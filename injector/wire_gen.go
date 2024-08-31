@@ -8,6 +8,7 @@ package injector
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 )
@@ -20,9 +21,9 @@ func LoggerInit() error {
 	return error2
 }
 
-func FiberProvider() *fiber.App {
+func RestProvider() *fiber.App {
 	configConfig := config.LoadConfig()
-	app := fiberProvider(configConfig)
+	app := rest.NewRestApp(configConfig)
 	return app
 }
 

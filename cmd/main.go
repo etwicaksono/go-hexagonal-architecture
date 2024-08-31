@@ -25,15 +25,15 @@ func main() {
 		stop()
 	}
 
-	// Fiber app initialization
-	fiberApp := injector.FiberProvider()
+	// Rest app initialization
+	restApp := injector.RestProvider()
 
 	// Run fiber rest server
 	go func() {
-		slog.InfoContext(ctx, "Starting fiber rest server...")
-		err := fiberApp.Listen(fmt.Sprintf("%s:%d", cfg.App.RestHost, cfg.App.RestPort))
+		slog.InfoContext(ctx, "Starting rest server...")
+		err := restApp.Listen(fmt.Sprintf("%s:%d", cfg.App.RestHost, cfg.App.RestPort))
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to start fiber rest server", slog.String(entity.Error, err.Error()))
+			slog.ErrorContext(ctx, "Failed to start rest server", slog.String(entity.Error, err.Error()))
 		}
 	}()
 

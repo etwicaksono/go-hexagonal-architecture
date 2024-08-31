@@ -1,4 +1,4 @@
-package injector
+package rest
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/utils"
 )
 
-func fiberProvider(cfg config.Config) *fiber.App {
+func NewRestApp(cfg config.Config) *fiber.App {
 	return fiber.New(fiber.Config{
 		IdleTimeout:  cfg.App.IdleTimeout,
 		WriteTimeout: cfg.App.WriteTimeout,

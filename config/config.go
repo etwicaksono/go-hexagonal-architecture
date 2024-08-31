@@ -1,7 +1,10 @@
 package config
 
 import (
+	"context"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/spf13/viper"
+	"log/slog"
 	"path/filepath"
 	"runtime"
 	"time"
@@ -39,6 +42,7 @@ func LoadConfig() Config {
 
 	err := vpr.ReadInConfig()
 	if err != nil {
+		slog.ErrorContext(context.Background(), "Failed to read config file", slog.String(entity.Error, err.Error()))
 		panic(err.Error())
 	}
 
