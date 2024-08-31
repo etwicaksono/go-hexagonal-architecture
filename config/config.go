@@ -26,7 +26,7 @@ type AppConfig struct {
 	Host            string
 }
 
-func LoadConfig() (Config, error) {
+func LoadConfig() Config {
 	_, b, _, _ := runtime.Caller(0)
 
 	// Root folder of this project
@@ -57,5 +57,5 @@ func LoadConfig() (Config, error) {
 			Version:         vpr.GetString("APP_VERSION"),
 			Host:            vpr.GetString("APP_HOST"),
 		},
-	}, nil
+	}
 }
