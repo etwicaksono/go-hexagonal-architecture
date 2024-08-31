@@ -17,6 +17,7 @@ type AppConfig struct {
 	RestPort        int
 	GrpcHost        string
 	GrpcPort        int
+	IdleTimeout     time.Duration
 	ReadTimeout     time.Duration
 	WriteTimeout    time.Duration
 	GracefulTimeout time.Duration
@@ -48,6 +49,7 @@ func LoadConfig() (Config, error) {
 			RestPort:        vpr.GetInt("APP_REST_NATIVE_PORT"),
 			GrpcHost:        vpr.GetString("APP_GRPC_HOST"),
 			GrpcPort:        vpr.GetInt("APP_GRPC_PORT"),
+			IdleTimeout:     vpr.GetDuration("APP_IDLE_TIMEOUT"),
 			ReadTimeout:     vpr.GetDuration("APP_READ_TIMEOUT"),
 			WriteTimeout:    vpr.GetDuration("APP_WRITE_TIMEOUT"),
 			GracefulTimeout: vpr.GetDuration("APP_GRACEFUL_TIMEOUT"),
