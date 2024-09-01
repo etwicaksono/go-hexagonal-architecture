@@ -6,7 +6,6 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/injector"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -28,7 +27,6 @@ func main() {
 
 	// Rest app initialization
 	restApp := injector.RestProvider()
-	router.Router(restApp)
 
 	// Run fiber rest server
 	go func() {

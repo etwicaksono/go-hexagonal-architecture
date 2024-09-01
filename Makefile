@@ -13,7 +13,7 @@ MAIN_PACKAGE := ./cmd
 
 .PHONY: all wire build clean
 
-all: wire build
+#all: wire build
 
 # Run wire to generate dependency injection code
 wire:

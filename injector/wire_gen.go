@@ -9,6 +9,8 @@ package injector
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/docs"
+	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 )
@@ -23,10 +25,14 @@ func LoggerInit() error {
 
 func RestProvider() *fiber.App {
 	configConfig := config.LoadConfig()
-	app := rest.NewRestApp(configConfig)
+	documentationHandlerInterface := docs.NewDocumentationHandler(configConfig)
+	routerRouter := router.NewRouter(documentationHandlerInterface)
+	app := rest.NewRestApp(configConfig, routerRouter)
 	return app
 }
 
 // injector.go:
 
-var serverSet = wire.NewSet(config.LoadConfig)
+var configSet = wire.NewSet(config.LoadConfig)
+
+var routerSet = wire.NewSet(docs.NewDocumentationHandler, router.NewRouter)

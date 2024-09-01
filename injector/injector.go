@@ -6,15 +6,21 @@ package injector
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/docs"
+	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 )
 
-var serverSet = wire.NewSet(config.LoadConfig)
+var configSet = wire.NewSet(config.LoadConfig)
+var routerSet = wire.NewSet(
+	docs.NewDocumentationHandler,
+	router.NewRouter,
+)
 
 func LoggerInit() error {
 	wire.Build(
-		serverSet,
+		configSet,
 		loggerInit,
 	)
 	return nil
@@ -22,7 +28,8 @@ func LoggerInit() error {
 
 func RestProvider() *fiber.App {
 	wire.Build(
-		serverSet,
+		routerSet,
+		configSet,
 		rest.NewRestApp,
 	)
 	return nil
