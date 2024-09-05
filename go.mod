@@ -11,7 +11,7 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
-	github.com/etwicaksono/public-proto v1.0.1
+	github.com/etwicaksono/public-proto v1.0.2
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gofiber/template v1.8.3 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect

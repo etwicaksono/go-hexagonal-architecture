@@ -2,14 +2,15 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
+	"net"
+
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/app"
 	primaryPort "github.com/etwicaksono/go-hexagonal-architecture/internal/ports/primary/grpc"
 	"github.com/etwicaksono/public-proto/gen/example"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log/slog"
-	"net"
 )
 
 type adapter struct {
