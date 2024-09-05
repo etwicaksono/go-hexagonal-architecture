@@ -7,7 +7,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/injector"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_app"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/grpc/example"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/grpc"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -31,20 +31,23 @@ func main() {
 		Start of app layer initialization
 	*/
 	exampleApp := example_app.NewExampleApp(example_app.Config{})
-	/*
-		End of app layer initialization
-	*/
 
+	/*
+		Server initialization
+	*/
 	// Rest app initialization
 	restApp := injector.RestProvider(ctx)
 
 	// Grpc app initialization
-	grpcApp := example.NewExampleGrpcAdapter(
+	grpcApp := grpc.NewGrpcAdapter(
 		ctx,
 		fmt.Sprintf("%s:%d", cfg.App.GrpcHost, cfg.App.GrpcPort),
 		exampleApp,
 	)
 
+	/*
+		Start server
+	*/
 	// Run fiber rest server
 	go func() {
 		slog.InfoContext(ctx, "Starting rest server...")

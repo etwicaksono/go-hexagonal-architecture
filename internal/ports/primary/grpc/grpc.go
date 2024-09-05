@@ -7,5 +7,9 @@ import (
 
 type ExampleGrpcHandlerInterface interface {
 	Run() error
+
+	/*
+		ExampleGrpcHandlerInterface
+	*/
 	GetExample(ctx context.Context, in *example.ExampleRequest) (*example.ExampleResponse, error)
 }

@@ -1,4 +1,4 @@
-package example
+package grpc
 
 import (
 	"context"
@@ -13,20 +13,24 @@ import (
 )
 
 type adapter struct {
-	ctx        context.Context
-	address    string
+	ctx     context.Context
+	address string
+	handler Handler
+}
+
+type Handler struct {
 	exampleApp app.ExampleAppInterface
 }
 
-func NewExampleGrpcAdapter(
+func NewGrpcAdapter(
 	ctx context.Context,
 	address string,
-	exampleApp app.ExampleAppInterface,
+	handler Handler,
 ) primaryPort.ExampleGrpcHandlerInterface {
 	return &adapter{
-		ctx:        ctx,
-		address:    address,
-		exampleApp: exampleApp,
+		ctx:     ctx,
+		address: address,
+		handler: handler,
 	}
 }
 
@@ -46,10 +50,10 @@ func (a *adapter) Run() error {
 	grpcServer := grpc.NewServer()
 	example.RegisterExampleServiceServer(
 		grpcServer,
-		NewExampleGrpcAdapter(
+		NewGrpcAdapter(
 			a.ctx,
 			a.address,
-			a.exampleApp,
+			a.handler,
 		),
 	)
 	slog.InfoContext(a.ctx, "grpc server running ", slog.String("address", a.address))
