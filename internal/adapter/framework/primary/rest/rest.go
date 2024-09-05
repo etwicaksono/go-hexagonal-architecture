@@ -3,13 +3,13 @@ package rest
 import (
 	"context"
 	"errors"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
+	middleware2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	"os"
 	"path/filepath"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/model"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/middleware"
 	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	recover2 "github.com/gofiber/fiber/v2/middleware/recover"
@@ -80,7 +80,7 @@ func NewRestApp(
 	}
 
 	// Middleware before route
-	middleware.CorsMiddleware(fiberApp, cfg.App)
+	middleware2.CorsMiddleware(fiberApp, cfg.App)
 
 	// SetRoute
 	router.SetRoute(fiberApp, route)
@@ -95,7 +95,7 @@ func NewRestApp(
 	}
 
 	// Middleware after route
-	middleware.NotFoundMiddleware(fiberApp)
+	middleware2.NotFoundMiddleware(fiberApp)
 
 	return fiberApp
 }

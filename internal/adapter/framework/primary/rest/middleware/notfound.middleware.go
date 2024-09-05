@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/gofiber/fiber/v2"
 )
 
