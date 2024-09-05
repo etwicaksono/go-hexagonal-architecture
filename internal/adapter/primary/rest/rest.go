@@ -3,6 +3,9 @@ package rest
 import (
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
+
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/model"
@@ -23,12 +26,22 @@ func NewRestApp(
 	cfg config.Config,
 	route router.Router,
 ) *fiber.App {
+	// Get the current working directory
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	// Use absolute path for the templates directory
+	templatePath := filepath.Join(wd, "../docs/swagger-ui")
+	engine := html.New(templatePath, ".gohtml")
+
 	fiberApp := fiber.New(fiber.Config{
 		IdleTimeout:  cfg.App.IdleTimeout,
 		WriteTimeout: cfg.App.WriteTimeout,
 		ReadTimeout:  cfg.App.ReadTimeout,
 		Prefork:      cfg.App.RestPrefork,
-		Views:        html.New("./docs/swagger-ui", ".gohtml"),
+		Views:        engine,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			// Status code defaults to 500
 			code := fiber.StatusInternalServerError
@@ -73,8 +86,9 @@ func NewRestApp(
 	router.SetRoute(fiberApp, route)
 
 	// Static files
+	docPath := filepath.Join(wd, "../docs")
 	staticFiles := map[string]string{
-		"/docs": "docs",
+		"/docs": docPath,
 	}
 	for key, value := range staticFiles {
 		fiberApp.Static(key, value)

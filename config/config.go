@@ -2,12 +2,14 @@ package config
 
 import (
 	"context"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/spf13/viper"
+	"fmt"
 	"log/slog"
 	"path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -49,7 +51,7 @@ func LoadConfig() Config {
 	vpr := viper.New()
 
 	vpr.AddConfigPath(projectRoot)
-	vpr.SetConfigFile(".env")
+	vpr.SetConfigFile(fmt.Sprintf("%s/.env", projectRoot))
 	vpr.AutomaticEnv()
 
 	err := vpr.ReadInConfig()

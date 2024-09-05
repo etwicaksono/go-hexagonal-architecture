@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"os"
+	"os/signal"
+
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/injector"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/grpc"
-	"log/slog"
-	"os"
-	"os/signal"
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 	restApp := injector.RestProvider(ctx)
 
 	// Grpc app initialization
-	grpcHandler := injector.GrpcHandlerProvider()
+	grpcHandler := injector.GrpcHandlerProvider(ctx)
 	grpcApp := grpc.NewGrpcAdapter(
 		ctx,
 		fmt.Sprintf("%s:%d", cfg.App.GrpcHost, cfg.App.GrpcPort),

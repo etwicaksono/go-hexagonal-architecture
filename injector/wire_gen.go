@@ -30,18 +30,18 @@ func LoggerInit() error {
 
 func RestProvider(ctx context.Context) *fiber.App {
 	configConfig := config.LoadConfig()
-	swaggerHandlerInterface := docs.NewDocumentationHandler(configConfig)
-	exampleCoreInterface := example_core.NewExampleCore()
-	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface)
+	swaggerHandlerInterface := docs.NewDocumentationHandler(ctx, configConfig)
+	exampleCoreInterface := example_core.NewExampleCore(ctx)
+	exampleAppInterface := example_app.NewExampleApp(ctx, exampleCoreInterface)
 	exampleHandlerInterface := example_rest.NewExampleRestHandler(exampleAppInterface)
 	routerRouter := router.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
 	app := rest.NewRestApp(ctx, configConfig, routerRouter)
 	return app
 }
 
-func GrpcHandlerProvider() grpc.Handler {
-	exampleCoreInterface := example_core.NewExampleCore()
-	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface)
+func GrpcHandlerProvider(ctx context.Context) grpc.Handler {
+	exampleCoreInterface := example_core.NewExampleCore(ctx)
+	exampleAppInterface := example_app.NewExampleApp(ctx, exampleCoreInterface)
 	handler := grpcHandlerProvider(exampleAppInterface)
 	return handler
 }

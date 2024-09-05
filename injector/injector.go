@@ -50,7 +50,7 @@ func RestProvider(ctx context.Context) *fiber.App {
 	return nil
 }
 
-func GrpcHandlerProvider() grpc.Handler {
+func GrpcHandlerProvider(ctx context.Context) grpc.Handler {
 	wire.Build(
 		exampleSet,
 		grpcHandlerProvider,
