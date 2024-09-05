@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/injector"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_app"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/grpc"
 	"log/slog"
@@ -28,21 +27,17 @@ func main() {
 	}
 
 	/*
-		Start of app layer initialization
-	*/
-	exampleApp := example_app.NewExampleApp(example_app.Config{})
-
-	/*
 		Server initialization
 	*/
 	// Rest app initialization
 	restApp := injector.RestProvider(ctx)
 
 	// Grpc app initialization
+	grpcHandler := injector.GrpcHandlerProvider()
 	grpcApp := grpc.NewGrpcAdapter(
 		ctx,
 		fmt.Sprintf("%s:%d", cfg.App.GrpcHost, cfg.App.GrpcPort),
-		exampleApp,
+		grpcHandler,
 	)
 
 	/*

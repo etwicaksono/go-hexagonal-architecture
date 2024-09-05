@@ -9,6 +9,8 @@ package injector
 import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_app"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/docs"
 	"github.com/etwicaksono/go-hexagonal-architecture/router"
@@ -28,8 +30,15 @@ func RestProvider(ctx context.Context) *fiber.App {
 	configConfig := config.LoadConfig()
 	swaggerHandlerInterface := docs.NewDocumentationHandler(configConfig)
 	routerRouter := router.NewRouter(swaggerHandlerInterface)
-	app := rest.NewRestApp(configConfig, routerRouter)
+	app := rest.NewRestApp(ctx, configConfig, routerRouter)
 	return app
+}
+
+func GrpcHandlerProvider() grpc.Handler {
+	example_appConfig := exampleAppConfigProvider()
+	exampleAppInterface := example_app.NewExampleApp(example_appConfig)
+	handler := grpcHandlerProvider(exampleAppInterface)
+	return handler
 }
 
 // injector.go:
@@ -37,3 +46,7 @@ func RestProvider(ctx context.Context) *fiber.App {
 var configSet = wire.NewSet(config.LoadConfig)
 
 var routerSet = wire.NewSet(docs.NewDocumentationHandler, router.NewRouter)
+
+var appSet = wire.NewSet(
+	exampleAppConfigProvider, example_app.NewExampleApp,
+)

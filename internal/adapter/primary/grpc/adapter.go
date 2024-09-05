@@ -19,14 +19,14 @@ type adapter struct {
 }
 
 type Handler struct {
-	exampleApp app.ExampleAppInterface
+	ExampleApp app.ExampleAppInterface
 }
 
 func NewGrpcAdapter(
 	ctx context.Context,
 	address string,
 	handler Handler,
-) primaryPort.ExampleGrpcHandlerInterface {
+) primaryPort.GrpcHandlerInterface {
 	return &adapter{
 		ctx:     ctx,
 		address: address,

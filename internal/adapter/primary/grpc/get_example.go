@@ -6,7 +6,7 @@ import (
 )
 
 func (a *adapter) GetExample(ctx context.Context, in *example.ExampleRequest) (*example.ExampleResponse, error) {
-	err := a.handler.exampleApp.DoSomething()
+	err := a.handler.ExampleApp.DoSomething()
 	if err != nil {
 		return nil, err
 	}

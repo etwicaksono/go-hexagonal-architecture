@@ -5,7 +5,7 @@ import (
 	"github.com/etwicaksono/public-proto/gen/example"
 )
 
-type ExampleGrpcHandlerInterface interface {
+type GrpcHandlerInterface interface {
 	Run() error
 
 	/*
