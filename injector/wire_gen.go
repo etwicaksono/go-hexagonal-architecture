@@ -13,6 +13,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/docs"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/example_rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
@@ -29,7 +30,9 @@ func LoggerInit() error {
 func RestProvider(ctx context.Context) *fiber.App {
 	configConfig := config.LoadConfig()
 	swaggerHandlerInterface := docs.NewDocumentationHandler(configConfig)
-	routerRouter := router.NewRouter(swaggerHandlerInterface)
+	example_restConfig := exampleRestConfigProvider()
+	exampleHandlerInterface := example_rest.NewExampleRestHandler(example_restConfig)
+	routerRouter := router.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
 	app := rest.NewRestApp(ctx, configConfig, routerRouter)
 	return app
 }
@@ -45,8 +48,14 @@ func GrpcHandlerProvider() grpc.Handler {
 
 var configSet = wire.NewSet(config.LoadConfig)
 
-var routerSet = wire.NewSet(docs.NewDocumentationHandler, router.NewRouter)
-
 var appSet = wire.NewSet(
 	exampleAppConfigProvider, example_app.NewExampleApp,
+)
+
+var restSet = wire.NewSet(
+	exampleRestConfigProvider, example_rest.NewExampleRestHandler,
+)
+
+var routerSet = wire.NewSet(
+	restSet, docs.NewDocumentationHandler, router.NewRouter,
 )
