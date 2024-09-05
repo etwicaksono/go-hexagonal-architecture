@@ -10,6 +10,7 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_app"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_core"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/docs"
@@ -30,16 +31,17 @@ func LoggerInit() error {
 func RestProvider(ctx context.Context) *fiber.App {
 	configConfig := config.LoadConfig()
 	swaggerHandlerInterface := docs.NewDocumentationHandler(configConfig)
-	example_restConfig := exampleRestConfigProvider()
-	exampleHandlerInterface := example_rest.NewExampleRestHandler(example_restConfig)
+	exampleCoreInterface := example_core.NewExampleCore()
+	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface)
+	exampleHandlerInterface := example_rest.NewExampleRestHandler(exampleAppInterface)
 	routerRouter := router.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
 	app := rest.NewRestApp(ctx, configConfig, routerRouter)
 	return app
 }
 
 func GrpcHandlerProvider() grpc.Handler {
-	example_appConfig := exampleAppConfigProvider()
-	exampleAppInterface := example_app.NewExampleApp(example_appConfig)
+	exampleCoreInterface := example_core.NewExampleCore()
+	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface)
 	handler := grpcHandlerProvider(exampleAppInterface)
 	return handler
 }
@@ -48,13 +50,9 @@ func GrpcHandlerProvider() grpc.Handler {
 
 var configSet = wire.NewSet(config.LoadConfig)
 
-var appSet = wire.NewSet(
-	exampleAppConfigProvider, example_app.NewExampleApp,
-)
+var exampleSet = wire.NewSet(example_core.NewExampleCore, example_app.NewExampleApp)
 
-var restSet = wire.NewSet(
-	exampleRestConfigProvider, example_rest.NewExampleRestHandler,
-)
+var restSet = wire.NewSet(example_rest.NewExampleRestHandler)
 
 var routerSet = wire.NewSet(
 	restSet, docs.NewDocumentationHandler, router.NewRouter,

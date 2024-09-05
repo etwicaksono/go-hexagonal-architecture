@@ -1,18 +1,18 @@
 package example_app
 
-import "github.com/etwicaksono/go-hexagonal-architecture/internal/ports/app"
+import (
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/app"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/core"
+)
 
 type exampleApp struct {
+	core core.ExampleCoreInterface
 }
 
-func (e exampleApp) DoSomething() error {
-	//TODO implement me
-	panic("implement me")
-}
-
-type Config struct {
-}
-
-func NewExampleApp(config Config) app.ExampleAppInterface {
-	return &exampleApp{}
+func NewExampleApp(
+	core core.ExampleCoreInterface,
+) app.ExampleAppInterface {
+	return &exampleApp{
+		core: core,
+	}
 }
