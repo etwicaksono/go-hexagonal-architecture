@@ -18,9 +18,6 @@ type adapter struct {
 	exampleApp app.ExampleAppInterface
 }
 
-type Config struct {
-}
-
 func NewExampleGrpcAdapter(
 	ctx context.Context,
 	address string,
@@ -37,13 +34,24 @@ func (a *adapter) Run() error {
 	// Initialize net listener
 	listen, err := net.Listen("tcp", a.address)
 	if err != nil {
-		slog.ErrorContext(a.ctx, "Failed to listen on port", slog.String("address", a.address), slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(
+			a.ctx,
+			"Failed to listen on port",
+			slog.String("address", a.address),
+			slog.String(entity.Error, err.Error()))
 		return err
 	}
 
 	// Initialize grpc server
 	grpcServer := grpc.NewServer()
-	example.RegisterExampleServiceServer(grpcServer, NewExampleGrpcAdapter(a.ctx, a.address, a))
+	example.RegisterExampleServiceServer(
+		grpcServer,
+		NewExampleGrpcAdapter(
+			a.ctx,
+			a.address,
+			a.exampleApp,
+		),
+	)
 	slog.InfoContext(a.ctx, "grpc server running ", slog.String("address", a.address))
 
 	// Register reflection service on gRPC server.

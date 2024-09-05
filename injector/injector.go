@@ -4,6 +4,7 @@
 package injector
 
 import (
+	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/docs"
@@ -26,7 +27,7 @@ func LoggerInit() error {
 	return nil
 }
 
-func RestProvider() *fiber.App {
+func RestProvider(ctx context.Context) *fiber.App {
 	wire.Build(
 		routerSet,
 		configSet,

@@ -7,6 +7,7 @@
 package injector
 
 import (
+	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/docs"
@@ -23,10 +24,10 @@ func LoggerInit() error {
 	return error2
 }
 
-func RestProvider() *fiber.App {
+func RestProvider(ctx context.Context) *fiber.App {
 	configConfig := config.LoadConfig()
-	documentationHandlerInterface := docs.NewDocumentationHandler(configConfig)
-	routerRouter := router.NewRouter(documentationHandlerInterface)
+	swaggerHandlerInterface := docs.NewDocumentationHandler(configConfig)
+	routerRouter := router.NewRouter(swaggerHandlerInterface)
 	app := rest.NewRestApp(configConfig, routerRouter)
 	return app
 }

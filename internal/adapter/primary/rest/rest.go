@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
@@ -13,7 +14,12 @@ import (
 	"github.com/gofiber/template/html/v2"
 )
 
+const (
+	ContextKey = "context"
+)
+
 func NewRestApp(
+	ctx context.Context,
 	cfg config.Config,
 	route router.Router,
 ) *fiber.App {
@@ -48,6 +54,12 @@ func NewRestApp(
 		},
 	})
 
+	// Middleware to attach the context to the request
+	fiberApp.Use(func(c *fiber.Ctx) error {
+		c.Locals(ContextKey, ctx)
+		return c.Next()
+	})
+
 	if cfg.App.RestRecovery {
 		fiberApp.Use(recover2.New(recover2.Config{
 			EnableStackTrace: cfg.App.RestEnableStackTrace,
@@ -72,4 +84,8 @@ func NewRestApp(
 	middleware.NotFoundMiddleware(fiberApp)
 
 	return fiberApp
+}
+
+func GetContext(ctx *fiber.Ctx) context.Context {
+	return ctx.Locals(ContextKey).(context.Context)
 }

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/injector"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_app"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/grpc/example"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -25,8 +27,23 @@ func main() {
 		stop()
 	}
 
+	/*
+		Start of app layer initialization
+	*/
+	exampleApp := example_app.NewExampleApp(example_app.Config{})
+	/*
+		End of app layer initialization
+	*/
+
 	// Rest app initialization
-	restApp := injector.RestProvider()
+	restApp := injector.RestProvider(ctx)
+
+	// Grpc app initialization
+	grpcApp := example.NewExampleGrpcAdapter(
+		ctx,
+		fmt.Sprintf("%s:%d", cfg.App.GrpcHost, cfg.App.GrpcPort),
+		exampleApp,
+	)
 
 	// Run fiber rest server
 	go func() {
@@ -34,6 +51,15 @@ func main() {
 		err := restApp.Listen(fmt.Sprintf("%s:%d", cfg.App.RestHost, cfg.App.RestPort))
 		if err != nil {
 			slog.ErrorContext(ctx, "Failed to start rest server", slog.String(entity.Error, err.Error()))
+		}
+	}()
+
+	// Run grpc server
+	go func() {
+		err = grpcApp.Run()
+		if err != nil {
+			slog.ErrorContext(ctx, "Failed to start grpc server", slog.String(entity.Error, err.Error()))
+			shutdown <- err
 		}
 	}()
 
