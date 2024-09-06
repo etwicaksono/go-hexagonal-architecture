@@ -20,6 +20,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Injectors from injector.go:
@@ -30,11 +31,10 @@ func LoggerInit() error {
 	return error2
 }
 
-func RestProvider(ctx context.Context) *fiber.App {
+func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	configConfig := config.LoadConfig()
 	swaggerHandlerInterface := docs.NewDocumentationHandler(ctx, configConfig)
-	mongoInterface := infrastructure.NewMongo(ctx, configConfig)
-	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoInterface)
+	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
 	exampleCoreInterface := example_core.NewExampleCore(ctx, exampleDbInterface)
 	exampleAppInterface := example_app.NewExampleApp(ctx, exampleCoreInterface)
 	exampleHandlerInterface := example_rest.NewExampleRestHandler(exampleAppInterface)
@@ -43,10 +43,9 @@ func RestProvider(ctx context.Context) *fiber.App {
 	return app
 }
 
-func GrpcHandlerProvider(ctx context.Context) grpc.Handler {
+func GrpcHandlerProvider(ctx context.Context, mongoClient *mongo.Client) grpc.Handler {
 	configConfig := config.LoadConfig()
-	mongoInterface := infrastructure.NewMongo(ctx, configConfig)
-	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoInterface)
+	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
 	exampleCoreInterface := example_core.NewExampleCore(ctx, exampleDbInterface)
 	exampleAppInterface := example_app.NewExampleApp(ctx, exampleCoreInterface)
 	handler := grpcHandlerProvider(exampleAppInterface)

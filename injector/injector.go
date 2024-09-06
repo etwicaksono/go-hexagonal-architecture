@@ -5,6 +5,7 @@ package injector
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 
@@ -45,7 +46,10 @@ func LoggerInit() error {
 	return nil
 }
 
-func RestProvider(ctx context.Context) *fiber.App {
+func RestProvider(
+	ctx context.Context,
+	mongoClient *mongo.Client,
+) *fiber.App {
 	wire.Build(
 		exampleSet,
 		routerSet,
@@ -54,7 +58,10 @@ func RestProvider(ctx context.Context) *fiber.App {
 	return nil
 }
 
-func GrpcHandlerProvider(ctx context.Context) grpc.Handler {
+func GrpcHandlerProvider(
+	ctx context.Context,
+	mongoClient *mongo.Client,
+) grpc.Handler {
 	wire.Build(
 		exampleSet,
 		grpcHandlerProvider,
