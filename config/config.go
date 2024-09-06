@@ -13,6 +13,7 @@ import (
 
 type Config struct {
 	App     AppConfig
+	Db      DbConfig
 	Swagger SwaggerConfig
 }
 
@@ -35,6 +36,19 @@ type AppConfig struct {
 	Name                 string
 	Version              string
 	Host                 string
+}
+
+type DbConfig struct {
+	Protocol          string
+	Address           string
+	Name              string
+	Username          string
+	Password          string
+	MaxConnOpen       int
+	MaxConnIdle       int
+	MaxConnLifetime   time.Duration
+	Option            string
+	ExampleCollection string
 }
 
 type SwaggerConfig struct {
@@ -83,6 +97,18 @@ func LoadConfig() Config {
 			Name:                 vpr.GetString("APP_NAME"),
 			Version:              vpr.GetString("APP_VERSION"),
 			Host:                 vpr.GetString("APP_HOST"),
+		},
+		Db: DbConfig{
+			Protocol:          vpr.GetString("DB_PROTOCOL"),
+			Address:           vpr.GetString("DB_ADDRESS"),
+			Name:              vpr.GetString("DB_NAME"),
+			Username:          vpr.GetString("DB_USERNAME"),
+			Password:          vpr.GetString("DB_PASSWORD"),
+			MaxConnOpen:       vpr.GetInt("DB_MAX_CONN_OPEN"),
+			MaxConnIdle:       vpr.GetInt("DB_MAX_CONN_IDLE"),
+			MaxConnLifetime:   vpr.GetDuration("DB_MAX_CONN_LIFETIME"),
+			Option:            vpr.GetString("DB_OPTION"),
+			ExampleCollection: vpr.GetString("DB_EXAMPLE_COLLECTION"),
 		},
 		Swagger: SwaggerConfig{
 			DeepLinking:  vpr.GetBool("SWAGGER_DEEP_LINKING"),

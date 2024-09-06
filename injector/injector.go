@@ -5,6 +5,11 @@ package injector
 
 import (
 	"context"
+
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
+
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_mongo"
+
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs"
@@ -20,14 +25,14 @@ import (
 
 var configSet = wire.NewSet(config.LoadConfig)
 var exampleSet = wire.NewSet(
+	configSet,
+	infrastructure.NewMongo,
+	example_mongo.NewExampleMongo,
 	example_core.NewExampleCore,
 	example_app.NewExampleApp,
 )
-var restSet = wire.NewSet(
-	example_rest.NewExampleRestHandler,
-)
 var routerSet = wire.NewSet(
-	restSet,
+	example_rest.NewExampleRestHandler,
 	docs.NewDocumentationHandler,
 	router.NewRouter,
 )
@@ -44,7 +49,6 @@ func RestProvider(ctx context.Context) *fiber.App {
 	wire.Build(
 		exampleSet,
 		routerSet,
-		configSet,
 		rest.NewRestApp,
 	)
 	return nil
