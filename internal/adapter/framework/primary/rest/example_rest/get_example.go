@@ -10,10 +10,16 @@ func (a adapter) GetExample(ctx *fiber.Ctx) (err error) {
 	if err != nil {
 		return err
 	}
+
+	var modelMessages []model.MessageTextItem
+	for _, message := range messages {
+		modelMessages = append(modelMessages, *message.ToModel())
+	}
+
 	return ctx.Status(fiber.StatusOK).JSON(model.Response{
 		Code:    fiber.StatusOK,
 		Status:  "success",
 		Message: "Get example success",
-		Data:    messages,
+		Data:    modelMessages,
 	})
 }
