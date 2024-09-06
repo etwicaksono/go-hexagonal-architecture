@@ -3,6 +3,7 @@ package example_mongo
 import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/model"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -16,11 +17,11 @@ func (e exampleMongo) FindAllTextMessage(ctx context.Context) ([]entity.MessageT
 
 	var messages []entity.MessageTextItem
 	for cursor.Next(ctx) {
-		var message entity.MessageTextItem
+		var message model2.MessageTextItem
 		if err = cursor.Decode(&message); err != nil {
 			return nil, err
 		}
-		messages = append(messages, message)
+		messages = append(messages, message.ToEntity())
 	}
 	return messages, nil
 }

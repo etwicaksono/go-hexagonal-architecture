@@ -15,7 +15,7 @@ func (a adapter) GetTextMessage(ctx *fiber.Ctx) (err error) {
 
 	var modelMessages []model.MessageTextItem
 	for _, message := range messages {
-		modelMessages = append(modelMessages, *message.ToModel())
+		modelMessages = append(modelMessages, model.FromEntity(message))
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(model.Response[[]model.MessageTextItem]{

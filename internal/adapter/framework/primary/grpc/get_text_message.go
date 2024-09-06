@@ -7,8 +7,8 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (a *adapter) GetTextMessage(context.Context, *emptypb.Empty) (*example.GetTextMessageResponse, error) {
-	messages, err := a.handler.ExampleApp.GetTextMessage()
+func (a *adapter) GetTextMessage(ctx context.Context, _ *emptypb.Empty) (*example.GetTextMessageResponse, error) {
+	messages, err := a.handler.ExampleApp.GetTextMessage(ctx)
 	if err != nil {
 		return nil, err
 	}

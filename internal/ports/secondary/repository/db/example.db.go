@@ -7,5 +7,5 @@ import (
 
 type ExampleDbInterface interface {
 	FindAllTextMessage(ctx context.Context) ([]entity.MessageTextItem, error)
-	UpsertTextMessage(ctx context.Context, objs []entity.MessageTextItem) (entity.BulkWriteResult, error)
+	InsertTextMessage(ctx context.Context, objs []entity.MessageTextItem) (entity.BulkWriteResult, error)
 }

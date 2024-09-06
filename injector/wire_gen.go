@@ -35,8 +35,8 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	configConfig := config.LoadConfig()
 	swaggerHandlerInterface := docs.NewDocumentationHandler(ctx, configConfig)
 	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
-	exampleCoreInterface := example_core.NewExampleCore(ctx, exampleDbInterface)
-	exampleAppInterface := example_app.NewExampleApp(ctx, exampleCoreInterface)
+	exampleCoreInterface := example_core.NewExampleCore(exampleDbInterface)
+	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface)
 	exampleHandlerInterface := example_rest.NewExampleRestHandler(exampleAppInterface)
 	routerRouter := router.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
 	app := rest.NewRestApp(ctx, configConfig, routerRouter)
@@ -46,8 +46,8 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 func GrpcHandlerProvider(ctx context.Context, mongoClient *mongo.Client) grpc.Handler {
 	configConfig := config.LoadConfig()
 	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
-	exampleCoreInterface := example_core.NewExampleCore(ctx, exampleDbInterface)
-	exampleAppInterface := example_app.NewExampleApp(ctx, exampleCoreInterface)
+	exampleCoreInterface := example_core.NewExampleCore(exampleDbInterface)
+	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface)
 	handler := grpcHandlerProvider(exampleAppInterface)
 	return handler
 }

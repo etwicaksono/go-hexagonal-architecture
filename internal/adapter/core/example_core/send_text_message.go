@@ -13,7 +13,7 @@ func (e exampleCore) SendTextMessage(ctx context.Context, request entity.SendTex
 			Message:  request.Message,
 		},
 	}
-	_, err := e.db.UpsertTextMessage(ctx, objs)
+	_, err := e.db.InsertTextMessage(ctx, objs)
 	if err != nil {
 		return err
 	}
