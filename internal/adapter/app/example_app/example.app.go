@@ -17,6 +17,7 @@ func NewExampleApp(
 	core core.ExampleCoreInterface,
 ) app.ExampleAppInterface {
 	return &exampleApp{
+		ctx:  ctx,
 		core: core,
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 )
 
-func (e exampleApp) GetTextMessage() ([]*entity.MessageTextItem, error) {
+func (e exampleApp) GetTextMessage() ([]entity.MessageTextItem, error) {
 	messages, err := e.core.GetTextMessage()
 	if err != nil {
 		slog.ErrorContext(e.ctx, err.Error())
