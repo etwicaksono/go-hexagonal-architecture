@@ -16,7 +16,7 @@ func (a adapter) GetExample(ctx *fiber.Ctx) (err error) {
 		modelMessages = append(modelMessages, *message.ToModel())
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(model.Response{
+	return ctx.Status(fiber.StatusOK).JSON(model.Response[[]model.MessageTextItem]{
 		Code:    fiber.StatusOK,
 		Status:  "success",
 		Message: "Get example success",

@@ -59,7 +59,7 @@ func NewRestApp(
 				}
 			}
 
-			return ctx.Status(code).JSON(model.Response{
+			return ctx.Status(code).JSON(model.Response[any]{
 				Code:    code,
 				Status:  status,
 				Message: message,
