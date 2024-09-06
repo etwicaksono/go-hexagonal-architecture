@@ -5,5 +5,8 @@ import (
 )
 
 type ExampleHandlerInterface interface {
-	GetExample(ctx *fiber.Ctx) (err error)
+	SendTextMessage(ctx *fiber.Ctx) (err error)
+	GetTextMessage(ctx *fiber.Ctx) (err error)
+	SendMultimediaMessage(ctx *fiber.Ctx) (err error)
+	GetMultimediaMessage(ctx *fiber.Ctx) (err error)
 }

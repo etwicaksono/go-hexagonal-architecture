@@ -27,5 +27,8 @@ func SetRoute(app *fiber.App, router Router) {
 	app.Get("/swagger/*", router.docs.Swagger)
 
 	// Example
-	app.Get("/example", router.example.GetExample)
+	app.Get("/message/text", router.example.GetTextMessage)
+	app.Post("/message/text", router.example.SendTextMessage)
+	app.Get("/message/multimedia", router.example.GetMultimediaMessage)
+	app.Post("/message/multimedia", router.example.SendMultimediaMessage)
 }

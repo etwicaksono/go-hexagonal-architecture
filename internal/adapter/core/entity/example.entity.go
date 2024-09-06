@@ -29,3 +29,9 @@ func (mti MessageTextItem) ToModel() *model.MessageTextItem {
 		Message:  mti.Message,
 	}
 }
+
+type SendTextMessageRequest struct {
+	Sender   string
+	Receiver string
+	Message  string
+}

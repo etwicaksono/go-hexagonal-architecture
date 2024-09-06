@@ -2,11 +2,13 @@ package example_rest
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
 	"github.com/gofiber/fiber/v2"
 )
 
-func (a adapter) GetExample(ctx *fiber.Ctx) (err error) {
-	messages, err := a.app.GetTextMessage()
+func (a adapter) GetTextMessage(ctx *fiber.Ctx) (err error) {
+	context := rest.GetContext(ctx)
+	messages, err := a.app.GetTextMessage(context)
 	if err != nil {
 		return err
 	}
@@ -19,7 +21,7 @@ func (a adapter) GetExample(ctx *fiber.Ctx) (err error) {
 	return ctx.Status(fiber.StatusOK).JSON(model.Response[[]model.MessageTextItem]{
 		Code:    fiber.StatusOK,
 		Status:  "success",
-		Message: "Get example success",
+		Message: "Get text message success",
 		Data:    modelMessages,
 	})
 }

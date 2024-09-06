@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	ContextKey = "context"
+	contextKey = "context"
 )
 
 func NewRestApp(
@@ -69,7 +69,7 @@ func NewRestApp(
 
 	// Middleware to attach the context to the request
 	fiberApp.Use(func(c *fiber.Ctx) error {
-		c.Locals(ContextKey, ctx)
+		c.Locals(contextKey, ctx)
 		return c.Next()
 	})
 
@@ -101,5 +101,5 @@ func NewRestApp(
 }
 
 func GetContext(ctx *fiber.Ctx) context.Context {
-	return ctx.Locals(ContextKey).(context.Context)
+	return ctx.Locals(contextKey).(context.Context)
 }
