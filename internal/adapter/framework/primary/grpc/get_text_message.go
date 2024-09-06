@@ -8,11 +8,17 @@ import (
 )
 
 func (a *adapter) GetTextMessage(context.Context, *emptypb.Empty) (*example.GetTextMessageResponse, error) {
-	err := a.handler.ExampleApp.DoSomethingInApp()
+	messages, err := a.handler.ExampleApp.GetTextMessage()
 	if err != nil {
 		return nil, err
 	}
+
+	var data []*example.MessageTextItem
+	for _, message := range messages {
+		data = append(data, message.ToProto())
+	}
+
 	return &example.GetTextMessageResponse{
-		Data: nil,
+		Data: data,
 	}, nil
 }

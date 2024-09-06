@@ -2,7 +2,6 @@ package example_core
 
 import (
 	"context"
-
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/core"
 )
 

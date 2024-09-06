@@ -6,7 +6,7 @@ import (
 )
 
 func (a adapter) GetExample(ctx *fiber.Ctx) (err error) {
-	err = a.app.DoSomethingInApp()
+	messages, err := a.app.GetTextMessage()
 	if err != nil {
 		return err
 	}
@@ -14,5 +14,6 @@ func (a adapter) GetExample(ctx *fiber.Ctx) (err error) {
 		Code:    fiber.StatusOK,
 		Status:  "success",
 		Message: "Get example success",
+		Data:    messages,
 	})
 }

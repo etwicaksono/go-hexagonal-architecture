@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"path/filepath"
-	"runtime"
+	"os"
 	"time"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
@@ -44,17 +43,21 @@ type SwaggerConfig struct {
 }
 
 func LoadConfig() Config {
-	_, b, _, _ := runtime.Caller(0)
+	// Get the current working directory
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err.Error())
+	}
 
 	// Root folder of this project
-	projectRoot := filepath.Join(filepath.Dir(b), "../")
+	projectRoot := wd
 	vpr := viper.New()
 
 	vpr.AddConfigPath(projectRoot)
 	vpr.SetConfigFile(fmt.Sprintf("%s/.env", projectRoot))
 	vpr.AutomaticEnv()
 
-	err := vpr.ReadInConfig()
+	err = vpr.ReadInConfig()
 	if err != nil {
 		slog.ErrorContext(context.Background(), "Failed to read config file", slog.String(entity.Error, err.Error()))
 		panic(err.Error())
