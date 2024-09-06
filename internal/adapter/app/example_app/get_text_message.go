@@ -8,7 +8,7 @@ import (
 func (e exampleApp) GetTextMessage() ([]entity.MessageTextItem, error) {
 	messages, err := e.core.GetTextMessage()
 	if err != nil {
-		slog.ErrorContext(e.ctx, err.Error())
+		slog.ErrorContext(e.ctx, "Error on getting text message", slog.String("error", err.Error()))
 		return nil, err
 	}
 

@@ -8,6 +8,15 @@ import (
 )
 
 func (a *adapter) SendTextMessage(context.Context, *example.SendTextMessageRequest) (*emptypb.Empty, error) {
-	// TODO: implement this
-	panic("unimplemented")
+	messages, err := a.handler.ExampleApp.GetTextMessage()
+	if err != nil {
+		return nil, err
+	}
+
+	var data []*example.MessageTextItem
+	for _, message := range messages {
+		data = append(data, message.ToProto())
+	}
+
+	return &emptypb.Empty{}, nil
 }
