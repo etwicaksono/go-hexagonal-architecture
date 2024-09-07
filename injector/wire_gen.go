@@ -7,12 +7,20 @@
 package injector
 
 import (
+	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/primary/rest/docs"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_app"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_core"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_mongo"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Injectors from injector.go:
@@ -23,16 +31,38 @@ func LoggerInit() error {
 	return error2
 }
 
-func RestProvider() *fiber.App {
+func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	configConfig := config.LoadConfig()
-	documentationHandlerInterface := docs.NewDocumentationHandler(configConfig)
-	routerRouter := router.NewRouter(documentationHandlerInterface)
-	app := rest.NewRestApp(configConfig, routerRouter)
+	swaggerHandlerInterface := docs.NewDocumentationHandler(ctx, configConfig)
+	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
+	exampleCoreInterface := example_core.NewExampleCore(exampleDbInterface)
+	validate := validatorInit()
+	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface, validate)
+	exampleHandlerInterface := example_rest.NewExampleRestHandler(exampleAppInterface)
+	routerRouter := router.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
+	app := rest.NewRestApp(ctx, configConfig, routerRouter)
 	return app
+}
+
+func GrpcHandlerProvider(ctx context.Context, mongoClient *mongo.Client) grpc.Handler {
+	configConfig := config.LoadConfig()
+	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
+	exampleCoreInterface := example_core.NewExampleCore(exampleDbInterface)
+	validate := validatorInit()
+	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface, validate)
+	handler := grpcHandlerProvider(exampleAppInterface)
+	return handler
 }
 
 // injector.go:
 
 var configSet = wire.NewSet(config.LoadConfig)
 
-var routerSet = wire.NewSet(docs.NewDocumentationHandler, router.NewRouter)
+var validatorSet = wire.NewSet(validatorInit)
+
+var exampleSet = wire.NewSet(
+	configSet,
+	validatorSet, infrastructure.NewMongo, example_mongo.NewExampleMongo, example_core.NewExampleCore, example_app.NewExampleApp,
+)
+
+var routerSet = wire.NewSet(example_rest.NewExampleRestHandler, docs.NewDocumentationHandler, router.NewRouter)

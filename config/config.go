@@ -2,16 +2,18 @@ package config
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
+	"os"
+	"time"
+
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/spf13/viper"
-	"log/slog"
-	"path/filepath"
-	"runtime"
-	"time"
 )
 
 type Config struct {
 	App     AppConfig
+	Db      DbConfig
 	Swagger SwaggerConfig
 }
 
@@ -36,23 +38,40 @@ type AppConfig struct {
 	Host                 string
 }
 
+type DbConfig struct {
+	Protocol          string
+	Address           string
+	Name              string
+	Username          string
+	Password          string
+	MaxConnOpen       int
+	MaxConnIdle       int
+	MaxConnLifetime   time.Duration
+	Option            string
+	ExampleCollection string
+}
+
 type SwaggerConfig struct {
 	DeepLinking  bool
 	DocExpansion string
 }
 
 func LoadConfig() Config {
-	_, b, _, _ := runtime.Caller(0)
+	// Get the current working directory
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err.Error())
+	}
 
 	// Root folder of this project
-	projectRoot := filepath.Join(filepath.Dir(b), "../")
+	projectRoot := wd
 	vpr := viper.New()
 
 	vpr.AddConfigPath(projectRoot)
-	vpr.SetConfigFile(".env")
+	vpr.SetConfigFile(fmt.Sprintf("%s/.env", projectRoot))
 	vpr.AutomaticEnv()
 
-	err := vpr.ReadInConfig()
+	err = vpr.ReadInConfig()
 	if err != nil {
 		slog.ErrorContext(context.Background(), "Failed to read config file", slog.String(entity.Error, err.Error()))
 		panic(err.Error())
@@ -78,6 +97,18 @@ func LoadConfig() Config {
 			Name:                 vpr.GetString("APP_NAME"),
 			Version:              vpr.GetString("APP_VERSION"),
 			Host:                 vpr.GetString("APP_HOST"),
+		},
+		Db: DbConfig{
+			Protocol:          vpr.GetString("DB_PROTOCOL"),
+			Address:           vpr.GetString("DB_ADDRESS"),
+			Name:              vpr.GetString("DB_NAME"),
+			Username:          vpr.GetString("DB_USERNAME"),
+			Password:          vpr.GetString("DB_PASSWORD"),
+			MaxConnOpen:       vpr.GetInt("DB_MAX_CONN_OPEN"),
+			MaxConnIdle:       vpr.GetInt("DB_MAX_CONN_IDLE"),
+			MaxConnLifetime:   vpr.GetDuration("DB_MAX_CONN_LIFETIME"),
+			Option:            vpr.GetString("DB_OPTION"),
+			ExampleCollection: vpr.GetString("DB_EXAMPLE_COLLECTION"),
 		},
 		Swagger: SwaggerConfig{
 			DeepLinking:  vpr.GetBool("SWAGGER_DEEP_LINKING"),
