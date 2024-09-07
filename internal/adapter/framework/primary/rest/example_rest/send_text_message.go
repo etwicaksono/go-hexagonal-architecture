@@ -1,6 +1,7 @@
 package example_rest
 
 import (
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils"
@@ -17,12 +18,10 @@ func (a adapter) SendTextMessage(ctx *fiber.Ctx) (err error) {
 		if errOther != nil {
 			return errOther
 		}
-		return ctx.Status(fiber.StatusBadRequest).JSON(model.Response[any]{
-			Code:    fiber.StatusBadRequest,
-			Status:  "error",
-			Message: "Error parsing",
-			Errors:  errParsing,
-		})
+		return utils.NewCustomError().
+			SetCode(fiber.StatusBadRequest).
+			SetMessage(entity.Error).
+			SetFields(errParsing)
 	}
 
 	err = a.app.SendTextMessage(context, payload.ToEntity())
@@ -32,7 +31,7 @@ func (a adapter) SendTextMessage(ctx *fiber.Ctx) (err error) {
 
 	return ctx.Status(fiber.StatusOK).JSON(model.Response[[]model.MessageTextItem]{
 		Code:    fiber.StatusOK,
-		Status:  "success",
+		Status:  entity.Success,
 		Message: "Send text message success",
 	})
 }

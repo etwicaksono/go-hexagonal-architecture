@@ -2,6 +2,7 @@ package entity
 
 const (
 	Error    string = "error"
+	Success  string = "success"
 	Topic    string = "topic"
 	Message  string = "message"
 	Request  string = "request"

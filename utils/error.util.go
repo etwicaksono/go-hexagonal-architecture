@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -16,6 +17,11 @@ func NewCustomError() *CustomError {
 		Code:    http.StatusInternalServerError,
 		Message: http.StatusText(http.StatusInternalServerError),
 	}
+}
+
+func IsCustomError(err error) (customError *CustomError, isCustomError bool) {
+	ok := errors.As(err, &customError)
+	return customError, ok
 }
 
 func (e *CustomError) Error() string {

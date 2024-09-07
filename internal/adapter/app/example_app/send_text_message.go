@@ -16,7 +16,7 @@ func (e exampleApp) SendTextMessage(ctx context.Context, request entity.SendText
 		errValidation := utils.GenerateErrorMessage(err)
 		return utils.NewCustomError().
 			SetCode(fiber.StatusBadRequest).
-			SetMessage("VALIDATION ERROR").
+			SetMessage(utils.ValidationError).
 			SetFields(errValidation)
 	}
 
