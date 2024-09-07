@@ -36,7 +36,8 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	swaggerHandlerInterface := docs.NewDocumentationHandler(ctx, configConfig)
 	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
 	exampleCoreInterface := example_core.NewExampleCore(exampleDbInterface)
-	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface)
+	validate := validatorInit()
+	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface, validate)
 	exampleHandlerInterface := example_rest.NewExampleRestHandler(exampleAppInterface)
 	routerRouter := router.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
 	app := rest.NewRestApp(ctx, configConfig, routerRouter)
@@ -47,7 +48,8 @@ func GrpcHandlerProvider(ctx context.Context, mongoClient *mongo.Client) grpc.Ha
 	configConfig := config.LoadConfig()
 	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
 	exampleCoreInterface := example_core.NewExampleCore(exampleDbInterface)
-	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface)
+	validate := validatorInit()
+	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface, validate)
 	handler := grpcHandlerProvider(exampleAppInterface)
 	return handler
 }
@@ -56,8 +58,11 @@ func GrpcHandlerProvider(ctx context.Context, mongoClient *mongo.Client) grpc.Ha
 
 var configSet = wire.NewSet(config.LoadConfig)
 
+var validatorSet = wire.NewSet(validatorInit)
+
 var exampleSet = wire.NewSet(
-	configSet, infrastructure.NewMongo, example_mongo.NewExampleMongo, example_core.NewExampleCore, example_app.NewExampleApp,
+	configSet,
+	validatorSet, infrastructure.NewMongo, example_mongo.NewExampleMongo, example_core.NewExampleCore, example_app.NewExampleApp,
 )
 
 var routerSet = wire.NewSet(example_rest.NewExampleRestHandler, docs.NewDocumentationHandler, router.NewRouter)

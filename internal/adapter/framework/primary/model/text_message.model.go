@@ -19,9 +19,9 @@ func FromMessageTextItemEntity(mti entity.MessageTextItem) MessageTextItem {
 }
 
 type SendTextMessageRequest struct {
-	Sender   string `json:"sender"`
-	Receiver string `json:"receiver"`
-	Message  string `json:"message"`
+	Sender   string `json:"sender" validate:"required"`
+	Receiver string `json:"receiver" validate:"required"`
+	Message  string `json:"message" validate:"required"`
 }
 
 func (s SendTextMessageRequest) ToEntity() entity.SendTextMessageRequest {
@@ -29,5 +29,13 @@ func (s SendTextMessageRequest) ToEntity() entity.SendTextMessageRequest {
 		Sender:   s.Sender,
 		Receiver: s.Receiver,
 		Message:  s.Message,
+	}
+}
+
+func FromSendTextMessageRequestEntity(mti entity.SendTextMessageRequest) SendTextMessageRequest {
+	return SendTextMessageRequest{
+		Sender:   mti.Sender,
+		Receiver: mti.Receiver,
+		Message:  mti.Message,
 	}
 }

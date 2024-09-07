@@ -18,7 +18,7 @@ func (a adapter) SendTextMessage(ctx *fiber.Ctx) (err error) {
 			return errOther
 		}
 		return ctx.Status(fiber.StatusBadRequest).JSON(model.Response[any]{
-			Code:    fiber.StatusOK,
+			Code:    fiber.StatusBadRequest,
 			Status:  "error",
 			Message: "Error parsing",
 			Errors:  errParsing,

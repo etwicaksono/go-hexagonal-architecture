@@ -3,17 +3,19 @@ package rest
 import (
 	"context"
 	"errors"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
+	utils2 "github.com/etwicaksono/go-hexagonal-architecture/utils"
+	"github.com/gofiber/fiber/v2/utils"
+	"log/slog"
 	"os"
 	"path/filepath"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/fiber/v2/utils"
 	"github.com/gofiber/template/html/v2"
 )
 
@@ -47,15 +49,30 @@ func NewRestApp(
 			code := fiber.StatusInternalServerError
 			status := fiber.ErrInternalServerError.Message
 			message := entity.Error
+			errorMap := map[string]any{}
 
 			// Retrieve the custom status code if it's a *fiber.Error
-			var e *fiber.Error
-			if errors.As(err, &e) {
-				code = e.Code
-				status = utils.StatusMessage(e.Code)
+			var fiberError *fiber.Error
+			slog.Info("Is fiber error", slog.Bool("is fiber error", errors.As(err, &fiberError)))
+			if errors.As(err, &fiberError) {
+				code = fiberError.Code
+				status = utils.StatusMessage(fiberError.Code)
 
 				if cfg.App.Env != "production" {
-					message = e.Error()
+					message = fiberError.Error()
+				}
+			}
+
+			// Retrieve the custom status code if it's an utils2.CustomError
+			var customError *utils2.CustomError
+			slog.Info("Is custom error: ", slog.Bool("is custom error", errors.As(err, &customError)))
+			if errors.As(err, &customError) {
+				code = customError.Code
+				status = utils.StatusMessage(customError.Code)
+				errorMap = customError.Fields
+
+				if cfg.App.Env != "production" {
+					message = customError.Error()
 				}
 			}
 
@@ -63,6 +80,7 @@ func NewRestApp(
 				Code:    code,
 				Status:  status,
 				Message: message,
+				Errors:  errorMap,
 			})
 		},
 	})

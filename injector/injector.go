@@ -25,8 +25,10 @@ import (
 )
 
 var configSet = wire.NewSet(config.LoadConfig)
+var validatorSet = wire.NewSet(validatorInit)
 var exampleSet = wire.NewSet(
 	configSet,
+	validatorSet,
 	infrastructure.NewMongo,
 	example_mongo.NewExampleMongo,
 	example_core.NewExampleCore,

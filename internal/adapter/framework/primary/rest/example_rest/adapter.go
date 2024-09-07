@@ -9,7 +9,9 @@ type adapter struct {
 	app app.ExampleAppInterface
 }
 
-func NewExampleRestHandler(app app.ExampleAppInterface) rest.ExampleHandlerInterface {
+func NewExampleRestHandler(
+	app app.ExampleAppInterface,
+) rest.ExampleHandlerInterface {
 	return &adapter{
 		app: app,
 	}

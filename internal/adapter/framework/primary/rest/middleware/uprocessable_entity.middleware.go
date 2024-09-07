@@ -24,12 +24,7 @@ func UnprocessableEntityMiddleware(app *fiber.App) {
 				})
 			}
 
-			// Default error handler for other status codes
-			return ctx.Status(code).JSON(model.Response[any]{
-				Code:    code,
-				Status:  "error",
-				Message: err.Error(),
-			})
+			return err
 		}
 		return nil
 	})
