@@ -1,4 +1,4 @@
-package utils
+package error_util
 
 import (
 	"github.com/gofiber/fiber/v2"

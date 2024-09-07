@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	utils2 "github.com/etwicaksono/go-hexagonal-architecture/utils"
+	utils2 "github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 

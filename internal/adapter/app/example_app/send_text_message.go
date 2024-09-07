@@ -5,6 +5,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/gofiber/fiber/v2"
 	"log/slog"
 )
@@ -14,7 +15,7 @@ func (e exampleApp) SendTextMessage(ctx context.Context, request entity.SendText
 	err := e.validator.Struct(model.FromSendTextMessageRequestEntity(request))
 	if err != nil {
 		errValidation := utils.GenerateErrorMessage(err)
-		return utils.NewCustomError().
+		return error_util.NewCustomError().
 			SetCode(fiber.StatusBadRequest).
 			SetMessage(utils.ValidationError).
 			SetFields(errValidation)

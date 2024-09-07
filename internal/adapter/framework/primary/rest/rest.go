@@ -6,7 +6,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
-	utils2 "github.com/etwicaksono/go-hexagonal-architecture/utils"
+	utils2 "github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/gofiber/fiber/v2/utils"
 	"log/slog"
 	"os"

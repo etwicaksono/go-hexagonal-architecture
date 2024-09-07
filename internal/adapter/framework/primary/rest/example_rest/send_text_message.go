@@ -5,6 +5,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -18,7 +19,7 @@ func (a adapter) SendTextMessage(ctx *fiber.Ctx) (err error) {
 		if errOther != nil {
 			return errOther
 		}
-		return utils.NewCustomError().
+		return error_util.NewCustomError().
 			SetCode(fiber.StatusBadRequest).
 			SetMessage(entity.Error).
 			SetFields(errParsing)
