@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
-	middleware2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	"os"
 	"path/filepath"
 
@@ -12,7 +12,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
-	recover2 "github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/gofiber/template/html/v2"
 )
@@ -74,13 +74,14 @@ func NewRestApp(
 	})
 
 	if cfg.App.RestRecovery {
-		fiberApp.Use(recover2.New(recover2.Config{
+		fiberApp.Use(recover.New(recover.Config{
 			EnableStackTrace: cfg.App.RestEnableStackTrace,
 		})) // Panic Handler
 	}
 
 	// Middleware before route
-	middleware2.CorsMiddleware(fiberApp, cfg.App)
+	middleware.CorsMiddleware(fiberApp, cfg.App)
+	middleware.UnprocessableEntityMiddleware(fiberApp)
 
 	// SetRoute
 	router.SetRoute(fiberApp, route)
@@ -95,7 +96,7 @@ func NewRestApp(
 	}
 
 	// Middleware after route
-	middleware2.NotFoundMiddleware(fiberApp)
+	middleware.NotFoundMiddleware(fiberApp)
 
 	return fiberApp
 }
