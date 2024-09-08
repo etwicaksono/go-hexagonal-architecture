@@ -62,6 +62,7 @@ func main() {
 		err := restApp.Listen(fmt.Sprintf("%s:%d", cfg.App.RestHost, cfg.App.RestPort))
 		if err != nil {
 			slog.ErrorContext(ctx, "Failed to start rest server", slog.String(entity.Error, err.Error()))
+			shutdown <- err
 		}
 	}()
 
@@ -77,10 +78,12 @@ func main() {
 	select {
 	case err = <-shutdown:
 		// Wait throw error
+		slog.ErrorContext(ctx, "Server crashed", slog.String(entity.Error, err.Error()))
 		return
 	case <-ctx.Done():
 		// Wait for first CTRL+C.
 		// Stop receiving signal notifications as soon as possible.
+		slog.InfoContext(ctx, "Shutting down server...")
 		stop()
 	}
 }

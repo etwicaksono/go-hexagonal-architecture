@@ -1,9 +1,17 @@
 package error_util
 
 import (
+	"errors"
 	"github.com/gofiber/fiber/v2"
-	"github.com/pkg/errors"
 	"net/http"
+)
+
+const (
+	VALIDATION_ERROR = "VALIDATION ERROR"
+	INVALID_REQUEST  = "INVALID REQUEST"
+	INTERNAL_SERVER  = "INTERNAL SERVER ERROR"
+	NOT_FOUND        = "NOT FOUND ERROR"
+	UNAUTHORIZED     = "UNAUTHORIZED"
 )
 
 type CustomError struct {
@@ -17,11 +25,6 @@ func NewCustomError() *CustomError {
 		Code:    http.StatusInternalServerError,
 		Message: http.StatusText(http.StatusInternalServerError),
 	}
-}
-
-func IsCustomError(err error) (customError *CustomError, isCustomError bool) {
-	ok := errors.As(err, &customError)
-	return customError, ok
 }
 
 func (e *CustomError) Error() string {
@@ -41,4 +44,16 @@ func (e *CustomError) SetMessage(msg string) *CustomError {
 func (e *CustomError) SetFields(fields fiber.Map) *CustomError {
 	e.Fields = fields
 	return e
+}
+
+func IsCustomError(err error) (customError *CustomError, isCustomError bool) {
+	ok := errors.As(err, &customError)
+	return customError, ok
+}
+
+func ValidationError(errValidation fiber.Map) *CustomError {
+	return NewCustomError().
+		SetCode(http.StatusBadRequest).
+		SetMessage(VALIDATION_ERROR).
+		SetFields(errValidation)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/utils"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/gofiber/fiber/v2"
+	"log/slog"
 )
 
 func (a adapter) SendTextMessage(ctx *fiber.Ctx) (err error) {
@@ -17,16 +18,15 @@ func (a adapter) SendTextMessage(ctx *fiber.Ctx) (err error) {
 	if err != nil {
 		errParsing, errOther := utils.HandleParsingError(err)
 		if errOther != nil {
+			slog.ErrorContext(context, errOther.Error())
 			return errOther
 		}
-		return error_util.NewCustomError().
-			SetCode(fiber.StatusBadRequest).
-			SetMessage(entity.Error).
-			SetFields(errParsing)
+		return error_util.ValidationError(errParsing)
 	}
 
 	err = a.app.SendTextMessage(context, payload.ToEntity())
 	if err != nil {
+		slog.ErrorContext(context, "Failed to send text message", slog.String(entity.Error, err.Error()))
 		return err
 	}
 
