@@ -40,9 +40,9 @@ var (
 		0: "LOCAL",
 		1: "MINIO",
 	}
-	MultimediaStorage_value = map[string]int32{
-		"LOCAL": 0,
-		"MINIO": 1,
+	MultimediaStorage_self = map[string]MultimediaStorage{
+		"LOCAL": MultimediaStorage_LOCAL,
+		"MINIO": MultimediaStorage_MINIO,
 	}
 )
 
@@ -59,10 +59,15 @@ type SendMultimediaMessageRequest struct {
 	Files    []MultimediaFile
 }
 
+type FileItem struct {
+	Storage string
+	File    string
+}
+
 type MessageMultimediaItem struct {
 	Id       string
 	Sender   string
 	Receiver string
 	Message  string
-	FileUrls []string
+	Files    []FileItem
 }

@@ -33,20 +33,32 @@ func FromMessageTextItemEntity(mti entity.MessageTextItem) MessageTextItem {
 	return messageItem
 }
 
+type FileItem struct {
+	Storage string `bson:"storage"`
+	File    string `bson:"file"`
+}
+
 type MessageMultimediaItem struct {
 	Id       primitive.ObjectID `bson:"_id,omitempty"`
 	Sender   string             `bson:"sender"`
 	Receiver string             `bson:"receiver"`
 	Message  string             `bson:"message"`
-	FileUrl  []string           `bson:"fileUrl"`
+	Files    []FileItem         `bson:"files"`
 }
 
 func FromMessageMultimediaItemEntity(mmi entity.MessageMultimediaItem) MessageMultimediaItem {
+	var files []FileItem
+	for _, file := range mmi.Files {
+		files = append(files, FileItem{
+			Storage: file.Storage,
+			File:    file.File,
+		})
+	}
 	messageItem := MessageMultimediaItem{
 		Sender:   mmi.Sender,
 		Receiver: mmi.Receiver,
 		Message:  mmi.Message,
-		FileUrl:  mmi.FileUrls,
+		Files:    files,
 	}
 	if mmi.Id != "" {
 		messageItem.Id, _ = primitive.ObjectIDFromHex(mmi.Id)

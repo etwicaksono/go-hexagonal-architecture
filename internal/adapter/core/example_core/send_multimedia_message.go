@@ -15,7 +15,7 @@ import (
 )
 
 func (e exampleCore) SendMultimediaMessage(ctx context.Context, request entity.SendMultimediaMessageRequest) error {
-	var fileUrls []string
+	var files []entity.FileItem
 
 	for _, requestFile := range request.Files {
 		//Validate extension
@@ -31,7 +31,6 @@ func (e exampleCore) SendMultimediaMessage(ctx context.Context, request entity.S
 				},
 			)
 		}
-		slog.InfoContext(ctx, "Cek storage", slog.String("storage", fmt.Sprintf("Storage type: %v\n", request.Storage)))
 		switch request.Storage {
 		case entity.MultimediaStorage_LOCAL:
 			{
@@ -51,11 +50,17 @@ func (e exampleCore) SendMultimediaMessage(ctx context.Context, request entity.S
 					return err
 				}
 				file.Close()
-				fileUrls = append(fileUrls, path)
+				files = append(
+					files,
+					entity.FileItem{File: path, Storage: entity.MultimediaStorage_name[int32(entity.MultimediaStorage_LOCAL)]},
+				)
 			}
 		case entity.MultimediaStorage_MINIO:
 			{
-				fileUrls = append(fileUrls, "saved to minio") // TODO
+				files = append(
+					files,
+					entity.FileItem{File: "saved to minio", Storage: entity.MultimediaStorage_name[int32(entity.MultimediaStorage_MINIO)]},
+				) // TODO
 			}
 		default:
 			{
@@ -69,7 +74,7 @@ func (e exampleCore) SendMultimediaMessage(ctx context.Context, request entity.S
 			Sender:   request.Sender,
 			Receiver: request.Receiver,
 			Message:  request.Message,
-			FileUrls: fileUrls,
+			Files:    files,
 		},
 	}
 	_, err := e.db.InsertMultimediaMessage(ctx, objs)
