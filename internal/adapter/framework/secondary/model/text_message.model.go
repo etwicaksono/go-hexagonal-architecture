@@ -21,7 +21,7 @@ func (mti MessageTextItem) ToEntity() entity.MessageTextItem {
 	}
 }
 
-func FromEntity(mti entity.MessageTextItem) MessageTextItem {
+func FromMessageTextItemEntity(mti entity.MessageTextItem) MessageTextItem {
 	messageItem := MessageTextItem{
 		Sender:   mti.Sender,
 		Receiver: mti.Receiver,
@@ -29,6 +29,27 @@ func FromEntity(mti entity.MessageTextItem) MessageTextItem {
 	}
 	if mti.Id != "" {
 		messageItem.Id, _ = primitive.ObjectIDFromHex(mti.Id)
+	}
+	return messageItem
+}
+
+type MessageMultimediaItem struct {
+	Id       primitive.ObjectID `bson:"_id,omitempty"`
+	Sender   string             `bson:"sender"`
+	Receiver string             `bson:"receiver"`
+	Message  string             `bson:"message"`
+	FileUrl  string             `bson:"fileUrl"`
+}
+
+func FromMessageMultimediaItemEntity(mmi entity.MessageMultimediaItem) MessageMultimediaItem {
+	messageItem := MessageMultimediaItem{
+		Sender:   mmi.Sender,
+		Receiver: mmi.Receiver,
+		Message:  mmi.Message,
+		FileUrl:  mmi.FileUrl,
+	}
+	if mmi.Id != "" {
+		messageItem.Id, _ = primitive.ObjectIDFromHex(mmi.Id)
 	}
 	return messageItem
 }

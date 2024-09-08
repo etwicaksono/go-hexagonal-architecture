@@ -9,7 +9,7 @@ import (
 	"log/slog"
 )
 
-func (e exampleMongo) InsertTextMessage(ctx context.Context, objs []entity.MessageTextItem) (entity.BulkWriteResult, error) {
+func (e exampleMongo) InsertMultimediaMessage(ctx context.Context, objs []entity.MessageMultimediaItem) (entity.BulkWriteResult, error) {
 	if len(objs) == 0 {
 		return entity.BulkWriteResult{}, fmt.Errorf("no object to insert")
 	}
@@ -17,19 +17,19 @@ func (e exampleMongo) InsertTextMessage(ctx context.Context, objs []entity.Messa
 	collection := e.client.Database(e.dbName).Collection(e.collection)
 
 	for i, obj := range objs {
-		message := model2.FromMessageTextItemEntity(obj)
+		message := model2.FromMessageMultimediaItemEntity(obj)
 		bulkCommands[i] = mongo.NewInsertOneModel().SetDocument(message)
 	}
 
 	result, err := collection.BulkWrite(ctx, bulkCommands)
 	if err != nil {
-		slog.ErrorContext(ctx, "Failed to BulkWrite text message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to BulkWrite multimedia message", slog.String(entity.Error, err.Error()))
 		return entity.BulkWriteResult{}, err
 	}
 
 	slog.InfoContext(
 		ctx,
-		"Successfully BulkWrite text message",
+		"Successfully BulkWrite multimedia message",
 		slog.Int("upserted count", int(result.UpsertedCount)),
 		slog.Int("modified count", int(result.ModifiedCount)),
 		slog.Int("objects count", len(objs)),

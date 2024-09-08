@@ -9,16 +9,16 @@ import (
 	"log/slog"
 )
 
-func (e exampleApp) SendTextMessage(ctx context.Context, request entity.SendTextMessageRequest) error {
-	err := e.validator.Struct(model.FromSendTextMessageRequestEntity(request))
+func (e exampleApp) SendMultimediaMessage(ctx context.Context, request entity.SendMultimediaMessageRequest) error {
+	err := e.validator.Struct(model.FromSendMultimediaMessageRequestEntity(request))
 	if err != nil {
 		errValidation := utils.GenerateErrorMessage(err)
 		return error_util.ValidationError(errValidation)
 	}
 
-	err = e.core.SendTextMessage(ctx, request)
+	err = e.core.SendMultimediaMessage(ctx, request)
 	if err != nil {
-		slog.ErrorContext(ctx, "Error on sending text message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Error on sending multimedia message", slog.String(entity.Error, err.Error()))
 		return err
 	}
 

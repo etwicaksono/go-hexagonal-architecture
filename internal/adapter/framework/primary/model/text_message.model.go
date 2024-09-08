@@ -9,12 +9,12 @@ type MessageTextItem struct {
 	Message  string `json:"message"`
 }
 
-func FromMessageTextItemEntity(mti entity.MessageTextItem) MessageTextItem {
+func FromMessageTextItemEntity(m entity.MessageTextItem) MessageTextItem {
 	return MessageTextItem{
-		Id:       mti.Id,
-		Sender:   mti.Sender,
-		Receiver: mti.Receiver,
-		Message:  mti.Message,
+		Id:       m.Id,
+		Sender:   m.Sender,
+		Receiver: m.Receiver,
+		Message:  m.Message,
 	}
 }
 
@@ -32,10 +32,38 @@ func (s SendTextMessageRequest) ToEntity() entity.SendTextMessageRequest {
 	}
 }
 
-func FromSendTextMessageRequestEntity(mti entity.SendTextMessageRequest) SendTextMessageRequest {
+func FromSendTextMessageRequestEntity(s entity.SendTextMessageRequest) SendTextMessageRequest {
 	return SendTextMessageRequest{
-		Sender:   mti.Sender,
-		Receiver: mti.Receiver,
-		Message:  mti.Message,
+		Sender:   s.Sender,
+		Receiver: s.Receiver,
+		Message:  s.Message,
+	}
+}
+
+type SendMultimediaMessageRequest struct {
+	Sender   string `json:"sender" validate:"required"`
+	Receiver string `json:"receiver" validate:"required"`
+	Message  string `json:"message" validate:"required"`
+	Storage  entity.MultimediaStorage
+	Files    [][]byte
+}
+
+func (s SendMultimediaMessageRequest) ToEntity() entity.SendMultimediaMessageRequest {
+	return entity.SendMultimediaMessageRequest{
+		Sender:   s.Sender,
+		Receiver: s.Receiver,
+		Message:  s.Message,
+		Storage:  s.Storage,
+		Files:    s.Files,
+	}
+}
+
+func FromSendMultimediaMessageRequestEntity(s entity.SendMultimediaMessageRequest) SendMultimediaMessageRequest {
+	return SendMultimediaMessageRequest{
+		Sender:   s.Sender,
+		Receiver: s.Receiver,
+		Message:  s.Message,
+		Storage:  s.Storage,
+		Files:    s.Files,
 	}
 }
