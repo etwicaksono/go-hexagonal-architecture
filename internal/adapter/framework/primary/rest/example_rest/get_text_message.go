@@ -4,6 +4,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 	"log/slog"
 )
@@ -21,10 +22,5 @@ func (a adapter) GetTextMessage(ctx *fiber.Ctx) (err error) {
 		modelMessages = append(modelMessages, model.FromMessageTextItemEntity(message))
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(model.Response[[]model.MessageTextItem]{
-		Code:    fiber.StatusOK,
-		Status:  entity.Success,
-		Message: "Get text message success",
-		Data:    modelMessages,
-	})
+	return rest_util.ResponseOkWithData(ctx, modelMessages, "Get text message success")
 }

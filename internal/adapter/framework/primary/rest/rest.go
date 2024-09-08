@@ -7,6 +7,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	utils2 "github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
 	"github.com/gofiber/fiber/v2/utils"
 	"log/slog"
 	"os"
@@ -76,7 +77,7 @@ func NewRestApp(
 				}
 			}
 
-			return ctx.Status(code).JSON(model.Response[any]{
+			return rest_util.ResponseGeneral(ctx, code, model.Response[any]{
 				Code:    code,
 				Status:  status,
 				Message: message,
