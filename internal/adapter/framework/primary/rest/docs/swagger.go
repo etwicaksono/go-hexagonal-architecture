@@ -2,6 +2,7 @@ package docs
 
 import (
 	"fmt"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"log/slog"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,7 +21,7 @@ func (a adapter) Swagger(ctx *fiber.Ctx) (err error) {
 		"docExpansion":   a.config.Swagger.DocExpansion,
 	})
 	if err != nil {
-		slog.ErrorContext(a.ctx, "Failed to render swagger-ui", slog.String("error", err.Error()))
+		slog.ErrorContext(a.ctx, "Failed to render swagger-ui", slog.String(entity.Error, err.Error()))
 	}
 
 	return err

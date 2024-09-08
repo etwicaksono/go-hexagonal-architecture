@@ -5,7 +5,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils"
-	"github.com/gofiber/fiber/v2"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"log/slog"
 )
 
@@ -14,15 +14,12 @@ func (e exampleApp) SendTextMessage(ctx context.Context, request entity.SendText
 	err := e.validator.Struct(model.FromSendTextMessageRequestEntity(request))
 	if err != nil {
 		errValidation := utils.GenerateErrorMessage(err)
-		return utils.NewCustomError().
-			SetCode(fiber.StatusBadRequest).
-			SetMessage(utils.ValidationError).
-			SetFields(errValidation)
+		return error_util.ValidationError(errValidation)
 	}
 
 	err = e.core.SendTextMessage(ctx, request)
 	if err != nil {
-		slog.ErrorContext(ctx, "Error on sending text message", slog.String("error", err.Error()))
+		slog.ErrorContext(ctx, "Error on sending text message", slog.String(entity.Error, err.Error()))
 		return err
 	}
 

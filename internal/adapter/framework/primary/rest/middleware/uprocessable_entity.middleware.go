@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -17,7 +18,7 @@ func UnprocessableEntityMiddleware(app *fiber.App) {
 			}
 
 			if code == fiber.StatusUnprocessableEntity {
-				return ctx.Status(fiber.StatusUnprocessableEntity).JSON(model.Response[any]{
+				return rest_util.ResponseGeneral(ctx, fiber.StatusUnprocessableEntity, model.Response[any]{
 					Code:    fiber.StatusUnprocessableEntity,
 					Status:  "error",
 					Message: "Unprocessable Entity - Invalid input",

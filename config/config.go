@@ -60,6 +60,7 @@ func LoadConfig() Config {
 	// Get the current working directory
 	wd, err := os.Getwd()
 	if err != nil {
+		slog.ErrorContext(context.Background(), "Failed to get current working directory", slog.String(entity.Error, err.Error()))
 		panic(err.Error())
 	}
 
