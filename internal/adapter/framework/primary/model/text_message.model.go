@@ -41,10 +41,10 @@ func FromSendTextMessageRequestEntity(s entity.SendTextMessageRequest) SendTextM
 }
 
 type SendMultimediaMessageRequest struct {
-	Sender   string `json:"sender" validate:"required"`
-	Receiver string `json:"receiver" validate:"required"`
-	Message  string `json:"message" validate:"required"`
-	Storage  entity.MultimediaStorage
+	Sender   string                   `json:"sender" validate:"required"`
+	Receiver string                   `json:"receiver" validate:"required"`
+	Message  string                   `json:"message" validate:"required"`
+	Storage  entity.MultimediaStorage `json:"storage"`
 	Files    []entity.MultimediaFile
 }
 
