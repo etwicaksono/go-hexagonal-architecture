@@ -46,12 +46,17 @@ var (
 	}
 )
 
+type MultimediaFile struct {
+	Filename string
+	Data     []byte
+}
+
 type SendMultimediaMessageRequest struct {
 	Sender   string
 	Receiver string
 	Message  string
 	Storage  MultimediaStorage
-	Files    [][]byte
+	Files    []MultimediaFile
 }
 
 type MessageMultimediaItem struct {
@@ -59,5 +64,5 @@ type MessageMultimediaItem struct {
 	Sender   string
 	Receiver string
 	Message  string
-	FileUrl  string
+	FileUrls []string
 }

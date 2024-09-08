@@ -45,7 +45,7 @@ type SendMultimediaMessageRequest struct {
 	Receiver string `json:"receiver" validate:"required"`
 	Message  string `json:"message" validate:"required"`
 	Storage  entity.MultimediaStorage
-	Files    [][]byte
+	Files    []entity.MultimediaFile
 }
 
 func (s SendMultimediaMessageRequest) ToEntity() entity.SendMultimediaMessageRequest {

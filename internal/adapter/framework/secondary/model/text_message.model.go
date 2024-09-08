@@ -38,7 +38,7 @@ type MessageMultimediaItem struct {
 	Sender   string             `bson:"sender"`
 	Receiver string             `bson:"receiver"`
 	Message  string             `bson:"message"`
-	FileUrl  string             `bson:"fileUrl"`
+	FileUrl  []string           `bson:"fileUrl"`
 }
 
 func FromMessageMultimediaItemEntity(mmi entity.MessageMultimediaItem) MessageMultimediaItem {
@@ -46,7 +46,7 @@ func FromMessageMultimediaItemEntity(mmi entity.MessageMultimediaItem) MessageMu
 		Sender:   mmi.Sender,
 		Receiver: mmi.Receiver,
 		Message:  mmi.Message,
-		FileUrl:  mmi.FileUrl,
+		FileUrl:  mmi.FileUrls,
 	}
 	if mmi.Id != "" {
 		messageItem.Id, _ = primitive.ObjectIDFromHex(mmi.Id)

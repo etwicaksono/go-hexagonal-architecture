@@ -14,12 +14,19 @@ import (
 )
 
 func (a *adapter) SendMultimediaMessage(ctx context.Context, request *example.SendMultimediaMessageRequest) (*emptypb.Empty, error) {
+	var files []entity.MultimediaFile
+	for _, file := range request.Files {
+		files = append(files, entity.MultimediaFile{
+			Filename: file.Filename,
+			Data:     file.Data,
+		})
+	}
 	err := a.handler.ExampleApp.SendMultimediaMessage(ctx, entity.SendMultimediaMessageRequest{
 		Sender:   request.Sender,
 		Receiver: request.Receiver,
 		Message:  request.Message,
 		Storage:  entity.MultimediaStorage(request.Storage),
-		Files:    request.Files,
+		Files:    files,
 	})
 	if err != nil {
 		if customError, isCustomError := error_util.IsCustomError(err); isCustomError {
