@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/gofiber/fiber/v2"
@@ -31,25 +32,32 @@ func (e exampleCore) SendMultimediaMessage(ctx context.Context, request entity.S
 				},
 			)
 		}
+
+		ext := filepath.Ext(requestFile.Filename)
+		fileNameNoExtension := strings.TrimSuffix(requestFile.Filename, ext)
+		fileName := fmt.Sprintf("%s-%d%s", utils.Slugify(fileNameNoExtension), time.Now().UnixNano(), ext)
 		switch request.Storage {
 		case entity.MultimediaStorage_LOCAL:
 			{
-				// Create a new file with the original filename
-				ext := filepath.Ext(requestFile.Filename)
-				fileNameNoExtension := strings.TrimSuffix(requestFile.Filename, ext)
-				path := fmt.Sprintf("uploaded/%s-%d%s", fileNameNoExtension, time.Now().UnixNano(), ext)
+				path := fmt.Sprintf("uploaded/%s", fileName)
 				file, err := os.Create(path)
 				if err != nil {
 					return err
+				}
+				closeFile := func(file *os.File) {
+					err := file.Close()
+					if err != nil {
+						slog.ErrorContext(ctx, "Failed to close file", slog.String("path", path), slog.String(entity.Error, err.Error()))
+					}
 				}
 
 				// Write the file data
 				_, err = file.Write(requestFile.Data)
 				if err != nil {
-					file.Close()
+					closeFile(file)
 					return err
 				}
-				file.Close()
+				closeFile(file)
 				files = append(
 					files,
 					entity.FileItem{File: path, Storage: entity.MultimediaStorage_name[int32(entity.MultimediaStorage_LOCAL)]},
@@ -57,10 +65,17 @@ func (e exampleCore) SendMultimediaMessage(ctx context.Context, request entity.S
 			}
 		case entity.MultimediaStorage_MINIO:
 			{
+				filePath := fmt.Sprint(constants.MINIO_EXAMPLE_MESSAGE_PATH, "/", fileName)
+				info, err := e.minio.Upload(ctx, requestFile.Data, requestFile.ContentType, filePath)
+				if err != nil {
+					slog.ErrorContext(ctx, "Failed to upload file", slog.String("path", filePath), slog.String(entity.Error, err.Error()))
+					return err
+				}
+
 				files = append(
 					files,
-					entity.FileItem{File: "saved to minio", Storage: entity.MultimediaStorage_name[int32(entity.MultimediaStorage_MINIO)]},
-				) // TODO
+					entity.FileItem{File: info.Key, Storage: entity.MultimediaStorage_name[int32(entity.MultimediaStorage_MINIO)]},
+				)
 			}
 		default:
 			{

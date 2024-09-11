@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"net/url"
 	"reflect"
 	"regexp"
 	"strings"
@@ -82,10 +81,17 @@ func GenerateErrorMessage(err error) (errValidation fiber.Map) {
 	return errValidation
 }
 
-func Slugify(strInput string) string {
-	// Replace spaces with hyphens or underscores
-	strInput = strings.ReplaceAll(strInput, " ", "-")
+func Slugify(input string) string {
+	// Convert the input string to lowercase
+	slug := strings.ToLower(input)
 
-	// URL-encode the input to handle special characters
-	return url.PathEscape(strInput)
+	// Replace spaces with hyphens
+	slug = strings.ReplaceAll(slug, " ", "-")
+
+	// Remove all non-alphanumeric characters (except hyphens)
+	re := regexp.MustCompile(`[^a-z0-9-]+`)
+	slug = re.ReplaceAllString(slug, "")
+
+	// Return the resulting slug
+	return slug
 }

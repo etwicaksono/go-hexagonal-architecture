@@ -7,6 +7,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/template/html/v2 v2.1.2
 	github.com/google/wire v0.6.0
+	github.com/minio/minio-go/v7 v7.0.76
 	github.com/spf13/viper v1.19.0
 	go.mongodb.org/mongo-driver v1.16.1
 )
@@ -22,7 +23,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.76 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect

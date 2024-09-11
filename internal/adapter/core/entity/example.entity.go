@@ -26,7 +26,6 @@ type SendTextMessageRequest struct {
 	Message  string
 }
 
-// Multimedia Message
 type MultimediaStorage int32
 
 const (
@@ -47,8 +46,9 @@ var (
 )
 
 type MultimediaFile struct {
-	Filename string
-	Data     []byte
+	Filename    string
+	ContentType string
+	Data        []byte
 }
 
 type SendMultimediaMessageRequest struct {

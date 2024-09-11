@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"bytes"
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
@@ -8,7 +9,6 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"log/slog"
-	"mime/multipart"
 )
 
 type adapterMinio struct {
@@ -45,23 +45,10 @@ func MinioProvider(ctx context.Context, cfg config.Config) infrastructure.MinioI
 	return minioInstance
 }
 
-func (a adapterMinio) Upload(ctx context.Context, file *multipart.FileHeader, filePath string) (result minio.UploadInfo, err error) {
-	// get buffer
-	buffer, err := file.Open()
-	if err != nil {
-		return minio.UploadInfo{}, err
-	}
-	defer func() {
-		err := buffer.Close()
-		if err != nil {
-			slog.ErrorContext(ctx, "Failed to close buffer", slog.String(entity.Error, err.Error()))
-		}
-	}()
-
-	contentType := file.Header["Content-Type"][0]
-	fileSize := file.Size
-
-	return a.client.PutObject(ctx, a.bucketName, filePath, buffer, fileSize, minio.PutObjectOptions{ContentType: contentType})
+func (a adapterMinio) Upload(ctx context.Context, data []byte, contentType string, filePath string) (result minio.UploadInfo, err error) {
+	fileSize := int64(len(data))
+	reader := bytes.NewReader(data)
+	return a.client.PutObject(ctx, a.bucketName, filePath, reader, fileSize, minio.PutObjectOptions{ContentType: contentType})
 }
 
 func (a adapterMinio) Remove(ctx context.Context, filePath string) (err error) {
