@@ -52,6 +52,10 @@ func NewRestApp(
 			message := entity.Error
 			errorMap := map[string]any{}
 
+			if cfg.App.Env != "production" {
+				message = err.Error()
+			}
+
 			// Retrieve the custom status code if it's a *fiber.Error
 			var fiberError *fiber.Error
 			slog.Info("Is fiber error", slog.Bool("is fiber error", errors.As(err, &fiberError)))
@@ -66,7 +70,6 @@ func NewRestApp(
 
 			// Retrieve the custom status code if it's an utils2.CustomError
 			var customError *utils2.CustomError
-			slog.Info("Is custom error: ", slog.Bool("is custom error", errors.As(err, &customError)))
 			if errors.As(err, &customError) {
 				code = customError.Code
 				status = utils.StatusMessage(customError.Code)

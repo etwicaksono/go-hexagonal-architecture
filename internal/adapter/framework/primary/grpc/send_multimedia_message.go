@@ -17,8 +17,9 @@ func (a *adapter) SendMultimediaMessage(ctx context.Context, request *example.Se
 	var files []entity.MultimediaFile
 	for _, file := range request.Files {
 		files = append(files, entity.MultimediaFile{
-			Filename: file.Filename,
-			Data:     file.Data,
+			Filename:    file.Filename,
+			ContentType: file.ContentType,
+			Data:        file.Data,
 		})
 	}
 	err := a.handler.ExampleApp.SendMultimediaMessage(ctx, entity.SendMultimediaMessageRequest{

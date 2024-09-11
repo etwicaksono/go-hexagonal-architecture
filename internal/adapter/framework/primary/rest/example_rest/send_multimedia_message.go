@@ -78,8 +78,9 @@ func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 			}
 
 			payload.Files = append(payload.Files, entity.MultimediaFile{
-				Filename: file.Filename,
-				Data:     fileBytes,
+				Filename:    file.Filename,
+				ContentType: file.Header.Get("Content-Type"),
+				Data:        fileBytes,
 			})
 		}
 	}
