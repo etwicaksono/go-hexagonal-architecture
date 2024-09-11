@@ -15,20 +15,20 @@ import (
 type adapterMongo struct {
 	ctx           context.Context
 	connectionURL string
-	Client        *mongo.Client
+	client        *mongo.Client
 	config        mongoConfig
 }
 
 type mongoConfig struct {
-	Protocol        string
-	Address         string
-	Name            string
-	Username        string
-	Password        string
-	MaxConnOpen     int
-	MaxConnIdle     int
-	MaxConnLifetime time.Duration
-	Option          string
+	protocol        string
+	address         string
+	name            string
+	username        string
+	password        string
+	maxConnOpen     int
+	maxConnIdle     int
+	maxConnLifetime time.Duration
+	option          string
 }
 
 func NewMongo(
@@ -47,14 +47,14 @@ func NewMongo(
 			config.Db.Option,
 		),
 		config: mongoConfig{
-			Protocol:        config.Db.Protocol,
-			Address:         config.Db.Address,
-			Name:            config.Db.Name,
-			Username:        config.Db.Username,
-			Password:        config.Db.Password,
-			MaxConnOpen:     config.Db.MaxConnOpen,
-			MaxConnIdle:     config.Db.MaxConnIdle,
-			MaxConnLifetime: config.Db.MaxConnLifetime,
+			protocol:        config.Db.Protocol,
+			address:         config.Db.Address,
+			name:            config.Db.Name,
+			username:        config.Db.Username,
+			password:        config.Db.Password,
+			maxConnOpen:     config.Db.MaxConnOpen,
+			maxConnIdle:     config.Db.MaxConnIdle,
+			maxConnLifetime: config.Db.MaxConnLifetime,
 		},
 	}
 }
@@ -72,18 +72,18 @@ func (a *adapterMongo) Connect() error {
 	slog.InfoContext(a.ctx, "MongoDB connected", slog.String(
 		"connected to", a.connectionURL,
 	))
-	a.Client = client
+	a.client = client
 
 	return nil
 }
 
 func (a *adapterMongo) Disconnect() {
-	err := a.Client.Disconnect(a.ctx)
+	err := a.client.Disconnect(a.ctx)
 	if err != nil {
 		slog.ErrorContext(a.ctx, "Failed to disconnect to MongoDB", slog.String("connection", a.connectionURL), slog.String(entity.Error, err.Error()))
 	}
 }
 
 func (a *adapterMongo) GetClient() *mongo.Client {
-	return a.Client
+	return a.client
 }

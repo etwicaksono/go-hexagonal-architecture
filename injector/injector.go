@@ -25,14 +25,15 @@ import (
 )
 
 var configSet = wire.NewSet(config.LoadConfig)
-var validatorSet = wire.NewSet(validatorInit)
+var validatorSet = wire.NewSet(validatorProvider)
 var exampleSet = wire.NewSet(
 	configSet,
+	infrastructure.MinioProvider,
 	validatorSet,
 	infrastructure.NewMongo,
 	example_mongo.NewExampleMongo,
-	example_core.NewExampleCore,
 	example_app.NewExampleApp,
+	example_core.NewExampleCore,
 )
 var routerSet = wire.NewSet(
 	example_rest.NewExampleRestHandler,

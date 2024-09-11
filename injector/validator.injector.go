@@ -6,21 +6,22 @@ import (
 	"strings"
 )
 
-var vld *validator.Validate
+var validatorInstance *validator.Validate
 
-func validatorInit() *validator.Validate {
-	if vld == nil {
-		vld = validator.New()
-		vld.RegisterTagNameFunc(func(fld reflect.StructField) string {
-			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
-
-			if name == "-" {
-				return ""
-			}
-
-			return name
-		})
-
+func validatorProvider() *validator.Validate {
+	if validatorInstance != nil {
+		return validatorInstance
 	}
-	return vld
+
+	validatorInstance = validator.New()
+	validatorInstance.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+
+		if name == "-" {
+			return ""
+		}
+
+		return name
+	})
+	return validatorInstance
 }
