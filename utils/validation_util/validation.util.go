@@ -1,4 +1,4 @@
-package utils
+package validation_util
 
 import (
 	"path/filepath"

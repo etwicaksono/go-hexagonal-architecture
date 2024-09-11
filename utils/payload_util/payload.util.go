@@ -1,4 +1,4 @@
-package utils
+package payload_util
 
 import (
 	"errors"

@@ -4,8 +4,8 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
-	"github.com/etwicaksono/go-hexagonal-architecture/utils"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/payload_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 	"log/slog"
@@ -17,7 +17,7 @@ func (a adapter) SendTextMessage(ctx *fiber.Ctx) (err error) {
 	payload := new(model.SendTextMessageRequest)
 	err = ctx.BodyParser(payload)
 	if err != nil {
-		errParsing, errOther := utils.HandleParsingError(err)
+		errParsing, errOther := payload_util.HandleParsingError(err)
 		if errOther != nil {
 			slog.ErrorContext(context, errOther.Error())
 			return errOther

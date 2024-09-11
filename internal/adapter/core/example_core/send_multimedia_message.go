@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity/constants"
-	"github.com/etwicaksono/go-hexagonal-architecture/utils"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/payload_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/string_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/validation_util"
 	"github.com/gofiber/fiber/v2"
 	"log/slog"
 	"os"
@@ -21,13 +23,13 @@ func (e exampleCore) SendMultimediaMessage(ctx context.Context, request entity.S
 	for _, requestFile := range request.Files {
 		//Validate extension
 		allowedTypes := []string{".jpg", ".jpeg", ".png", ".txt"}
-		if !utils.IsValidExtension(allowedTypes, requestFile.Filename) {
+		if !validation_util.IsValidExtension(allowedTypes, requestFile.Filename) {
 			return error_util.ValidationError(
 				fiber.Map{
 					"files": fmt.Sprintf(
 						"invalid file type (%s). Allowed types are %s",
 						requestFile.Filename,
-						utils.Implode(allowedTypes, ", "),
+						string_util.Implode(allowedTypes, ", "),
 					),
 				},
 			)
@@ -35,7 +37,7 @@ func (e exampleCore) SendMultimediaMessage(ctx context.Context, request entity.S
 
 		ext := filepath.Ext(requestFile.Filename)
 		fileNameNoExtension := strings.TrimSuffix(requestFile.Filename, ext)
-		fileName := fmt.Sprintf("%s-%d%s", utils.Slugify(fileNameNoExtension), time.Now().UnixNano(), ext)
+		fileName := fmt.Sprintf("%s-%d%s", payload_util.Slugify(fileNameNoExtension), time.Now().UnixNano(), ext)
 		switch request.Storage {
 		case entity.MultimediaStorage_LOCAL:
 			{
