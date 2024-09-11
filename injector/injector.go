@@ -5,9 +5,9 @@ package injector
 
 import (
 	"context"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
+	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
 	"go.mongodb.org/mongo-driver/mongo"
-
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_mongo"
 
@@ -28,9 +28,9 @@ var configSet = wire.NewSet(config.LoadConfig)
 var validatorSet = wire.NewSet(validatorProvider)
 var exampleSet = wire.NewSet(
 	configSet,
-	infrastructure.MinioProvider,
+	minio.MinioProvider,
 	validatorSet,
-	infrastructure.NewMongo,
+	mongo2.NewMongo,
 	example_mongo.NewExampleMongo,
 	example_app.NewExampleApp,
 	example_core.NewExampleCore,

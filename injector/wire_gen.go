@@ -15,8 +15,9 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
+	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_mongo"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
@@ -35,7 +36,7 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	configConfig := config.LoadConfig()
 	swaggerHandlerInterface := docs.NewDocumentationHandler(ctx, configConfig)
 	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
-	minioInterface := infrastructure.MinioProvider(ctx, configConfig)
+	minioInterface := minio.MinioProvider(ctx, configConfig)
 	exampleCoreInterface := example_core.NewExampleCore(exampleDbInterface, minioInterface)
 	validate := validatorProvider()
 	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface, validate)
@@ -48,7 +49,7 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 func GrpcHandlerProvider(ctx context.Context, mongoClient *mongo.Client) grpc.Handler {
 	configConfig := config.LoadConfig()
 	exampleDbInterface := example_mongo.NewExampleMongo(configConfig, mongoClient)
-	minioInterface := infrastructure.MinioProvider(ctx, configConfig)
+	minioInterface := minio.MinioProvider(ctx, configConfig)
 	exampleCoreInterface := example_core.NewExampleCore(exampleDbInterface, minioInterface)
 	validate := validatorProvider()
 	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface, validate)
@@ -63,7 +64,7 @@ var configSet = wire.NewSet(config.LoadConfig)
 var validatorSet = wire.NewSet(validatorProvider)
 
 var exampleSet = wire.NewSet(
-	configSet, infrastructure.MinioProvider, validatorSet, infrastructure.NewMongo, example_mongo.NewExampleMongo, example_app.NewExampleApp, example_core.NewExampleCore,
+	configSet, minio.MinioProvider, validatorSet, mongo2.NewMongo, example_mongo.NewExampleMongo, example_app.NewExampleApp, example_core.NewExampleCore,
 )
 
 var routerSet = wire.NewSet(example_rest.NewExampleRestHandler, docs.NewDocumentationHandler, router.NewRouter)
