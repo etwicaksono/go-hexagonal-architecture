@@ -15,6 +15,7 @@ type Config struct {
 	App     AppConfig
 	Db      DbConfig
 	Swagger SwaggerConfig
+	Minio   MinioConfig
 }
 
 type AppConfig struct {
@@ -56,7 +57,20 @@ type SwaggerConfig struct {
 	DocExpansion string
 }
 
+type MinioConfig struct {
+	Endpoint        string
+	AccessKeyID     string
+	SecretAccessKey string
+	UseSSL          bool
+	BucketName      string
+}
+
+var configInstance *Config
+
 func LoadConfig() Config {
+	if configInstance != nil {
+		return *configInstance
+	}
 	// Get the current working directory
 	wd, err := os.Getwd()
 	if err != nil {
@@ -78,7 +92,7 @@ func LoadConfig() Config {
 		panic(err.Error())
 	}
 
-	return Config{
+	configInstance = &Config{
 		App: AppConfig{
 			Env:                  vpr.GetString("APP_ENV"),
 			RestHost:             vpr.GetString("APP_REST_HOST"),
@@ -115,5 +129,14 @@ func LoadConfig() Config {
 			DeepLinking:  vpr.GetBool("SWAGGER_DEEP_LINKING"),
 			DocExpansion: vpr.GetString("SWAGGER_DOC_EXPANSION"),
 		},
+		Minio: MinioConfig{
+			Endpoint:        vpr.GetString("MINIO_ENDPOINT"),
+			AccessKeyID:     vpr.GetString("MINIO_ACCESS_KEY_ID"),
+			SecretAccessKey: vpr.GetString("MINIO_SECRET_ACCESS_KEY"),
+			UseSSL:          vpr.GetBool("MINIO_USE_SSL"),
+			BucketName:      vpr.GetString("MINIO_BUCKET_NAME"),
+		},
 	}
+
+	return *configInstance
 }

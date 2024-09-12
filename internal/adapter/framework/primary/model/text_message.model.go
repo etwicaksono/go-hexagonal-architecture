@@ -9,12 +9,12 @@ type MessageTextItem struct {
 	Message  string `json:"message"`
 }
 
-func FromMessageTextItemEntity(mti entity.MessageTextItem) MessageTextItem {
+func FromMessageTextItemEntity(m entity.MessageTextItem) MessageTextItem {
 	return MessageTextItem{
-		Id:       mti.Id,
-		Sender:   mti.Sender,
-		Receiver: mti.Receiver,
-		Message:  mti.Message,
+		Id:       m.Id,
+		Sender:   m.Sender,
+		Receiver: m.Receiver,
+		Message:  m.Message,
 	}
 }
 
@@ -32,10 +32,10 @@ func (s SendTextMessageRequest) ToEntity() entity.SendTextMessageRequest {
 	}
 }
 
-func FromSendTextMessageRequestEntity(mti entity.SendTextMessageRequest) SendTextMessageRequest {
+func FromSendTextMessageRequestEntity(s entity.SendTextMessageRequest) SendTextMessageRequest {
 	return SendTextMessageRequest{
-		Sender:   mti.Sender,
-		Receiver: mti.Receiver,
-		Message:  mti.Message,
+		Sender:   s.Sender,
+		Receiver: s.Receiver,
+		Message:  s.Message,
 	}
 }

@@ -57,3 +57,18 @@ func ValidationError(errValidation fiber.Map) *CustomError {
 		SetMessage(VALIDATION_ERROR).
 		SetFields(errValidation)
 }
+
+func IsRealError(err error) bool {
+	if err != nil {
+		isValidationError := err.Error() == VALIDATION_ERROR
+		return !isValidationError
+	}
+	return false
+}
+
+func IsValidationError(err error) bool {
+	if err != nil {
+		return err.Error() == VALIDATION_ERROR
+	}
+	return false
+}
