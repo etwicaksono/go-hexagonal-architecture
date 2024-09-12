@@ -14,7 +14,9 @@ import (
 type adapterMinio struct {
 	ctx        context.Context
 	client     *minio.Client
+	endpoint   string
 	bucketName string
+	useSSL     bool
 }
 
 var minioInstance *adapterMinio
@@ -34,13 +36,16 @@ func MinioProvider(ctx context.Context, cfg config.Config) minio2.MinioInterface
 	})
 	if err != nil {
 		slog.Info("Minio client initialization failed", slog.String(entity.Error, err.Error()))
+		panic(err)
 	}
 	slog.Info("Minio client initialized successfully")
 
 	minioInstance = &adapterMinio{
 		ctx:        ctx,
 		client:     client,
+		endpoint:   cfg.Minio.Endpoint,
 		bucketName: cfg.Minio.BucketName,
+		useSSL:     cfg.Minio.UseSSL,
 	}
 	return minioInstance
 }
@@ -57,4 +62,16 @@ func (a adapterMinio) Remove(ctx context.Context, filePath string) (err error) {
 
 func (a adapterMinio) GetClient() *minio.Client {
 	return a.client
+}
+
+func (a adapterMinio) GetEndpoint() string {
+	return a.endpoint
+}
+
+func (a adapterMinio) GetBucketName() string {
+	return a.bucketName
+}
+
+func (a adapterMinio) IsUseSSL() bool {
+	return a.useSSL
 }

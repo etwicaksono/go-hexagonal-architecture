@@ -71,3 +71,19 @@ type MessageMultimediaItem struct {
 	Message  string
 	Files    []FileItem
 }
+
+func (mmi MessageMultimediaItem) ToProto() *example.MessageMultimediaItem {
+	var fileUrl []string
+
+	for _, file := range mmi.Files {
+		fileUrl = append(fileUrl, file.File)
+	}
+
+	return &example.MessageMultimediaItem{
+		Id:       mmi.Id,
+		Sender:   mmi.Sender,
+		Receiver: mmi.Receiver,
+		Message:  mmi.Message,
+		FileUrls: fileUrl,
+	}
+}

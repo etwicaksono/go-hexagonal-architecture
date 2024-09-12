@@ -65,3 +65,22 @@ func FromMessageMultimediaItemEntity(mmi entity.MessageMultimediaItem) MessageMu
 	}
 	return messageItem
 }
+
+func (mti MessageMultimediaItem) ToEntity() entity.MessageMultimediaItem {
+	var files []entity.FileItem
+
+	for _, file := range mti.Files {
+		files = append(files, entity.FileItem{
+			Storage: file.Storage,
+			File:    file.File,
+		})
+	}
+
+	return entity.MessageMultimediaItem{
+		Id:       mti.Id.Hex(),
+		Sender:   mti.Sender,
+		Receiver: mti.Receiver,
+		Message:  mti.Message,
+		Files:    files,
+	}
+}
