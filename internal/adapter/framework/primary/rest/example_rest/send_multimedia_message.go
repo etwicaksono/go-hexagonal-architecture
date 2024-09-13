@@ -87,7 +87,7 @@ func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 
 	err = a.app.SendMultimediaMessage(context, payload.ToEntity())
 	if err != nil {
-		if !error_util.IsValidationError(err) {
+		if error_util.IsRealError(err) {
 			slog.ErrorContext(context, "Failed to send multimedia message", slog.String(entity.Error, err.Error()))
 		}
 		return err

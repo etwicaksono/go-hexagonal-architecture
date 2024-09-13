@@ -27,7 +27,7 @@ func (a adapter) SendTextMessage(ctx *fiber.Ctx) (err error) {
 
 	err = a.app.SendTextMessage(context, payload.ToEntity())
 	if err != nil {
-		if !error_util.IsValidationError(err) {
+		if error_util.IsRealError(err) {
 			slog.ErrorContext(context, "Failed to send text message", slog.String(entity.Error, err.Error()))
 		}
 		return err

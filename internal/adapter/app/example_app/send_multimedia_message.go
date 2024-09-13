@@ -18,7 +18,7 @@ func (e exampleApp) SendMultimediaMessage(ctx context.Context, request entity.Se
 
 	err = e.core.SendMultimediaMessage(ctx, request)
 	if err != nil {
-		if !error_util.IsValidationError(err) {
+		if error_util.IsRealError(err) {
 			slog.ErrorContext(ctx, "Error on sending multimedia message", slog.String(entity.Error, err.Error()))
 		}
 		return err

@@ -6,15 +6,19 @@ import (
 	"net/http"
 )
 
+type CustomErrorType string
+
 const (
-	VALIDATION_ERROR = "VALIDATION ERROR"
-	INVALID_REQUEST  = "INVALID REQUEST"
-	INTERNAL_SERVER  = "INTERNAL SERVER ERROR"
-	NOT_FOUND        = "NOT FOUND ERROR"
-	UNAUTHORIZED     = "UNAUTHORIZED"
+	VALIDATION_ERROR CustomErrorType = "VALIDATION ERROR"
+	INVALID_REQUEST  CustomErrorType = "INVALID REQUEST"
+	INTERNAL_SERVER  CustomErrorType = "INTERNAL SERVER ERROR"
+	NOT_FOUND        CustomErrorType = "NOT FOUND ERROR"
+	UNAUTHORIZED     CustomErrorType = "UNAUTHORIZED"
 )
 
 type CustomError struct {
+	errorType CustomErrorType
+
 	Code    int
 	Message string
 	Fields  fiber.Map
@@ -29,6 +33,11 @@ func NewCustomError() *CustomError {
 
 func (e *CustomError) Error() string {
 	return e.Message
+}
+
+func (e *CustomError) SetErrorType(errorType CustomErrorType) *CustomError {
+	e.errorType = errorType
+	return e
 }
 
 func (e *CustomError) SetCode(code int) *CustomError {
@@ -46,6 +55,10 @@ func (e *CustomError) SetFields(fields fiber.Map) *CustomError {
 	return e
 }
 
+func (e *CustomError) IsValidationError() bool {
+	return e.errorType == VALIDATION_ERROR
+}
+
 func IsCustomError(err error) (customError *CustomError, isCustomError bool) {
 	ok := errors.As(err, &customError)
 	return customError, ok
@@ -54,21 +67,16 @@ func IsCustomError(err error) (customError *CustomError, isCustomError bool) {
 func ValidationError(errValidation fiber.Map) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusBadRequest).
-		SetMessage(VALIDATION_ERROR).
+		SetErrorType(VALIDATION_ERROR).
 		SetFields(errValidation)
 }
 
 func IsRealError(err error) bool {
 	if err != nil {
-		isValidationError := err.Error() == VALIDATION_ERROR
-		return !isValidationError
+		customError, isCustomError := IsCustomError(err)
+		if isCustomError {
+			return !customError.IsValidationError() // condition may be updated
+		}
 	}
-	return false
-}
-
-func IsValidationError(err error) bool {
-	if err != nil {
-		return err.Error() == VALIDATION_ERROR
-	}
-	return false
+	return true
 }
