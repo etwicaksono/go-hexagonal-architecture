@@ -2,9 +2,11 @@ package example_mongo
 
 import (
 	"context"
+	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log/slog"
 )
 
@@ -12,6 +14,9 @@ func (e exampleMongo) FindAllTextMessage(ctx context.Context) ([]entity.MessageT
 	collection := e.client.Database(e.dbName).Collection(e.collection)
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, entity.ErrNoData
+		}
 		slog.ErrorContext(ctx, "Failed to find all text message", slog.String(entity.Error, err.Error()))
 		return nil, err
 	}

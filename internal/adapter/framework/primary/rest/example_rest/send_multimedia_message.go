@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/payload_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
@@ -15,7 +14,7 @@ import (
 )
 
 func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
-	context := rest.GetContext(ctx)
+	context := ctx.UserContext()
 
 	payload := new(model.SendMultimediaMessageRequest)
 	err = ctx.BodyParser(payload)

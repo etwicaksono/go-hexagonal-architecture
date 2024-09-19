@@ -51,21 +51,18 @@ type FileItem struct {
 }
 
 type MessageMultimediaItem struct {
-	Id       string     `json:"id"`
-	Sender   string     `json:"sender"`
-	Receiver string     `json:"receiver"`
-	Message  string     `json:"message"`
-	Files    []FileItem `json:"files"`
+	Id       string   `json:"id"`
+	Sender   string   `json:"sender"`
+	Receiver string   `json:"receiver"`
+	Message  string   `json:"message"`
+	FileUrls []string `json:"fileUrls"`
 }
 
 func FromMessageMultimediaItemEntity(s entity.MessageMultimediaItem) MessageMultimediaItem {
-	var files []FileItem
+	var fileUrls []string
 
 	for _, file := range s.Files {
-		files = append(files, FileItem{
-			Storage: file.Storage,
-			File:    file.File,
-		})
+		fileUrls = append(fileUrls, file.File)
 	}
 
 	return MessageMultimediaItem{
@@ -73,6 +70,6 @@ func FromMessageMultimediaItemEntity(s entity.MessageMultimediaItem) MessageMult
 		Sender:   s.Sender,
 		Receiver: s.Receiver,
 		Message:  s.Message,
-		Files:    files,
+		FileUrls: fileUrls,
 	}
 }
