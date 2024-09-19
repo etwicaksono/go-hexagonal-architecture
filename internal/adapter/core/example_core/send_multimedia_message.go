@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity/constants"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/payload_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/string_util"

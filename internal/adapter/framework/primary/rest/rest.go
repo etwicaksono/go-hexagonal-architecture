@@ -20,10 +20,6 @@ import (
 	"github.com/gofiber/template/html/v2"
 )
 
-const (
-	contextKey = "context"
-)
-
 func NewRestApp(
 	ctx context.Context,
 	cfg config.Config,
@@ -89,12 +85,6 @@ func NewRestApp(
 		},
 	})
 
-	// Middleware to attach the context to the request
-	fiberApp.Use(func(c *fiber.Ctx) error {
-		c.Locals(contextKey, ctx)
-		return c.Next()
-	})
-
 	if cfg.App.RestRecovery {
 		fiberApp.Use(recover.New(recover.Config{
 			EnableStackTrace: cfg.App.RestEnableStackTrace,
@@ -121,8 +111,4 @@ func NewRestApp(
 	middleware.NotFoundMiddleware(fiberApp)
 
 	return fiberApp
-}
-
-func GetContext(ctx *fiber.Ctx) context.Context {
-	return ctx.Locals(contextKey).(context.Context)
 }
