@@ -9,16 +9,16 @@ import (
 	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_mongo"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_rest"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_app"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_core"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_message_app"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_message_core"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 )
@@ -30,12 +30,12 @@ var exampleSet = wire.NewSet(
 	minio.MinioProvider,
 	validatorSet,
 	mongo2.NewMongo,
-	example_mongo.NewExampleMongo,
-	example_app.NewExampleApp,
-	example_core.NewExampleCore,
+	example_message_mongo.NewExampleMessageMongo,
+	example_message_app.NewExampleMessageApp,
+	example_message_core.NewExampleMessageCore,
 )
 var routerSet = wire.NewSet(
-	example_rest.NewExampleRestHandler,
+	example_message_rest.NewExampleRestHandler,
 	docs.NewDocumentationHandler,
 	rest.NewRouter,
 )

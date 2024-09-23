@@ -7,17 +7,17 @@ import (
 )
 
 type Router struct {
-	docs    rest.SwaggerHandlerInterface
-	example rest.ExampleHandlerInterface
+	docs           rest.SwaggerHandlerInterface
+	exampleMessage rest.ExampleMessageHandlerInterface
 }
 
 func NewRouter(
 	docs rest.SwaggerHandlerInterface,
-	example rest.ExampleHandlerInterface,
+	exampleMessage rest.ExampleMessageHandlerInterface,
 ) Router {
 	return Router{
-		docs:    docs,
-		example: example,
+		docs:           docs,
+		exampleMessage: exampleMessage,
 	}
 }
 
@@ -27,9 +27,9 @@ func SetRoute(app *fiber.App, router Router) {
 	})
 	app.Get("/swagger/*", router.docs.Swagger)
 
-	// Example
-	app.Get("/message/text", router.example.GetTextMessage)
-	app.Post("/message/text", router.example.SendTextMessage)
-	app.Get("/message/multimedia", router.example.GetMultimediaMessage)
-	app.Post("/message/multimedia", router.example.SendMultimediaMessage)
+	// Example Message
+	app.Get("/message/text", router.exampleMessage.GetTextMessage)
+	app.Post("/message/text", router.exampleMessage.SendTextMessage)
+	app.Get("/message/multimedia", router.exampleMessage.GetMultimediaMessage)
+	app.Post("/message/multimedia", router.exampleMessage.SendMultimediaMessage)
 }

@@ -40,16 +40,16 @@ type AppConfig struct {
 }
 
 type DbConfig struct {
-	Protocol          string
-	Address           string
-	Name              string
-	Username          string
-	Password          string
-	MaxConnOpen       int
-	MaxConnIdle       int
-	MaxConnLifetime   time.Duration
-	Option            string
-	ExampleCollection string
+	Protocol                 string
+	Address                  string
+	Name                     string
+	Username                 string
+	Password                 string
+	MaxConnOpen              int
+	MaxConnIdle              int
+	MaxConnLifetime          time.Duration
+	Option                   string
+	ExampleMessageCollection string
 }
 
 type SwaggerConfig struct {
@@ -114,16 +114,16 @@ func LoadConfig() Config {
 			Host:                 vpr.GetString("APP_HOST"),
 		},
 		Db: DbConfig{
-			Protocol:          vpr.GetString("DB_PROTOCOL"),
-			Address:           vpr.GetString("DB_ADDRESS"),
-			Name:              vpr.GetString("DB_NAME"),
-			Username:          vpr.GetString("DB_USERNAME"),
-			Password:          vpr.GetString("DB_PASSWORD"),
-			MaxConnOpen:       vpr.GetInt("DB_MAX_CONN_OPEN"),
-			MaxConnIdle:       vpr.GetInt("DB_MAX_CONN_IDLE"),
-			MaxConnLifetime:   vpr.GetDuration("DB_MAX_CONN_LIFETIME"),
-			Option:            vpr.GetString("DB_OPTION"),
-			ExampleCollection: vpr.GetString("DB_EXAMPLE_COLLECTION"),
+			Protocol:                 vpr.GetString("DB_PROTOCOL"),
+			Address:                  vpr.GetString("DB_ADDRESS"),
+			Name:                     vpr.GetString("DB_NAME"),
+			Username:                 vpr.GetString("DB_USERNAME"),
+			Password:                 vpr.GetString("DB_PASSWORD"),
+			MaxConnOpen:              vpr.GetInt("DB_MAX_CONN_OPEN"),
+			MaxConnIdle:              vpr.GetInt("DB_MAX_CONN_IDLE"),
+			MaxConnLifetime:          vpr.GetDuration("DB_MAX_CONN_LIFETIME"),
+			Option:                   vpr.GetString("DB_OPTION"),
+			ExampleMessageCollection: vpr.GetString("DB_EXAMPLE_MESSAGE_COLLECTION"),
 		},
 		Swagger: SwaggerConfig{
 			DeepLinking:  vpr.GetBool("SWAGGER_DEEP_LINKING"),

@@ -20,7 +20,7 @@ type adapter struct {
 }
 
 type Handler struct {
-	ExampleApp app.ExampleAppInterface
+	ExampleMessageApp app.ExampleMessageAppInterface
 }
 
 func NewGrpcAdapter(
