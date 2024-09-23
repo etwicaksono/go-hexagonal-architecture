@@ -8,15 +8,18 @@ import (
 
 type Router struct {
 	docs           rest.SwaggerHandlerInterface
+	authentication rest.AuthenticationHandlerInterface
 	exampleMessage rest.ExampleMessageHandlerInterface
 }
 
 func NewRouter(
 	docs rest.SwaggerHandlerInterface,
+	authentication rest.AuthenticationHandlerInterface,
 	exampleMessage rest.ExampleMessageHandlerInterface,
 ) Router {
 	return Router{
 		docs:           docs,
+		authentication: authentication,
 		exampleMessage: exampleMessage,
 	}
 }
@@ -27,9 +30,17 @@ func SetRoute(app *fiber.App, router Router) {
 	})
 	app.Get("/swagger/*", router.docs.Swagger)
 
-	// Example Message
-	app.Get("/message/text", router.exampleMessage.GetTextMessage)
-	app.Post("/message/text", router.exampleMessage.SendTextMessage)
-	app.Get("/message/multimedia", router.exampleMessage.GetMultimediaMessage)
-	app.Post("/message/multimedia", router.exampleMessage.SendMultimediaMessage)
+	// Authentication
+	authentication := app.Group("/auth")
+	authentication.Post("/register", router.authentication.Register)
+	authentication.Post("/login", router.authentication.Login)
+	authentication.Post("/logout", router.authentication.Logout)
+	authentication.Post("/refresh", router.authentication.Refresh)
+
+	// Example
+	example := app.Group("/example")
+	example.Get("/message/text", router.exampleMessage.GetTextMessage)
+	example.Post("/message/text", router.exampleMessage.SendTextMessage)
+	example.Get("/message/multimedia", router.exampleMessage.GetMultimediaMessage)
+	example.Post("/message/multimedia", router.exampleMessage.SendMultimediaMessage)
 }
