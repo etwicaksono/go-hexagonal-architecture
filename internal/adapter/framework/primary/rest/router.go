@@ -1,7 +1,8 @@
-package router
+package rest
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/primary/rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -22,7 +23,7 @@ func NewRouter(
 
 func SetRoute(app *fiber.App, router Router) {
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
+		return rest_util.ResponseOk(c, "Welcome to Hexagonal Architecture!")
 	})
 	app.Get("/swagger/*", router.docs.Swagger)
 

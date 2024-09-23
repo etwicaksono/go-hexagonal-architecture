@@ -18,7 +18,6 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
 	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_mongo"
-	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -41,7 +40,7 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	validate := validatorProvider()
 	exampleAppInterface := example_app.NewExampleApp(exampleCoreInterface, validate)
 	exampleHandlerInterface := example_rest.NewExampleRestHandler(exampleAppInterface)
-	routerRouter := router.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
+	routerRouter := rest.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
 	app := rest.NewRestApp(ctx, configConfig, routerRouter)
 	return app
 }
@@ -67,4 +66,4 @@ var exampleSet = wire.NewSet(
 	configSet, minio.MinioProvider, validatorSet, mongo2.NewMongo, example_mongo.NewExampleMongo, example_app.NewExampleApp, example_core.NewExampleCore,
 )
 
-var routerSet = wire.NewSet(example_rest.NewExampleRestHandler, docs.NewDocumentationHandler, router.NewRouter)
+var routerSet = wire.NewSet(example_rest.NewExampleRestHandler, docs.NewDocumentationHandler, rest.NewRouter)

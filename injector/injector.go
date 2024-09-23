@@ -19,7 +19,6 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_app"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_core"
-	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 )
@@ -38,7 +37,7 @@ var exampleSet = wire.NewSet(
 var routerSet = wire.NewSet(
 	example_rest.NewExampleRestHandler,
 	docs.NewDocumentationHandler,
-	router.NewRouter,
+	rest.NewRouter,
 )
 
 func LoggerInit() error {

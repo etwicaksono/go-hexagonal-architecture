@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/config"
-	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
@@ -23,7 +22,7 @@ import (
 func NewRestApp(
 	ctx context.Context,
 	cfg config.Config,
-	route router.Router,
+	route Router,
 ) *fiber.App {
 	// Get the current working directory
 	wd, err := os.Getwd()
@@ -96,7 +95,7 @@ func NewRestApp(
 	middleware.UnprocessableEntityMiddleware(fiberApp)
 
 	// SetRoute
-	router.SetRoute(fiberApp, route)
+	SetRoute(fiberApp, route)
 
 	// Static files
 	docPath := filepath.Join(wd, "/docs")
