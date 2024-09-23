@@ -13,6 +13,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_message_core"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/authentication_rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_rest"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
@@ -34,25 +35,26 @@ func LoggerInit() error {
 func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	configConfig := config.LoadConfig()
 	swaggerHandlerInterface := docs.NewDocumentationHandler(ctx, configConfig)
-	exampleDbInterface := example_message_mongo.NewExampleMessageMongo(configConfig, mongoClient)
+	authenticationHandlerInterface := authentication_rest.NewAuthenticationRestHandler()
+	exampleMessageDbInterface := example_message_mongo.NewExampleMessageMongo(configConfig, mongoClient)
 	minioInterface := minio.MinioProvider(ctx, configConfig)
-	exampleCoreInterface := example_message_core.NewExampleMessageCore(exampleDbInterface, minioInterface)
+	exampleMessageCoreInterface := example_message_core.NewExampleMessageCore(exampleMessageDbInterface, minioInterface)
 	validate := validatorProvider()
-	exampleAppInterface := example_message_app.NewExampleMessageApp(exampleCoreInterface, validate)
-	exampleHandlerInterface := example_message_rest.NewExampleRestHandler(exampleAppInterface)
-	routerRouter := rest.NewRouter(swaggerHandlerInterface, exampleHandlerInterface)
-	app := rest.NewRestApp(ctx, configConfig, routerRouter)
+	exampleMessageAppInterface := example_message_app.NewExampleMessageApp(exampleMessageCoreInterface, validate)
+	exampleMessageHandlerInterface := example_message_rest.NewExampleRestHandler(exampleMessageAppInterface)
+	router := rest.NewRouter(swaggerHandlerInterface, authenticationHandlerInterface, exampleMessageHandlerInterface)
+	app := rest.NewRestApp(ctx, configConfig, router)
 	return app
 }
 
 func GrpcHandlerProvider(ctx context.Context, mongoClient *mongo.Client) grpc.Handler {
 	configConfig := config.LoadConfig()
-	exampleDbInterface := example_message_mongo.NewExampleMessageMongo(configConfig, mongoClient)
+	exampleMessageDbInterface := example_message_mongo.NewExampleMessageMongo(configConfig, mongoClient)
 	minioInterface := minio.MinioProvider(ctx, configConfig)
-	exampleCoreInterface := example_message_core.NewExampleMessageCore(exampleDbInterface, minioInterface)
+	exampleMessageCoreInterface := example_message_core.NewExampleMessageCore(exampleMessageDbInterface, minioInterface)
 	validate := validatorProvider()
-	exampleAppInterface := example_message_app.NewExampleMessageApp(exampleCoreInterface, validate)
-	handler := grpcHandlerProvider(exampleAppInterface)
+	exampleMessageAppInterface := example_message_app.NewExampleMessageApp(exampleMessageCoreInterface, validate)
+	handler := grpcHandlerProvider(exampleMessageAppInterface)
 	return handler
 }
 
@@ -62,8 +64,10 @@ var configSet = wire.NewSet(config.LoadConfig)
 
 var validatorSet = wire.NewSet(validatorProvider)
 
+var routerSet = wire.NewSet(example_message_rest.NewExampleRestHandler, docs.NewDocumentationHandler, rest.NewRouter)
+
+var authenticationSet = wire.NewSet(authentication_rest.NewAuthenticationRestHandler)
+
 var exampleSet = wire.NewSet(
 	configSet, minio.MinioProvider, validatorSet, mongo2.NewMongo, example_message_mongo.NewExampleMessageMongo, example_message_app.NewExampleMessageApp, example_message_core.NewExampleMessageCore,
 )
-
-var routerSet = wire.NewSet(example_message_rest.NewExampleRestHandler, docs.NewDocumentationHandler, rest.NewRouter)
