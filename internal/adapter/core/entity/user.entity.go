@@ -13,3 +13,16 @@ type User struct {
 	UpdatedAt time.Time
 	DeletedAt time.Time
 }
+
+type RegisterRequest struct {
+	Username string
+	Phone    string
+	Email    string
+	FullName string
+	Password string
+}
+
+type LoginRequest struct {
+	Username string
+	Password string
+}
