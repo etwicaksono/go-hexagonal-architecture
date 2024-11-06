@@ -3,8 +3,8 @@ package mongo
 import (
 	"context"
 	"fmt"
-	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/mongo"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

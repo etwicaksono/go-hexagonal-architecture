@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
-	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
-	"github.com/etwicaksono/go-hexagonal-architecture/utils/payload_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/payload_util"
 	"log/slog"
 )
 

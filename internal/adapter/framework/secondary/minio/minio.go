@@ -3,8 +3,8 @@ package minio
 import (
 	"bytes"
 	"context"
-	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	minio2 "github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/minio"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"

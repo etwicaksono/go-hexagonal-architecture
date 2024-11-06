@@ -1,7 +1,7 @@
 package injector
 
 import (
-	"github.com/etwicaksono/go-hexagonal-architecture/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"log/slog"
 	"os"
 )

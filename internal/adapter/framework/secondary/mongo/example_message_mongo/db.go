@@ -1,7 +1,7 @@
 package example_message_mongo
 
 import (
-	"github.com/etwicaksono/go-hexagonal-architecture/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/repository/db"
 	"go.mongodb.org/mongo-driver/mongo"
 )

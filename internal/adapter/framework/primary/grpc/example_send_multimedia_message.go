@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
-	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log/slog"

@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/primary/rest"
-	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 )
 

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"log/slog"
 	"os"
 	"os/signal"
 
-	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/injector"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 )

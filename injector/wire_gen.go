@@ -8,7 +8,6 @@ package injector
 
 import (
 	"context"
-	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_message_app"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_message_core"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
@@ -19,6 +18,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
 	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
