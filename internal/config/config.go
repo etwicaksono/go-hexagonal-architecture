@@ -37,6 +37,7 @@ type AppConfig struct {
 	Name                 string
 	Version              string
 	Host                 string
+	LogLevel             string
 }
 
 type DbConfig struct {
@@ -112,6 +113,7 @@ func LoadConfig() Config {
 			Name:                 vpr.GetString("APP_NAME"),
 			Version:              vpr.GetString("APP_VERSION"),
 			Host:                 vpr.GetString("APP_HOST"),
+			LogLevel:             vpr.GetString("APP_LOG_LEVEL"),
 		},
 		Db: DbConfig{
 			Protocol:                 vpr.GetString("DB_PROTOCOL"),
