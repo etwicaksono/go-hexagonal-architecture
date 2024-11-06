@@ -8,7 +8,6 @@ import (
 	utils2 "github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
 	"github.com/gofiber/fiber/v2/utils"
-	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -48,7 +47,6 @@ func NewRestApp(
 
 			// Retrieve the custom status code if it's a *fiber.Error
 			var fiberError *fiber.Error
-			slog.Info("Is fiber error", slog.Bool("is fiber error", errors.As(err, &fiberError)))
 			if errors.As(err, &fiberError) {
 				code = fiberError.Code
 				status = utils.StatusMessage(fiberError.Code)

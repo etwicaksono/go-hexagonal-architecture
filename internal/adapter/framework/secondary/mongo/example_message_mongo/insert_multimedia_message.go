@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/model"
+	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/model"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log/slog"
 )

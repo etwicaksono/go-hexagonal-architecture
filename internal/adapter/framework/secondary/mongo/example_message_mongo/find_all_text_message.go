@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/model"
+	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/model"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
