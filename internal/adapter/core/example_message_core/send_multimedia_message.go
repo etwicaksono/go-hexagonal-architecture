@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/payload_util"
@@ -39,7 +40,7 @@ func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request e
 		fileNameNoExtension := strings.TrimSuffix(requestFile.Filename, ext)
 		fileName := fmt.Sprintf("%s-%d%s", payload_util.Slugify(fileNameNoExtension), time.Now().UnixNano(), ext)
 		switch request.Storage {
-		case entity.MultimediaStorage_LOCAL:
+		case valueobject.MultimediaStorage_LOCAL:
 			{
 				path := fmt.Sprintf("uploaded/%s", fileName)
 				file, err := os.Create(path)
@@ -62,10 +63,10 @@ func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request e
 				closeFile(file)
 				files = append(
 					files,
-					entity.FileItem{File: path, Storage: entity.MultimediaStorage_name[int32(entity.MultimediaStorage_LOCAL)]},
+					entity.FileItem{File: path, Storage: request.Storage.ToString()},
 				)
 			}
-		case entity.MultimediaStorage_MINIO:
+		case valueobject.MultimediaStorage_MINIO:
 			{
 				filePath := fmt.Sprint(constants.MINIO_EXAMPLE_MESSAGE_PATH, "/", fileName)
 				info, err := e.minio.Upload(ctx, requestFile.Data, requestFile.ContentType, filePath)
@@ -76,7 +77,7 @@ func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request e
 
 				files = append(
 					files,
-					entity.FileItem{File: info.Key, Storage: entity.MultimediaStorage_name[int32(entity.MultimediaStorage_MINIO)]},
+					entity.FileItem{File: info.Key, Storage: request.Storage.ToString()},
 				)
 			}
 		default:

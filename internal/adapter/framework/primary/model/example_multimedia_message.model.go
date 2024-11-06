@@ -1,27 +1,15 @@
 package model
 
-import "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-
-type MultimediaStorage string
-
-const (
-	MultimediaStorage_LOCAL MultimediaStorage = "LOCAL"
-	MultimediaStorage_MINIO MultimediaStorage = "MINIO"
-)
-
-// Enum value maps for MultimediaStorage.
-var (
-	MultimediaStorage_self = map[int32]MultimediaStorage{
-		0: MultimediaStorage_LOCAL,
-		1: MultimediaStorage_MINIO,
-	}
+import (
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 )
 
 type SendMultimediaMessageRequest struct {
-	Sender   string            `json:"sender" validate:"required"`
-	Receiver string            `json:"receiver" validate:"required"`
-	Message  string            `json:"message" validate:"required"`
-	Storage  MultimediaStorage `json:"storage"`
+	Sender   string `json:"sender" validate:"required"`
+	Receiver string `json:"receiver" validate:"required"`
+	Message  string `json:"message" validate:"required"`
+	Storage  string `json:"storage"`
 	Files    []entity.MultimediaFile
 }
 
@@ -30,7 +18,7 @@ func (s SendMultimediaMessageRequest) ToEntity() entity.SendMultimediaMessageReq
 		Sender:   s.Sender,
 		Receiver: s.Receiver,
 		Message:  s.Message,
-		Storage:  entity.MultimediaStorage_self[string(s.Storage)],
+		Storage:  valueobject.MultimediaStorageFromString(s.Storage),
 		Files:    s.Files,
 	}
 }
@@ -40,7 +28,7 @@ func FromSendMultimediaMessageRequestEntity(s entity.SendMultimediaMessageReques
 		Sender:   s.Sender,
 		Receiver: s.Receiver,
 		Message:  s.Message,
-		Storage:  MultimediaStorage_self[int32(s.Storage)],
+		Storage:  s.Storage.ToString(),
 		Files:    s.Files,
 	}
 }

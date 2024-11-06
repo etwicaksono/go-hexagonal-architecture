@@ -3,6 +3,7 @@ package example_message_rest
 import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/payload_util"
@@ -28,24 +29,18 @@ func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 	}
 
 	// Validate storage
-	switch payload.Storage {
-	case model.MultimediaStorage_LOCAL, model.MultimediaStorage_MINIO:
-		{
-			// do nothing
-		}
-	default:
-		{
-			return error_util.ValidationError(
-				fiber.Map{"storage": fmt.Sprintf(
-					"Invalid storage type. Available types are: %s",
-					string_util.Implode(
-						[]string{
-							string(model.MultimediaStorage_LOCAL),
-							string(model.MultimediaStorage_MINIO)},
-						", ",
-					))},
-			)
-		}
+	if valueobject.MultimediaStorageFromString(payload.Storage) == valueobject.MultimediaStorage_INVALID {
+		return error_util.ValidationError(
+			fiber.Map{"storage": fmt.Sprintf(
+				"Invalid storage type. Available types are: %s",
+				string_util.Implode(
+					[]string{
+						valueobject.MultimediaStorage_LOCAL.ToString(),
+						valueobject.MultimediaStorage_MINIO.ToString(),
+					},
+					", ",
+				))},
+		)
 	}
 
 	// Handle file upload

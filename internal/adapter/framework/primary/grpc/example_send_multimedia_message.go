@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 	"github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -26,7 +27,7 @@ func (a *adapter) SendMultimediaMessage(ctx context.Context, request *example.Se
 		Sender:   request.Sender,
 		Receiver: request.Receiver,
 		Message:  request.Message,
-		Storage:  entity.MultimediaStorage(request.Storage),
+		Storage:  valueobject.MultimediaStorageFromInt32(int32(request.Storage)),
 		Files:    files,
 	})
 	if err != nil {
