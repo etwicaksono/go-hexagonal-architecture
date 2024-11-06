@@ -51,6 +51,7 @@ type DbConfig struct {
 	MaxConnLifetime          time.Duration
 	Option                   string
 	ExampleMessageCollection string
+	ExampleUserCollection    string
 }
 
 type SwaggerConfig struct {
@@ -126,6 +127,7 @@ func LoadConfig() Config {
 			MaxConnLifetime:          vpr.GetDuration("DB_MAX_CONN_LIFETIME"),
 			Option:                   vpr.GetString("DB_OPTION"),
 			ExampleMessageCollection: vpr.GetString("DB_EXAMPLE_MESSAGE_COLLECTION"),
+			ExampleUserCollection:    vpr.GetString("DB_EXAMPLE_USER_COLLECTION"),
 		},
 		Swagger: SwaggerConfig{
 			DeepLinking:  vpr.GetBool("SWAGGER_DEEP_LINKING"),

@@ -3,15 +3,18 @@ package entity
 import "time"
 
 type User struct {
-	Id        string
-	Username  string
-	Phone     string
+	ID        string
 	Email     string
-	FullName  string
+	Name      string
+	Username  string
 	Password  string
+	Active    bool
 	CreatedAt time.Time
+	CreatedBy string
 	UpdatedAt time.Time
-	DeletedAt time.Time
+	UpdatedBy string
+	DeletedAt *time.Time
+	DeletedBy string
 }
 
 type RegisterRequest struct {
