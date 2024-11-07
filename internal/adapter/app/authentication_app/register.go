@@ -10,10 +10,9 @@ import (
 )
 
 func (a authenticationApp) Register(ctx context.Context, request entity.RegisterRequest) (err error) {
-	err = a.validator.Struct(model.FromRegisterRequestEntity(request)) // TODO: create util for this
+	err = validation_util.ValidateStruct(a.validator, model.FromRegisterRequestEntity(request))
 	if err != nil {
-		errValidation := validation_util.TranslateErrorMessage(err)
-		return error_util.ErrorValidation(errValidation)
+		return
 	}
 
 	err = a.core.Register(ctx, request)

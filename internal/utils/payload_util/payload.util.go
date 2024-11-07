@@ -1,12 +1,13 @@
 package payload_util
 
 import (
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
 	"github.com/gofiber/fiber/v2"
 	"regexp"
 	"strings"
 )
 
-func HandleParsingError(err error) (errParsing fiber.Map, errOther error) {
+func handleParsingError(err error) (errParsing fiber.Map, errOther error) {
 	if strings.HasPrefix(err.Error(), "failed to decode: schema: error converting value for") {
 		// Compile the regex pattern
 		regex := regexp.MustCompile(`failed to decode: schema: error converting value for "(.*?)"`)
@@ -37,4 +38,16 @@ func Slugify(input string) string {
 
 	// Return the resulting slug
 	return slug
+}
+
+func BodyParser[T any](ctx *fiber.Ctx, payload *T) (err error) {
+	err = ctx.BodyParser(payload)
+	if err != nil {
+		errParsing, errOther := handleParsingError(err)
+		if errOther != nil {
+			return errOther
+		}
+		return error_util.ErrorValidation(errParsing)
+	}
+	return
 }

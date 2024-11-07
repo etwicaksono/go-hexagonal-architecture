@@ -14,14 +14,12 @@ func (a AuthenticationHandler) Register(ctx *fiber.Ctx) (err error) {
 	context := ctx.UserContext()
 
 	payload := new(model.RegisterRequest)
-	err = ctx.BodyParser(payload) // TODO: create util for this
+	err = payload_util.BodyParser(ctx, payload)
 	if err != nil {
-		errParsing, errOther := payload_util.HandleParsingError(err)
-		if errOther != nil {
-			slog.ErrorContext(context, errOther.Error())
-			return errOther
+		if error_util.IsRealError(err) {
+			slog.ErrorContext(context, "Failed to parse RegisterRequest", slog.String(entity.Error, err.Error()))
 		}
-		return error_util.ErrorValidation(errParsing)
+		return
 	}
 
 	err = a.app.Register(context, payload.ToEntity())
@@ -29,7 +27,7 @@ func (a AuthenticationHandler) Register(ctx *fiber.Ctx) (err error) {
 		if error_util.IsRealError(err) {
 			slog.ErrorContext(context, "Failed to register user", slog.String(entity.Error, err.Error()))
 		}
-		return err
+		return
 	}
 
 	return rest_util.ResponseOk(ctx, "Register user success")

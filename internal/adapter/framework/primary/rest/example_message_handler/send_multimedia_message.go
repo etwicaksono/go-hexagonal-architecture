@@ -18,14 +18,12 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 	context := ctx.UserContext()
 
 	payload := new(model.SendMultimediaMessageRequest)
-	err = ctx.BodyParser(payload)
+	err = payload_util.BodyParser(ctx, payload)
 	if err != nil {
-		errParsing, errOther := payload_util.HandleParsingError(err)
-		if errOther != nil {
-			slog.ErrorContext(context, errOther.Error())
-			return errOther
+		if error_util.IsRealError(err) {
+			slog.ErrorContext(context, "Failed to parse RegisterRequest", slog.String(entity.Error, err.Error()))
 		}
-		return error_util.ErrorValidation(errParsing)
+		return
 	}
 
 	// Validate storage

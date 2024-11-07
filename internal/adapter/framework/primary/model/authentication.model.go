@@ -8,7 +8,7 @@ type RegisterRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Name     string `json:"name" validate:"required"`
 	Username string `json:"username" validate:"required,is-username"`
-	Password string `json:"password" validate:"required"`
+	Password string `json:"password" validate:"required,max=72"`
 }
 
 func (r RegisterRequest) ToEntity() entity.RegisterRequest {

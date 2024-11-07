@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sagikazarmark/slog-shim"
@@ -42,7 +43,7 @@ func registerCustomValidations(validatorInstance *validator.Validate) {
 	}
 }
 
-func TranslateErrorMessage(err error) (errValidation fiber.Map) {
+func translateErrorMessage(err error) (errValidation fiber.Map) {
 	// make error map
 	errValidation = make(fiber.Map)
 	var validationErrors validator.ValidationErrors
@@ -64,6 +65,14 @@ func TranslateErrorMessage(err error) (errValidation fiber.Map) {
 						errValidation[fieldName] = fmt.Sprint(fieldName, " field must be longer than ", fieldError.Param(), " characters")
 					} else {
 						errValidation[fieldName] = fmt.Sprint(fieldName, " field must be greater than ", fieldError.Param())
+					}
+				}
+			case "max":
+				{
+					if fieldError.Kind() == reflect.String {
+						errValidation[fieldName] = fmt.Sprint(fieldName, " field must not be longer than ", fieldError.Param(), " characters")
+					} else {
+						errValidation[fieldName] = fmt.Sprint(fieldName, " field must not be greater than ", fieldError.Param())
 					}
 				}
 			case "required_with":
@@ -115,4 +124,13 @@ func isUsernameValid(fl validator.FieldLevel) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9]+$`)
 	// Return whether the field matches the regex
 	return re.MatchString(fl.Field().String())
+}
+
+func ValidateStruct[T any](validator *validator.Validate, s T) (err error) {
+	err = validator.Struct(s)
+	if err != nil {
+		errValidation := translateErrorMessage(err)
+		return error_util.ErrorValidation(errValidation)
+	}
+	return
 }
