@@ -13,15 +13,14 @@ type User struct {
 	CreatedBy string
 	UpdatedAt time.Time
 	UpdatedBy string
-	DeletedAt *time.Time
+	DeletedAt time.Time
 	DeletedBy string
 }
 
 type RegisterRequest struct {
-	Username string
-	Phone    string
 	Email    string
-	FullName string
+	Name     string
+	Username string
 	Password string
 }
 

@@ -31,11 +31,11 @@ func SetRoute(app *fiber.App, router Router) {
 	app.Get("/swagger/*", router.docs.Swagger)
 
 	// Authentication
-	authentication := app.Group("/auth")
-	authentication.Post("/register", router.authentication.Register)
-	authentication.Post("/login", router.authentication.Login)
-	authentication.Post("/logout", router.authentication.Logout)
-	authentication.Post("/refresh", router.authentication.Refresh)
+	auth := app.Group("/auth")
+	auth.Post("/register", router.authentication.Register)
+	auth.Post("/login", router.authentication.Login)
+	auth.Post("/logout", router.authentication.Logout)
+	auth.Post("/refresh", router.authentication.Refresh)
 
 	// Example
 	example := app.Group("/example")

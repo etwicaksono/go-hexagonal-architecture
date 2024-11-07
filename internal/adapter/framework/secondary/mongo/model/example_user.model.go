@@ -8,17 +8,17 @@ import (
 
 type User struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Email     string             `bson:"Email"`
-	Name      string             `bson:"Name"`
-	Username  string             `bson:"Username"`
-	Password  string             `bson:"Password"`
-	Active    bool               `bson:"Active"`
-	CreatedAt time.Time          `bson:"CreatedAt"`
-	CreatedBy string             `bson:"CreatedBy"`
-	UpdatedAt time.Time          `bson:"UpdatedAt"`
-	UpdatedBy string             `bson:"UpdatedBy"`
-	DeletedAt *time.Time         `bson:"DeletedAt"`
-	DeletedBy string             `bson:"DeletedBy"`
+	Email     string             `bson:"email"`
+	Name      string             `bson:"name"`
+	Username  string             `bson:"username"`
+	Password  string             `bson:"password"`
+	Active    bool               `bson:"active"`
+	CreatedAt time.Time          `bson:"created_at"`
+	CreatedBy string             `bson:"created_by"`
+	UpdatedAt time.Time          `bson:"updated_at,omitempty"`
+	UpdatedBy string             `bson:"updated_by,omitempty"`
+	DeletedAt time.Time          `bson:"deleted_at,omitempty"`
+	DeletedBy string             `bson:"deleted_by,omitempty"`
 }
 
 func (u User) ToEntity() entity.User {

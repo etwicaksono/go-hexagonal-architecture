@@ -16,6 +16,10 @@ const (
 	UNAUTHORIZED     CustomErrorType = "UNAUTHORIZED"
 )
 
+func (c CustomErrorType) String() string {
+	return string(c)
+}
+
 type CustomError struct {
 	errorType CustomErrorType
 
@@ -68,6 +72,7 @@ func ValidationError(errValidation fiber.Map) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusBadRequest).
 		SetErrorType(VALIDATION_ERROR).
+		SetMessage(VALIDATION_ERROR.String()).
 		SetFields(errValidation)
 }
 

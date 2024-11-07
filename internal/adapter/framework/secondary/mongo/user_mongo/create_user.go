@@ -1,4 +1,4 @@
-package example_user_mongo
+package user_mongo
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"log/slog"
 )
 
-func (e exampleUserMongo) CreateUser(ctx context.Context, objs []entity.User) (entity.BulkWriteResult, error) {
+func (e userMongo) CreateUser(ctx context.Context, objs []entity.User) (entity.BulkWriteResult, error) {
 	if len(objs) == 0 {
 		return entity.BulkWriteResult{}, fmt.Errorf("no object to insert")
 	}
