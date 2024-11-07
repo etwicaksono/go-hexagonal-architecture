@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"context"
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
@@ -18,7 +17,6 @@ import (
 )
 
 func NewRestApp(
-	ctx context.Context,
 	cfg config.Config,
 	route Router,
 ) *fiber.App {

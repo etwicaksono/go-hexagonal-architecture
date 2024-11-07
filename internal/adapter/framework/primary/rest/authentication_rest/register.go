@@ -14,7 +14,7 @@ func (a adapter) Register(ctx *fiber.Ctx) (err error) {
 	context := ctx.UserContext()
 
 	payload := new(model.RegisterRequest)
-	err = ctx.BodyParser(payload)
+	err = ctx.BodyParser(payload) // TODO: create util for this
 	if err != nil {
 		errParsing, errOther := payload_util.HandleParsingError(err)
 		if errOther != nil {

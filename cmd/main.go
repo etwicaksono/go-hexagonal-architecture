@@ -31,7 +31,7 @@ func main() {
 	/*
 	   Infrastructure initialization
 	*/
-	mongoDb := mongo.NewMongo(ctx, cfg)
+	mongoDb := mongo.NewMongo(ctx, cfg) // TODO: adjust so it can use other database
 	err = mongoDb.Connect()
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to connect to MongoDB", slog.String(entity.Error, err.Error()))

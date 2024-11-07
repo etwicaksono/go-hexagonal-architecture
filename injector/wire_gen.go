@@ -49,7 +49,7 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	exampleMessageAppInterface := example_message_app.NewExampleMessageApp(exampleMessageCoreInterface, validate)
 	exampleMessageHandlerInterface := example_message_rest.NewExampleRestHandler(exampleMessageAppInterface)
 	router := rest.NewRouter(swaggerHandlerInterface, authenticationHandlerInterface, exampleMessageHandlerInterface)
-	app := rest.NewRestApp(ctx, configConfig, router)
+	app := rest.NewRestApp(configConfig, router)
 	return app
 }
 

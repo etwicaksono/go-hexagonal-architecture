@@ -5,14 +5,14 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/payload_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/validation_util"
 	"log/slog"
 )
 
 func (e exampleMessageApp) SendMultimediaMessage(ctx context.Context, request entity.SendMultimediaMessageRequest) error {
 	err := e.validator.Struct(model.FromSendMultimediaMessageRequestEntity(request))
 	if err != nil {
-		errValidation := payload_util.GenerateErrorMessage(err)
+		errValidation := validation_util.TranslateErrorMessage(err)
 		return error_util.ErrorValidation(errValidation)
 	}
 
