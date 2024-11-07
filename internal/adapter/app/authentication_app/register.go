@@ -13,7 +13,7 @@ func (a authenticationApp) Register(ctx context.Context, request entity.Register
 	err = a.validator.Struct(model.FromRegisterRequestEntity(request))
 	if err != nil {
 		errValidation := payload_util.GenerateErrorMessage(err)
-		return error_util.ValidationError(errValidation)
+		return error_util.ErrorValidation(errValidation)
 	}
 
 	err = a.core.Register(ctx, request)

@@ -25,7 +25,7 @@ func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request e
 		//Validate extension
 		allowedTypes := []string{".jpg", ".jpeg", ".png", ".txt"}
 		if !validation_util.IsValidExtension(allowedTypes, requestFile.Filename) {
-			return error_util.ValidationError(
+			return error_util.ErrorValidation(
 				fiber.Map{
 					"files": fmt.Sprintf(
 						"invalid file type (%s). Allowed types are %s",
@@ -82,7 +82,7 @@ func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request e
 			}
 		default:
 			{
-				return error_util.ValidationError(fiber.Map{"storage": "invalid storage type"})
+				return error_util.ErrorValidation(fiber.Map{"storage": "invalid storage type"})
 			}
 		}
 	}

@@ -9,11 +9,9 @@ import (
 type CustomErrorType string
 
 const (
-	VALIDATION_ERROR CustomErrorType = "VALIDATION ERROR"
-	INVALID_REQUEST  CustomErrorType = "INVALID REQUEST"
-	INTERNAL_SERVER  CustomErrorType = "INTERNAL SERVER ERROR"
-	NOT_FOUND        CustomErrorType = "NOT FOUND ERROR"
-	UNAUTHORIZED     CustomErrorType = "UNAUTHORIZED"
+	VALIDATION_ERROR      CustomErrorType = "VALIDATION ERROR"
+	BAD_REQUEST_ERROR     CustomErrorType = "BAD REQUEST"
+	INTERNAL_SERVER_ERROR CustomErrorType = "INTERNAL SERVER ERROR"
 )
 
 func (c CustomErrorType) String() string {
@@ -63,19 +61,32 @@ func (e *CustomError) IsValidationError() bool {
 	return e.errorType == VALIDATION_ERROR
 }
 
-func IsCustomError(err error) (customError *CustomError, isCustomError bool) {
-	ok := errors.As(err, &customError)
-	return customError, ok
-}
-
-func ValidationError(errValidation fiber.Map) *CustomError {
+/*Errors factory*/
+func ErrorValidation(errValidation fiber.Map) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusBadRequest).
 		SetErrorType(VALIDATION_ERROR).
 		SetMessage(VALIDATION_ERROR.String()).
 		SetFields(errValidation)
 }
+func Error400(msg string) *CustomError {
+	return NewCustomError().
+		SetCode(http.StatusBadRequest).
+		SetErrorType(BAD_REQUEST_ERROR).
+		SetMessage(msg)
+}
+func Error500(msg string) *CustomError {
+	return NewCustomError().
+		SetCode(http.StatusInternalServerError).
+		SetErrorType(INTERNAL_SERVER_ERROR).
+		SetMessage(msg)
+}
 
+/*Errors checking*/
+func IsCustomError(err error) (customError *CustomError, isCustomError bool) {
+	ok := errors.As(err, &customError)
+	return customError, ok
+}
 func IsRealError(err error) bool {
 	if err != nil {
 		customError, isCustomError := IsCustomError(err)

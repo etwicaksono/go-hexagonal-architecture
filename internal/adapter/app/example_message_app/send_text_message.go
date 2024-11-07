@@ -13,7 +13,7 @@ func (e exampleMessageApp) SendTextMessage(ctx context.Context, request entity.S
 	err := e.validator.Struct(model.FromSendTextMessageRequestEntity(request))
 	if err != nil {
 		errValidation := payload_util.GenerateErrorMessage(err)
-		return error_util.ValidationError(errValidation)
+		return error_util.ErrorValidation(errValidation)
 	}
 
 	err = e.core.SendTextMessage(ctx, request)

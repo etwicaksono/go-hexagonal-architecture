@@ -13,7 +13,7 @@ func (e exampleMessageApp) SendMultimediaMessage(ctx context.Context, request en
 	err := e.validator.Struct(model.FromSendMultimediaMessageRequestEntity(request))
 	if err != nil {
 		errValidation := payload_util.GenerateErrorMessage(err)
-		return error_util.ValidationError(errValidation)
+		return error_util.ErrorValidation(errValidation)
 	}
 
 	err = e.core.SendMultimediaMessage(ctx, request)

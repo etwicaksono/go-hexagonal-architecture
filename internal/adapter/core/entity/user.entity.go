@@ -17,14 +17,18 @@ type User struct {
 	DeletedBy string
 }
 
-type RegisterRequest struct {
+type UserFindFilter struct {
+	ID       string
 	Email    string
 	Name     string
 	Username string
-	Password string
+	Active   *bool
 }
 
-type LoginRequest struct {
-	Username string
-	Password string
+type UserGetFilter struct {
+	IDs       []string
+	Emails    []string
+	Names     []string
+	Usernames []string
+	Active    *bool
 }

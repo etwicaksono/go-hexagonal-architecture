@@ -25,12 +25,12 @@ func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 			slog.ErrorContext(context, errOther.Error())
 			return errOther
 		}
-		return error_util.ValidationError(errParsing)
+		return error_util.ErrorValidation(errParsing)
 	}
 
 	// Validate storage
 	if valueobject.MultimediaStorageFromString(payload.Storage) == valueobject.MultimediaStorage_INVALID {
-		return error_util.ValidationError(
+		return error_util.ErrorValidation(
 			fiber.Map{"storage": fmt.Sprintf(
 				"Invalid storage type. Available types are: %s",
 				string_util.Implode(
@@ -47,7 +47,7 @@ func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 	// Parse the multipart form containing the files
 	form, err := ctx.MultipartForm()
 	if err != nil {
-		return error_util.ValidationError(fiber.Map{"files": "Failed to parse multipart form"})
+		return error_util.ErrorValidation(fiber.Map{"files": "Failed to parse multipart form"})
 	}
 
 	// Get the files from the "files" field in the form
@@ -57,7 +57,7 @@ func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 			// Open the file
 			openedFile, err := file.Open()
 			if err != nil {
-				return error_util.ValidationError(fiber.Map{"files": fmt.Sprintf("Failed to open file (%s)", file.Filename)})
+				return error_util.ErrorValidation(fiber.Map{"files": fmt.Sprintf("Failed to open file (%s)", file.Filename)})
 			}
 			defer func() {
 				if err := openedFile.Close(); err != nil {
@@ -68,7 +68,7 @@ func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 			// Read file content into []byte
 			fileBytes, err := io.ReadAll(openedFile)
 			if err != nil {
-				return error_util.ValidationError(fiber.Map{"files": fmt.Sprintf("Failed to read file (%s)", file.Filename)})
+				return error_util.ErrorValidation(fiber.Map{"files": fmt.Sprintf("Failed to read file (%s)", file.Filename)})
 			}
 
 			payload.Files = append(payload.Files, entity.MultimediaFile{
