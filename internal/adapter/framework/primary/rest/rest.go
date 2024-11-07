@@ -27,7 +27,7 @@ func NewRestApp(
 	}
 
 	// Use absolute path for the templates directory
-	templatePath := filepath.Join(wd, "/docs/swagger-ui")
+	templatePath := filepath.Join(wd, "/docs_handler/swagger-ui")
 	engine := html.New(templatePath, ".gohtml")
 
 	fiberApp := fiber.New(fiber.Config{
@@ -83,9 +83,9 @@ func NewRestApp(
 	SetRoute(fiberApp, route)
 
 	// Static files
-	docPath := filepath.Join(wd, "/docs")
+	docPath := filepath.Join(wd, "/docs_handler")
 	staticFiles := map[string]string{
-		"/docs": docPath,
+		"/docs_handler": docPath,
 	}
 	for key, value := range staticFiles {
 		fiberApp.Static(key, value)

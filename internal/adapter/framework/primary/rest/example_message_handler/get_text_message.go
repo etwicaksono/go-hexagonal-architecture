@@ -1,4 +1,4 @@
-package example_message_rest
+package example_message_handler
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-func (a adapter) GetTextMessage(ctx *fiber.Ctx) (err error) {
+func (a ExampleMessageHandler) GetTextMessage(ctx *fiber.Ctx) (err error) {
 	context := ctx.UserContext()
 	messages, err := a.app.GetTextMessage(context)
 	if err != nil {

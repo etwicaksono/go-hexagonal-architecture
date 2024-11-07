@@ -93,6 +93,7 @@ func IsRealError(err error) bool {
 		if isCustomError {
 			return !customError.IsValidationError() // condition may be updated
 		}
+		return true
 	}
-	return true
+	return false
 }

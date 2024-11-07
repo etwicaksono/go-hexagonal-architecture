@@ -1,4 +1,4 @@
-package authentication_rest
+package example_message_handler
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
@@ -10,11 +10,11 @@ import (
 	"log/slog"
 )
 
-func (a adapter) Register(ctx *fiber.Ctx) (err error) {
+func (a ExampleMessageHandler) SendTextMessage(ctx *fiber.Ctx) (err error) {
 	context := ctx.UserContext()
 
-	payload := new(model.RegisterRequest)
-	err = ctx.BodyParser(payload) // TODO: create util for this
+	payload := new(model.SendTextMessageRequest)
+	err = ctx.BodyParser(payload)
 	if err != nil {
 		errParsing, errOther := payload_util.HandleParsingError(err)
 		if errOther != nil {
@@ -24,13 +24,13 @@ func (a adapter) Register(ctx *fiber.Ctx) (err error) {
 		return error_util.ErrorValidation(errParsing)
 	}
 
-	err = a.app.Register(context, payload.ToEntity())
+	err = a.app.SendTextMessage(context, payload.ToEntity())
 	if err != nil {
 		if error_util.IsRealError(err) {
-			slog.ErrorContext(context, "Failed to register user", slog.String(entity.Error, err.Error()))
+			slog.ErrorContext(context, "Failed to send text message", slog.String(entity.Error, err.Error()))
 		}
 		return err
 	}
 
-	return rest_util.ResponseOk(ctx, "Register user success")
+	return rest_util.ResponseOk(ctx, "Send text message success")
 }

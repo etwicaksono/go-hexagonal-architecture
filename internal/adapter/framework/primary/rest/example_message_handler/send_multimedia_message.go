@@ -1,4 +1,4 @@
-package example_message_rest
+package example_message_handler
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ import (
 	"log/slog"
 )
 
-func (a adapter) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
+func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 	context := ctx.UserContext()
 
 	payload := new(model.SendMultimediaMessageRequest)

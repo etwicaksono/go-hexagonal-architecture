@@ -1,18 +1,17 @@
-package example_message_rest
+package example_message_handler
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/app"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/primary/rest"
 )
 
-type adapter struct {
+type ExampleMessageHandler struct {
 	app app.ExampleMessageAppInterface
 }
 
 func NewExampleRestHandler(
 	app app.ExampleMessageAppInterface,
-) rest.ExampleMessageHandlerInterface {
-	return &adapter{
+) ExampleMessageHandler {
+	return ExampleMessageHandler{
 		app: app,
 	}
 }

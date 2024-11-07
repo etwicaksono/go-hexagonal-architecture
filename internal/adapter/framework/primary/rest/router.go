@@ -1,21 +1,23 @@
 package rest
 
 import (
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/primary/rest"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/authentication_handler"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs_handler"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Router struct {
-	docs           rest.SwaggerHandlerInterface
-	authentication rest.AuthenticationHandlerInterface
-	exampleMessage rest.ExampleMessageHandlerInterface
+	docs           docs_handler.DocsHandler
+	authentication authentication_handler.AuthenticationHandler
+	exampleMessage example_message_handler.ExampleMessageHandler
 }
 
 func NewRouter(
-	docs rest.SwaggerHandlerInterface,
-	authentication rest.AuthenticationHandlerInterface,
-	exampleMessage rest.ExampleMessageHandlerInterface,
+	docs docs_handler.DocsHandler,
+	authentication authentication_handler.AuthenticationHandler,
+	exampleMessage example_message_handler.ExampleMessageHandler,
 ) Router {
 	return Router{
 		docs:           docs,
