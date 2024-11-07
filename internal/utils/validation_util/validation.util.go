@@ -1,6 +1,7 @@
 package validation_util
 
 import (
+	"net/mail"
 	"path/filepath"
 	"strings"
 )
@@ -14,4 +15,9 @@ func IsValidExtension(allowedExtension []string, fileName string) bool {
 		}
 	}
 	return false
+}
+
+func IsValidateEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
 }

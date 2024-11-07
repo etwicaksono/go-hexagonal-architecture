@@ -9,12 +9,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log/slog"
 )
 
 func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter) ([]entity.User, error) {
 	collection := e.client.Database(e.dbName).Collection(e.collection)
-	var pipeline []bson.D
+	var pipeline bson.D
 
 	if len(filter.IDs) > 0 {
 		var ids []primitive.ObjectID
@@ -22,7 +23,7 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 			_id, _ := primitive.ObjectIDFromHex(id)
 			ids = append(ids, _id)
 		}
-		pipeline = append(pipeline, bson.D{{"_id", bson.M{"$in": ids}}})
+		pipeline = append(pipeline, bson.E{Key: "_id", Value: bson.M{"$in": ids}})
 	}
 
 	if len(filter.Emails) > 0 {
@@ -31,7 +32,7 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 			// Use case-insensitive regex
 			emailRegexes = append(emailRegexes, primitive.Regex{Pattern: "^" + t + "$", Options: "i"})
 		}
-		pipeline = append(pipeline, bson.D{{"email", bson.M{"$in": emailRegexes}}})
+		pipeline = append(pipeline, bson.E{Key: "email", Value: bson.M{"$in": emailRegexes}})
 	}
 
 	if len(filter.Names) > 0 {
@@ -40,7 +41,7 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 			// Use case-insensitive regex for partial matches
 			nameRegexes = append(nameRegexes, primitive.Regex{Pattern: ".*" + t + ".*", Options: "i"})
 		}
-		pipeline = append(pipeline, bson.D{{"name", bson.M{"$in": nameRegexes}}})
+		pipeline = append(pipeline, bson.E{Key: "name", Value: bson.M{"$in": nameRegexes}})
 	}
 
 	if len(filter.Usernames) > 0 {
@@ -49,14 +50,15 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 			// Use case-insensitive regex
 			usernameRegexes = append(usernameRegexes, primitive.Regex{Pattern: "^" + t + "$", Options: "i"})
 		}
-		pipeline = append(pipeline, bson.D{{"username", bson.M{"$in": usernameRegexes}}})
+		pipeline = append(pipeline, bson.E{Key: "username", Value: bson.M{"$in": usernameRegexes}})
 	}
 
 	if filter.Active != nil {
-		pipeline = append(pipeline, bson.D{{"active", *filter.Active}})
+		pipeline = append(pipeline, bson.E{Key: "active", Value: *filter.Active})
 	}
 
-	cursor, err := collection.Find(ctx, pipeline)
+	findOptions := options.Find()
+	cursor, err := collection.Find(ctx, pipeline, findOptions)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, errors2.ErrNoData
@@ -68,12 +70,12 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 
 	var users []entity.User
 	for cursor.Next(ctx) {
-		var message model.User
-		if err = cursor.Decode(&message); err != nil {
+		var user model.User
+		if err = cursor.Decode(&user); err != nil {
 			slog.ErrorContext(ctx, "Failed to decode message", slog.String(entity.Error, err.Error()))
 			return nil, err
 		}
-		users = append(users, message.ToEntity())
+		users = append(users, user.ToEntity())
 	}
 	return users, nil
 }

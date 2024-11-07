@@ -23,6 +23,12 @@ func (a authenticationCore) Register(ctx context.Context, request entity.Registe
 		return errors2.ErrEmailAlreadyUsed
 	}
 
+	// Check username is used
+	_, err = a.db.FindByFilter(ctx, entity.UserFindFilter{Username: request.Username})
+	if err == nil || !errors.Is(err, errors2.ErrNoData) {
+		return errors2.ErrUsernameAlreadyUsed
+	}
+
 	user := entity.User{
 		ID:        uuid.New().String(),
 		Email:     request.Email,
