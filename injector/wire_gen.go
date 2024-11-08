@@ -39,7 +39,7 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	configConfig := config.LoadConfig()
 	docsHandler := docs_handler.NewDocumentationHandler(ctx, configConfig)
 	userDbInterface := user_mongo.NewUserMongo(configConfig, mongoClient)
-	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface)
+	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig)
 	validate := validatorProvider()
 	authenticationAppInterface := authentication_app.NewAuthenticationApp(authenticationCoreInterface, validate)
 	authenticationHandler := authentication_handler.NewAuthenticationRestHandler(authenticationAppInterface)

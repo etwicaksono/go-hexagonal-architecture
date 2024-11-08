@@ -38,6 +38,8 @@ type AppConfig struct {
 	Version              string
 	Host                 string
 	LogLevel             string
+	JwtExpiration        string
+	JwtTokenKey          string
 }
 
 type DbConfig struct {
@@ -115,6 +117,8 @@ func LoadConfig() Config {
 			Version:              vpr.GetString("APP_VERSION"),
 			Host:                 vpr.GetString("APP_HOST"),
 			LogLevel:             vpr.GetString("APP_LOG_LEVEL"),
+			JwtExpiration:        vpr.GetString("APP_JWT_EXPIRATION"),
+			JwtTokenKey:          vpr.GetString("APP_JWT_TOKEN_KEY"),
 		},
 		Db: DbConfig{
 			Protocol:                 vpr.GetString("DB_PROTOCOL"),

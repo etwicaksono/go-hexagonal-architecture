@@ -12,6 +12,7 @@ const (
 	VALIDATION_ERROR      CustomErrorType = "VALIDATION ERROR"
 	BAD_REQUEST_ERROR     CustomErrorType = "BAD REQUEST"
 	INTERNAL_SERVER_ERROR CustomErrorType = "INTERNAL SERVER ERROR"
+	UNAUTHORIZED_ERROR    CustomErrorType = "UNAUTHORIZED ERROR"
 )
 
 func (c CustomErrorType) String() string {
@@ -91,7 +92,7 @@ func IsRealError(err error) bool {
 	if err != nil {
 		customError, isCustomError := IsCustomError(err)
 		if isCustomError {
-			return !customError.IsValidationError() // condition may be updated
+			return customError.Code == http.StatusInternalServerError
 		}
 		return true
 	}

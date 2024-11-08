@@ -20,9 +20,7 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 	payload := new(model.SendMultimediaMessageRequest)
 	err = payload_util.BodyParser(ctx, payload)
 	if err != nil {
-		if error_util.IsRealError(err) {
-			slog.ErrorContext(context, "Failed to parse RegisterRequest", slog.String(entity.Error, err.Error()))
-		}
+		slog.ErrorContext(context, "Failed to parse RegisterRequest", slog.String(entity.Error, err.Error()))
 		return
 	}
 
@@ -79,9 +77,7 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 
 	err = a.app.SendMultimediaMessage(context, payload.ToEntity())
 	if err != nil {
-		if error_util.IsRealError(err) {
-			slog.ErrorContext(context, "Failed to send multimedia message", slog.String(entity.Error, err.Error()))
-		}
+		slog.ErrorContext(context, "Failed to send multimedia message", slog.String(entity.Error, err.Error()))
 		return err
 	}
 

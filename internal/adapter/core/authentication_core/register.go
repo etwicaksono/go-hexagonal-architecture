@@ -5,14 +5,14 @@ import (
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
 func (a authenticationCore) Register(ctx context.Context, request entity.RegisterRequest) (err error) {
 	// Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
+	hashedPassword, err := utils.PasswordGenerate(request.Password)
 	if err != nil {
 		return errors2.ErrFailedToHashPassword
 	}
@@ -34,7 +34,7 @@ func (a authenticationCore) Register(ctx context.Context, request entity.Registe
 		Email:     request.Email,
 		Name:      request.Name,
 		Username:  request.Username,
-		Password:  string(hashedPassword),
+		Password:  hashedPassword,
 		Active:    true,
 		CreatedAt: time.Now(),
 		CreatedBy: request.Username,

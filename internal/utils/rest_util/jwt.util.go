@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func Generate(payload model.TokenPayload) model.TokenGenerated {
+func Generate(payload model.TokenPayload) (generatedToken model.TokenGenerated, err error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp":       payload.Expiration.Unix(),
 		"accessKey": payload.AccessKey,
@@ -20,13 +20,13 @@ func Generate(payload model.TokenPayload) model.TokenGenerated {
 
 	if err != nil {
 		slog.Error(fmt.Sprint("Error from jwt.Generate : ", err.Error()))
-		panic(err)
+		return
 	}
 
 	return model.TokenGenerated{
 		Token:     token,
 		ExpiredAt: payload.Expiration,
-	}
+	}, nil
 }
 
 func parse(tokenKey string, jwtToken string) (*jwt.Token, error) {
