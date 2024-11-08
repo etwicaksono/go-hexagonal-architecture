@@ -7,7 +7,6 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"log/slog"
 	"time"
 )
@@ -33,20 +32,21 @@ func (a authenticationCore) Login(ctx context.Context, request entity.LoginReque
 		return
 	}
 
-	additionalDuration, err := time.ParseDuration(a.config.App.JwtExpiration)
+	additionalDuration, err := time.ParseDuration(a.config.App.JwtTokenExpiration)
 	if err != nil {
 		return
 	}
 	expiredAt := time.Now().Add(additionalDuration)
-	generatedJwt, err := rest_util.Generate(model.TokenPayload{
+	generatedJwt, err := a.jwt.GenerateJwtToken(model.TokenPayload{
 		AccessKey:  accessKey,
 		TokenKey:   a.config.App.JwtTokenKey,
 		Expiration: expiredAt,
 	})
-
 	if err != nil {
 		return
 	}
+
+	// TODO: save access key to redis
 
 	return generatedJwt.ToEntity(), nil
 }

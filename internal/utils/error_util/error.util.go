@@ -76,6 +76,19 @@ func Error400(msg string) *CustomError {
 		SetErrorType(BAD_REQUEST_ERROR).
 		SetMessage(msg)
 }
+func Error401(msg string) *CustomError {
+	return NewCustomError().
+		SetCode(http.StatusUnauthorized).
+		SetErrorType(UNAUTHORIZED_ERROR).
+		SetMessage(msg)
+}
+func Error401WithField(msg string, errorField fiber.Map) *CustomError {
+	return NewCustomError().
+		SetCode(http.StatusUnauthorized).
+		SetErrorType(UNAUTHORIZED_ERROR).
+		SetMessage(msg).
+		SetFields(errorField)
+}
 func Error500(msg string) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusInternalServerError).

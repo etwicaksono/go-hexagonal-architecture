@@ -17,11 +17,13 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/authentication_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_handler"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
 	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/user_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -37,9 +39,11 @@ func LoggerInit() error {
 
 func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	configConfig := config.LoadConfig()
+	jwt := rest_util.NewJwt(configConfig)
+	middlewareMiddleware := middleware.NewMiddleware(jwt)
 	docsHandler := docs_handler.NewDocumentationHandler(ctx, configConfig)
 	userDbInterface := user_mongo.NewUserMongo(configConfig, mongoClient)
-	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig)
+	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig, jwt)
 	validate := validatorProvider()
 	authenticationAppInterface := authentication_app.NewAuthenticationApp(authenticationCoreInterface, validate)
 	authenticationHandler := authentication_handler.NewAuthenticationRestHandler(authenticationAppInterface)
@@ -48,7 +52,7 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	exampleMessageCoreInterface := example_message_core.NewExampleMessageCore(exampleMessageDbInterface, minioInterface)
 	exampleMessageAppInterface := example_message_app.NewExampleMessageApp(exampleMessageCoreInterface, validate)
 	exampleMessageHandler := example_message_handler.NewExampleRestHandler(exampleMessageAppInterface)
-	router := rest.NewRouter(docsHandler, authenticationHandler, exampleMessageHandler)
+	router := rest.NewRouter(middlewareMiddleware, docsHandler, authenticationHandler, exampleMessageHandler)
 	app := rest.NewRestApp(configConfig, router)
 	return app
 }
@@ -70,9 +74,9 @@ var configSet = wire.NewSet(config.LoadConfig)
 
 var validatorSet = wire.NewSet(validatorProvider)
 
-var routerSet = wire.NewSet(example_message_handler.NewExampleRestHandler, docs_handler.NewDocumentationHandler, rest.NewRouter)
+var routerSet = wire.NewSet(middleware.NewMiddleware, example_message_handler.NewExampleRestHandler, docs_handler.NewDocumentationHandler, rest.NewRouter)
 
-var authenticationSet = wire.NewSet(user_mongo.NewUserMongo, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
+var authenticationSet = wire.NewSet(user_mongo.NewUserMongo, rest_util.NewJwt, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
 
 var exampleSet = wire.NewSet(
 	configSet, minio.MinioProvider, validatorSet, mongo2.NewMongo, example_message_mongo.NewExampleMessageMongo, example_message_app.NewExampleMessageApp, example_message_core.NewExampleMessageCore,

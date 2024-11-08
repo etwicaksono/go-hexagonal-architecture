@@ -41,8 +41,8 @@ type TokenPayload struct {
 }
 
 type TokenGenerated struct {
-	Token     string
-	ExpiredAt time.Time
+	Token     string    `json:"token"`
+	ExpiredAt time.Time `json:"expired_at"`
 }
 
 func (t TokenGenerated) ToEntity() entity.TokenGenerated {

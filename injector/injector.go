@@ -10,10 +10,12 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/authentication_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_handler"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
 	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/user_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
@@ -29,6 +31,7 @@ import (
 var configSet = wire.NewSet(config.LoadConfig)
 var validatorSet = wire.NewSet(validatorProvider)
 var routerSet = wire.NewSet(
+	middleware.NewMiddleware,
 	example_message_handler.NewExampleRestHandler,
 	docs_handler.NewDocumentationHandler,
 	rest.NewRouter,
@@ -36,6 +39,7 @@ var routerSet = wire.NewSet(
 
 var authenticationSet = wire.NewSet(
 	user_mongo.NewUserMongo,
+	rest_util.NewJwt,
 	authentication_core.NewAuthenticationCore,
 	authentication_app.NewAuthenticationApp,
 	authentication_handler.NewAuthenticationRestHandler,
