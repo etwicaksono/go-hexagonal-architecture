@@ -3,7 +3,7 @@ package mongo
 import "go.mongodb.org/mongo-driver/mongo"
 
 type MongoInterface interface {
-	Connect() error
+	Connect() (err error)
 	Disconnect()
-	GetClient() *mongo.Client
+	GetClient() (mongoClient *mongo.Client)
 }

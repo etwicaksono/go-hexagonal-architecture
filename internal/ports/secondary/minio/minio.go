@@ -8,8 +8,8 @@ import (
 type MinioInterface interface {
 	Upload(ctx context.Context, data []byte, contentType string, filePath string) (result minio.UploadInfo, err error)
 	Remove(ctx context.Context, filePath string) (err error)
-	GetClient() *minio.Client
-	GetBucketName() string
-	GetEndpoint() string
-	IsUseSSL() bool
+	GetClient() (minioClient *minio.Client)
+	GetBucketName() (bucketName string)
+	GetEndpoint() (minioEndpoint string)
+	IsUseSSL() (isUseSSL bool)
 }

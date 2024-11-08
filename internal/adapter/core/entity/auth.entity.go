@@ -1,5 +1,7 @@
 package entity
 
+import "time"
+
 type RegisterRequest struct {
 	Email    string
 	Name     string
@@ -8,6 +10,11 @@ type RegisterRequest struct {
 }
 
 type LoginRequest struct {
-	Username string
+	Email    string
 	Password string
+}
+
+type TokenGenerated struct {
+	Token     string
+	ExpiredAt time.Time
 }

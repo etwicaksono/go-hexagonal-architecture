@@ -11,4 +11,5 @@ var (
 	ErrUsernameAlreadyUsed      = error_util.Error400("username already used")
 	ErrEmailMustBeInValidFormat = error_util.Error400("email must be in valid format")
 	ErrUserNotFound             = error_util.Error400("user not found")
+	ErrInternalServer           = error_util.Error500("internal server error")
 )

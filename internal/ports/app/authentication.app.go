@@ -6,8 +6,8 @@ import (
 )
 
 type AuthenticationAppInterface interface {
-	Register(ctx context.Context, request entity.RegisterRequest) error
-	Login(ctx context.Context, request entity.LoginRequest) (entity.UserAccess, error)
-	Logout(ctx context.Context) error
-	Refresh(ctx context.Context) (entity.UserAccess, error)
+	Register(ctx context.Context, request entity.RegisterRequest) (err error)
+	Login(ctx context.Context, request entity.LoginRequest) (result entity.TokenGenerated, err error)
+	Logout(ctx context.Context) (err error)
+	Refresh(ctx context.Context) (result entity.TokenGenerated, err error)
 }
