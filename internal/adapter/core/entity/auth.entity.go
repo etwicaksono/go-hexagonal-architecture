@@ -15,6 +15,8 @@ type LoginRequest struct {
 }
 
 type TokenGenerated struct {
-	Token     string
-	ExpiredAt time.Time
+	AccessToken      string
+	ExpiredAt        time.Time
+	RefreshToken     string
+	RefreshableUntil time.Time
 }

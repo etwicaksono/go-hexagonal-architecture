@@ -33,16 +33,11 @@ func FromLoginRequestEntity(r entity.LoginRequest) LoginRequest {
 	return LoginRequest(r)
 }
 
-// TokenPayload defines the payload for the token
-type TokenPayload struct {
-	AccessKey  string
-	TokenKey   string
-	Expiration time.Time
-}
-
 type TokenGenerated struct {
-	Token     string    `json:"token"`
-	ExpiredAt time.Time `json:"expired_at"`
+	AccessToken      string    `json:"access_token"`
+	ExpiredAt        time.Time `json:"expired_at"`
+	RefreshToken     string    `json:"refresh_token"`
+	RefreshableUntil time.Time `json:"refreshable_until"`
 }
 
 func (t TokenGenerated) ToEntity() entity.TokenGenerated {
@@ -56,4 +51,5 @@ func FromTokenGeneratedEntity(t entity.TokenGenerated) TokenGenerated {
 type TokenReversed struct {
 	AccessKey string
 	ExpiredAt time.Time
+	TokenType string
 }

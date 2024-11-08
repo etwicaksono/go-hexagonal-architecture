@@ -40,6 +40,7 @@ type AppConfig struct {
 	LogLevel             string
 	JwtTokenKey          string
 	JwtTokenExpiration   string
+	JwtTokenRefresh      string
 }
 
 type DbConfig struct {
@@ -119,6 +120,7 @@ func LoadConfig() Config {
 			LogLevel:             vpr.GetString("APP_LOG_LEVEL"),
 			JwtTokenKey:          vpr.GetString("APP_JWT_TOKEN_KEY"),
 			JwtTokenExpiration:   vpr.GetString("APP_JWT_TOKEN_EXPIRATION"),
+			JwtTokenRefresh:      vpr.GetString("APP_JWT_TOKEN_REFRESH"),
 		},
 		Db: DbConfig{
 			Protocol:                 vpr.GetString("DB_PROTOCOL"),

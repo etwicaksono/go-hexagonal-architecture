@@ -1,7 +1,6 @@
 package rest_util
 
 import (
-	"errors"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
@@ -14,26 +13,51 @@ import (
 )
 
 const (
-	accessKey = "accessKey"
+	accessKey        = "accessKey"
+	accessTokenType  = "access"
+	refreshTokenType = "refresh"
 )
 
 type Jwt struct {
-	tokenKey string
+	tokenKey        string
+	tokenExpiration string
+	tokenRefresh    string
 }
 
 func NewJwt(config config.Config) *Jwt {
 	return &Jwt{
-		tokenKey: config.App.JwtTokenKey,
+		tokenKey:        config.App.JwtTokenKey,
+		tokenExpiration: config.App.JwtTokenExpiration,
+		tokenRefresh:    config.App.JwtTokenRefresh,
 	}
 }
 
-func (j *Jwt) GenerateJwtToken(payload model.TokenPayload) (generatedToken model.TokenGenerated, err error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp":       payload.Expiration.Unix(),
-		"accessKey": payload.AccessKey,
+func (j *Jwt) GenerateJwtToken(accessKey string) (generatedToken model.TokenGenerated, err error) {
+	// Generate the access token
+	accessTokenAdditionalDuration, err := time.ParseDuration(j.tokenExpiration)
+	if err != nil {
+		return
+	}
+	expiredAt := time.Now().Add(accessTokenAdditionalDuration)
+	accessKeyClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":       expiredAt.Unix(),
+		"accessKey": accessKey,
+		"type":      accessTokenType,
 	})
+	accessToken, err := accessKeyClaims.SignedString([]byte(j.tokenKey))
 
-	token, err := t.SignedString([]byte(payload.TokenKey))
+	// Generate the refresh token
+	refreshTokenAdditionalDuration, err := time.ParseDuration(j.tokenRefresh)
+	if err != nil {
+		return
+	}
+	refreshableUntil := time.Now().Add(refreshTokenAdditionalDuration)
+	refreshKeyClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":       refreshableUntil.Unix(),
+		"accessKey": accessKey,
+		"type":      refreshTokenType,
+	})
+	refreshToken, err := refreshKeyClaims.SignedString([]byte(j.tokenKey))
 
 	if err != nil {
 		slog.Error(fmt.Sprint("Error from jwt.GenerateJwtToken : ", err.Error()))
@@ -41,12 +65,14 @@ func (j *Jwt) GenerateJwtToken(payload model.TokenPayload) (generatedToken model
 	}
 
 	return model.TokenGenerated{
-		Token:     token,
-		ExpiredAt: payload.Expiration,
+		AccessToken:      accessToken,
+		ExpiredAt:        expiredAt,
+		RefreshToken:     refreshToken,
+		RefreshableUntil: refreshableUntil,
 	}, nil
 }
 
-func (j *Jwt) parseJwtToken(tokenKey string, jwtToken string) (*jwt.Token, error) {
+func (j *Jwt) parseJwtToken(jwtToken string) (*jwt.Token, error) {
 	// Parse takes the token string and a function for looking up the key. The latter is especially
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
 	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
@@ -59,19 +85,17 @@ func (j *Jwt) parseJwtToken(tokenKey string, jwtToken string) (*jwt.Token, error
 		}
 
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(tokenKey), nil
+		return []byte(j.tokenKey), nil
 	})
 }
 
 // Verify verifies the jwt token against the secret
-func (j *Jwt) reverseJwtToken(tokenKey string, jwtToken string) (*model.TokenReversed, error) {
+func (j *Jwt) reverseJwtToken(jwtToken string) (*model.TokenReversed, error) {
 	var expiredAt time.Time
-	parsed, err := j.parseJwtToken(tokenKey, jwtToken)
+	parsed, err := j.parseJwtToken(jwtToken)
 
 	if err != nil {
-		if !errors.Is(err, jwt.ErrTokenExpired) {
-			slog.Error(fmt.Sprint("Error from jwt.parseJwtToken : ", err.Error()))
-		}
+		slog.Error(fmt.Sprint("Error from jwt.parseJwtToken : ", err.Error()))
 		return nil, err
 	}
 
@@ -82,7 +106,13 @@ func (j *Jwt) reverseJwtToken(tokenKey string, jwtToken string) (*model.TokenRev
 		return nil, err
 	}
 
-	accessKey, ok := claims["accessKey"].(string)
+	typeParsed, ok := claims["type"].(string)
+	if !ok {
+		slog.Error("Error from jwt.reverseJwtToken when parsing accessKey")
+		return nil, errorsConst.ErrInternalServer
+	}
+
+	accessKeyParsed, ok := claims["accessKey"].(string)
 	if !ok {
 		slog.Error("Error from jwt.reverseJwtToken when parsing accessKey")
 		return nil, errorsConst.ErrInternalServer
@@ -98,8 +128,9 @@ func (j *Jwt) reverseJwtToken(tokenKey string, jwtToken string) (*model.TokenRev
 	}
 
 	return &model.TokenReversed{
-		AccessKey: accessKey,
+		AccessKey: accessKeyParsed,
 		ExpiredAt: expiredAt,
+		TokenType: typeParsed,
 	}, nil
 }
 
@@ -129,11 +160,13 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 	}
 
 	// Verify the token which is in the chunks
-	reversedToken, err := j.reverseJwtToken(j.tokenKey, chunks[1])
+	reversedToken, err := j.reverseJwtToken(chunks[1])
 	if err != nil {
-		if !errors.Is(err, jwt.ErrTokenExpired) {
-			slog.Error(fmt.Sprintln("Error on reverse jwt token : ", err.Error()))
-		}
+		slog.Error(fmt.Sprintln("Error on reverse jwt token : ", err.Error()))
+		return errorsConst.ErrUnauthorized
+	}
+
+	if reversedToken.TokenType != accessTokenType {
 		return errorsConst.ErrUnauthorized
 	}
 
@@ -141,6 +174,6 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 	return ctx.Next()
 }
 
-func GetJwtAccessKey(ctx *fiber.Ctx) string {
+func (j *Jwt) GetJwtAccessKey(ctx *fiber.Ctx) string {
 	return ctx.Locals(accessKey).(string)
 }

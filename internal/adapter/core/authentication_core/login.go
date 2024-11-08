@@ -4,11 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils"
 	"log/slog"
-	"time"
 )
 
 func (a authenticationCore) Login(ctx context.Context, request entity.LoginRequest) (result entity.TokenGenerated, err error) {
@@ -31,17 +29,7 @@ func (a authenticationCore) Login(ctx context.Context, request entity.LoginReque
 	if err != nil {
 		return
 	}
-
-	additionalDuration, err := time.ParseDuration(a.config.App.JwtTokenExpiration)
-	if err != nil {
-		return
-	}
-	expiredAt := time.Now().Add(additionalDuration)
-	generatedJwt, err := a.jwt.GenerateJwtToken(model.TokenPayload{
-		AccessKey:  accessKey,
-		TokenKey:   a.config.App.JwtTokenKey,
-		Expiration: expiredAt,
-	})
+	generatedJwt, err := a.jwt.GenerateJwtToken(accessKey)
 	if err != nil {
 		return
 	}
