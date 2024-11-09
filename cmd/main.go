@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"log/slog"
 	"os"
@@ -31,7 +31,7 @@ func main() {
 	/*
 	   Infrastructure initialization
 	*/
-	mongoDb := mongo.NewMongo(ctx, cfg) // TODO: adjust so it can use other database
+	mongoDb := infrastructure.NewMongo(ctx, cfg) // TODO: adjust so it can use other database
 	err = mongoDb.Connect()
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to connect to MongoDB", slog.String(entity.Error, err.Error()))
