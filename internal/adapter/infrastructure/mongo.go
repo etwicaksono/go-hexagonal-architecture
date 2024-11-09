@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
-	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/mongo"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/infrastructure"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log/slog"
@@ -34,7 +34,7 @@ type mongoConfig struct {
 func NewMongo(
 	ctx context.Context,
 	config config.Config,
-) mongo2.MongoInterface {
+) infrastructure.MongoInterface {
 	return &adapterMongo{
 		ctx: ctx,
 		connectionURL: fmt.Sprintf(
