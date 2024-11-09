@@ -13,9 +13,10 @@ var (
 	ErrEmailMustBeInValidFormat = error_util.Error400("email must be in valid format")
 	ErrUserNotFound             = error_util.Error400("user not found")
 	ErrInternalServer           = error_util.Error500("internal server error")
-	ErrInvalidLoginCredentials  = error_util.Error401WithField("invalid login credentials", fiber.Map{
+	ErrLoginCredentialInvalid   = error_util.Error401WithField("invalid login credentials", fiber.Map{
 		"username": "Invalid username or password",
 		"password": "Invalid username or password",
 	})
 	ErrUnauthorized = error_util.Error401("unauthorized")
+	ErrTokenInvalid = error_util.Error400("invalid token")
 )

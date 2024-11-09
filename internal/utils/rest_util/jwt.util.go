@@ -14,8 +14,8 @@ import (
 
 const (
 	accessKey        = "accessKey"
-	accessTokenType  = "access"
-	refreshTokenType = "refresh"
+	AccessTokenType  = "access"
+	RefreshTokenType = "refresh"
 )
 
 type Jwt struct {
@@ -42,7 +42,7 @@ func (j *Jwt) GenerateJwtToken(accessKey string) (generatedToken model.TokenGene
 	accessKeyClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp":       expiredAt.Unix(),
 		"accessKey": accessKey,
-		"type":      accessTokenType,
+		"type":      AccessTokenType,
 	})
 	accessToken, err := accessKeyClaims.SignedString([]byte(j.tokenKey))
 
@@ -55,7 +55,7 @@ func (j *Jwt) GenerateJwtToken(accessKey string) (generatedToken model.TokenGene
 	refreshKeyClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp":       refreshableUntil.Unix(),
 		"accessKey": accessKey,
-		"type":      refreshTokenType,
+		"type":      RefreshTokenType,
 	})
 	refreshToken, err := refreshKeyClaims.SignedString([]byte(j.tokenKey))
 
@@ -90,7 +90,7 @@ func (j *Jwt) parseJwtToken(jwtToken string) (*jwt.Token, error) {
 }
 
 // Verify verifies the jwt token against the secret
-func (j *Jwt) reverseJwtToken(jwtToken string) (*model.TokenReversed, error) {
+func (j *Jwt) ReverseJwtToken(jwtToken string) (*model.TokenReversed, error) {
 	var expiredAt time.Time
 	parsed, err := j.parseJwtToken(jwtToken)
 
@@ -102,19 +102,19 @@ func (j *Jwt) reverseJwtToken(jwtToken string) (*model.TokenReversed, error) {
 	// Parsing token claims
 	claims, ok := parsed.Claims.(jwt.MapClaims)
 	if !ok {
-		slog.Error("Error from jwt.reverseJwtToken on parsed.Claims")
+		slog.Error("Error from jwt.ReverseJwtToken on parsed.Claims")
 		return nil, err
 	}
 
 	typeParsed, ok := claims["type"].(string)
 	if !ok {
-		slog.Error("Error from jwt.reverseJwtToken when parsing accessKey")
+		slog.Error("Error from jwt.ReverseJwtToken when parsing accessKey")
 		return nil, errorsConst.ErrInternalServer
 	}
 
 	accessKeyParsed, ok := claims["accessKey"].(string)
 	if !ok {
-		slog.Error("Error from jwt.reverseJwtToken when parsing accessKey")
+		slog.Error("Error from jwt.ReverseJwtToken when parsing accessKey")
 		return nil, errorsConst.ErrInternalServer
 	}
 
@@ -123,7 +123,7 @@ func (j *Jwt) reverseJwtToken(jwtToken string) (*model.TokenReversed, error) {
 		seconds := int64(expiredAtFloat)
 		expiredAt = time.Unix(seconds, 0)
 	} else {
-		slog.Error("Error from jwt.reverseJwtToken when parsing exp")
+		slog.Error("Error from jwt.ReverseJwtToken when parsing exp")
 		return nil, errorsConst.ErrInternalServer
 	}
 
@@ -160,13 +160,13 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 	}
 
 	// Verify the token which is in the chunks
-	reversedToken, err := j.reverseJwtToken(chunks[1])
+	reversedToken, err := j.ReverseJwtToken(chunks[1])
 	if err != nil {
 		slog.Error(fmt.Sprintln("Error on reverse jwt token : ", err.Error()))
 		return errorsConst.ErrUnauthorized
 	}
 
-	if reversedToken.TokenType != accessTokenType {
+	if reversedToken.TokenType != AccessTokenType {
 		return errorsConst.ErrUnauthorized
 	}
 

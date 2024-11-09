@@ -46,7 +46,7 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig, jwt)
 	validate := validatorProvider()
 	authenticationAppInterface := authentication_app.NewAuthenticationApp(authenticationCoreInterface, validate)
-	authenticationHandler := authentication_handler.NewAuthenticationRestHandler(authenticationAppInterface)
+	authenticationHandler := authentication_handler.NewAuthenticationRestHandler(authenticationAppInterface, jwt)
 	exampleMessageDbInterface := example_message_mongo.NewExampleMessageMongo(configConfig, mongoClient)
 	minioInterface := minio.MinioProvider(ctx, configConfig)
 	exampleMessageCoreInterface := example_message_core.NewExampleMessageCore(exampleMessageDbInterface, minioInterface)

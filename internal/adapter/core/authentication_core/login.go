@@ -22,7 +22,7 @@ func (a authenticationCore) Login(ctx context.Context, request entity.LoginReque
 
 	// verify password
 	if err = utils.PasswordVerify(user.Password, request.Password); err != nil {
-		return entity.TokenGenerated{}, errors2.ErrInvalidLoginCredentials
+		return entity.TokenGenerated{}, errors2.ErrLoginCredentialInvalid
 	}
 
 	accessKey, err := utils.PasswordGenerate(user.ID)

@@ -42,7 +42,7 @@ func SetRoute(app *fiber.App, router Router) {
 	auth := app.Group("/auth")
 	auth.Post("/register", router.authentication.Register)
 	auth.Post("/login", router.authentication.Login)
-	auth.Post("/logout", router.authentication.Logout)
+	auth.Post("/logout", router.authentication.Logout, jwtMiddleware)
 	auth.Post("/refresh", router.authentication.Refresh)
 
 	// Example

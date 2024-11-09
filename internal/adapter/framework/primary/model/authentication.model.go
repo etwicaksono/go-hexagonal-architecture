@@ -53,3 +53,7 @@ type TokenReversed struct {
 	ExpiredAt time.Time
 	TokenType string
 }
+
+type RefreshTokenRequest struct {
+	Token string `json:"refresh_token" validate:"required"`
+}
