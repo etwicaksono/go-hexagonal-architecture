@@ -34,7 +34,7 @@ func (a authenticationCore) Login(ctx context.Context, request entity.LoginReque
 		return
 	}
 
-	// TODO: save access key to redis
+	// TODO: save access key to cache
 
 	return generatedJwt.ToEntity(), nil
 }

@@ -13,7 +13,7 @@ func (a authenticationCore) Refresh(ctx context.Context, accessKey string) (resu
 		return
 	}
 
-	// TODO: save access key to redis
+	// TODO: save access key to cache
 
 	return generatedJwt.ToEntity(), nil
 }

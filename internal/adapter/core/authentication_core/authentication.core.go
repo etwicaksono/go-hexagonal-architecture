@@ -3,7 +3,7 @@ package authentication_core
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/core"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/repository/db"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/db"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 )
 

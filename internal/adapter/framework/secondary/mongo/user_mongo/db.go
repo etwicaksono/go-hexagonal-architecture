@@ -2,7 +2,7 @@ package user_mongo
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/repository/db"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/db"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
