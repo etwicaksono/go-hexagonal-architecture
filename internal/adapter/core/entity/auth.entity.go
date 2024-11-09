@@ -20,3 +20,7 @@ type TokenGenerated struct {
 	RefreshToken     string
 	RefreshableUntil time.Time
 }
+
+type RefreshTokenRequest struct {
+	Token string
+}

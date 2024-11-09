@@ -57,3 +57,11 @@ type TokenReversed struct {
 type RefreshTokenRequest struct {
 	Token string `json:"refresh_token" validate:"required"`
 }
+
+func (t RefreshTokenRequest) ToEntity() entity.RefreshTokenRequest {
+	return entity.RefreshTokenRequest(t)
+}
+
+func FromRefreshTokenRequestEntity(t entity.RefreshTokenRequest) RefreshTokenRequest {
+	return RefreshTokenRequest(t)
+}
