@@ -3,7 +3,7 @@ package middleware
 import (
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
-	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 )
 

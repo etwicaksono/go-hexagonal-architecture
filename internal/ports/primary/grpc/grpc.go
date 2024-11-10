@@ -5,6 +5,6 @@ import (
 )
 
 type GrpcHandlerInterface interface {
-	Run() error
+	Run() (err error)
 	example.ExampleServiceServer
 }

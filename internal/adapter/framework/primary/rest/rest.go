@@ -1,29 +1,24 @@
 package rest
 
 import (
-	"context"
 	"errors"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
-	utils2 "github.com/etwicaksono/go-hexagonal-architecture/utils/error_util"
-	"github.com/etwicaksono/go-hexagonal-architecture/utils/rest_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	utils2 "github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/gofiber/fiber/v2/utils"
-	"log/slog"
 	"os"
 	"path/filepath"
 
-	"github.com/etwicaksono/go-hexagonal-architecture/config"
-	"github.com/etwicaksono/go-hexagonal-architecture/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
 )
 
 func NewRestApp(
-	ctx context.Context,
 	cfg config.Config,
-	route router.Router,
+	route Router,
 ) *fiber.App {
 	// Get the current working directory
 	wd, err := os.Getwd()
@@ -32,7 +27,7 @@ func NewRestApp(
 	}
 
 	// Use absolute path for the templates directory
-	templatePath := filepath.Join(wd, "/docs/swagger-ui")
+	templatePath := filepath.Join(wd, "/docs_handler/swagger-ui")
 	engine := html.New(templatePath, ".gohtml")
 
 	fiberApp := fiber.New(fiber.Config{
@@ -45,23 +40,15 @@ func NewRestApp(
 			// Status code defaults to 500
 			code := fiber.StatusInternalServerError
 			status := fiber.ErrInternalServerError.Message
-			message := entity.Error
+			message := err.Error()
 			errorMap := map[string]any{}
-
-			if cfg.App.Env != "production" {
-				message = err.Error()
-			}
 
 			// Retrieve the custom status code if it's a *fiber.Error
 			var fiberError *fiber.Error
-			slog.Info("Is fiber error", slog.Bool("is fiber error", errors.As(err, &fiberError)))
 			if errors.As(err, &fiberError) {
 				code = fiberError.Code
 				status = utils.StatusMessage(fiberError.Code)
-
-				if cfg.App.Env != "production" {
-					message = fiberError.Error()
-				}
+				message = fiberError.Error()
 			}
 
 			// Retrieve the custom status code if it's an utils2.CustomError
@@ -70,10 +57,7 @@ func NewRestApp(
 				code = customError.Code
 				status = utils.StatusMessage(customError.Code)
 				errorMap = customError.Fields
-
-				if cfg.App.Env != "production" {
-					message = customError.Error()
-				}
+				message = customError.Error()
 			}
 
 			return rest_util.ResponseGeneral(ctx, code, model.Response[any]{
@@ -96,12 +80,12 @@ func NewRestApp(
 	middleware.UnprocessableEntityMiddleware(fiberApp)
 
 	// SetRoute
-	router.SetRoute(fiberApp, route)
+	SetRoute(fiberApp, route)
 
 	// Static files
-	docPath := filepath.Join(wd, "/docs")
+	docPath := filepath.Join(wd, "/docs_handler")
 	staticFiles := map[string]string{
-		"/docs": docPath,
+		"/docs_handler": docPath,
 	}
 	for key, value := range staticFiles {
 		fiberApp.Static(key, value)

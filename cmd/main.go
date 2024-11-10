@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"log/slog"
 	"os"
 	"os/signal"
 
-	"github.com/etwicaksono/go-hexagonal-architecture/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/injector"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 )
@@ -31,22 +31,26 @@ func main() {
 	/*
 	   Infrastructure initialization
 	*/
-	mongo := mongo.NewMongo(ctx, cfg)
-	err = mongo.Connect()
+	mongoDb := infrastructure.NewMongo(ctx, cfg) // TODO: adjust so it can use other database
+	err = mongoDb.Connect()
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to connect to MongoDB", slog.String(entity.Error, err.Error()))
 		return
 	}
-	defer mongo.Disconnect()
+	defer mongoDb.Disconnect()
+
+	redis := infrastructure.NewRedis(ctx, cfg)
+	redis.Connect()
+	defer redis.Disconnect()
 
 	/*
 	   Server initialization
 	*/
 	// Rest app initialization
-	restApp := injector.RestProvider(ctx, mongo.GetClient())
+	restApp := injector.RestProvider(ctx, mongoDb.GetClient(), redis.GetClient())
 
 	// Grpc app initialization
-	grpcHandler := injector.GrpcHandlerProvider(ctx, mongo.GetClient())
+	grpcHandler := injector.GrpcHandlerProvider(ctx, mongoDb.GetClient())
 	grpcApp := grpc.NewGrpcAdapter(
 		ctx,
 		fmt.Sprintf("%s:%d", cfg.App.GrpcHost, cfg.App.GrpcPort),

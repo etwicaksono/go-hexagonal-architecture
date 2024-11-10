@@ -1,0 +1,28 @@
+package docs_handler
+
+import (
+	"fmt"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"log/slog"
+
+	"github.com/gofiber/fiber/v2"
+)
+
+func (a DocsHandler) Swagger(ctx *fiber.Ctx) (err error) {
+	url := a.config.App.Host
+	swaggerUiUrl := fmt.Sprintf("%s/docs_handler/swagger-ui", url)
+	swaggerJsonUrl := fmt.Sprintf("%s/docs_handler/swagger.yaml", url)
+
+	err = ctx.Render("index", fiber.Map{
+		"title":          "Example API",
+		"swaggerUiUrl":   swaggerUiUrl,
+		"swaggerJsonUrl": swaggerJsonUrl,
+		"deepLinking":    a.config.Swagger.DeepLinking,
+		"docExpansion":   a.config.Swagger.DocExpansion,
+	})
+	if err != nil {
+		slog.ErrorContext(a.ctx, "Failed to render swagger-ui", slog.String(entity.Error, err.Error()))
+	}
+
+	return err
+}
