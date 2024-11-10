@@ -1,13 +1,16 @@
 package rest_util
 
 import (
+	"errors"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/cache"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/redis/go-redis/v9"
 	"log/slog"
 	"strings"
 	"time"
@@ -23,13 +26,18 @@ type Jwt struct {
 	tokenKey        string
 	tokenExpiration string
 	tokenRefresh    string
+	cache           cache.CacheInterface
 }
 
-func NewJwt(config config.Config) *Jwt {
+func NewJwt(
+	config config.Config,
+	cache cache.CacheInterface,
+) *Jwt {
 	return &Jwt{
 		tokenKey:        config.App.JwtTokenKey,
 		tokenExpiration: config.App.JwtTokenExpiration,
 		tokenRefresh:    config.App.JwtTokenRefresh,
+		cache:           cache,
 	}
 }
 
@@ -171,6 +179,16 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 
 	if reversedToken.TokenType != AccessTokenType {
 		return errorsConst.ErrUnauthorized
+	}
+
+	// Check if token is within blacklist
+	_, err = j.cache.GetAuthToken(ctx.UserContext(), fmt.Sprintf("%s:%s", entity.BlackListedTokenRedisPrefix, reversedToken.AccessKey))
+	if err == nil {
+		return errorsConst.ErrUnauthorized
+	} else {
+		if !errors.Is(redis.Nil, err) {
+			slog.ErrorContext(ctx.UserContext(), "Failed to get auth token from redis", slog.String("error", err.Error()))
+		}
 	}
 
 	ctx.Locals(accessKey, reversedToken)

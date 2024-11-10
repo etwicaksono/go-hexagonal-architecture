@@ -41,11 +41,11 @@ func LoggerInit() error {
 
 func RestProvider(ctx context.Context, mongoClient *mongo.Client, redisClient *redis.Client) *fiber.App {
 	configConfig := config.LoadConfig()
-	jwt := rest_util.NewJwt(configConfig)
+	cacheInterface := cache.NewCache(redisClient)
+	jwt := rest_util.NewJwt(configConfig, cacheInterface)
 	middlewareMiddleware := middleware.NewMiddleware(jwt)
 	docsHandler := docs_handler.NewDocumentationHandler(ctx, configConfig)
 	userDbInterface := user_mongo.NewUserMongo(configConfig, mongoClient)
-	cacheInterface := cache.NewCache(redisClient)
 	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig, jwt, cacheInterface)
 	validate := validatorProvider()
 	authenticationAppInterface := authentication_app.NewAuthenticationApp(authenticationCoreInterface, validate, jwt)
