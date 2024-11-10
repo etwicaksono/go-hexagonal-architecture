@@ -16,6 +16,7 @@ type Config struct {
 	Db      DbConfig
 	Swagger SwaggerConfig
 	Minio   MinioConfig
+	Redis   RedisConfig
 }
 
 type AppConfig struct {
@@ -68,6 +69,14 @@ type MinioConfig struct {
 	SecretAccessKey string
 	UseSSL          bool
 	BucketName      string
+}
+
+type RedisConfig struct {
+	Db       int
+	Host     string
+	Port     int
+	Username string
+	Password string
 }
 
 var configInstance *Config
@@ -145,6 +154,13 @@ func LoadConfig() Config {
 			SecretAccessKey: vpr.GetString("MINIO_SECRET_ACCESS_KEY"),
 			UseSSL:          vpr.GetBool("MINIO_USE_SSL"),
 			BucketName:      vpr.GetString("MINIO_BUCKET_NAME"),
+		},
+		Redis: RedisConfig{
+			Db:       vpr.GetInt("REDIS_DB"),
+			Host:     vpr.GetString("REDIS_HOST"),
+			Port:     vpr.GetInt("REDIS_PORT"),
+			Username: vpr.GetString("REDIS_USERNAME"),
+			Password: vpr.GetString("REDIS_PASSWORD"),
 		},
 	}
 

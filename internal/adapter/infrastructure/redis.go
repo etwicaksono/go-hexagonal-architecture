@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/infrastructure"
 	"github.com/redis/go-redis/v9"
 	"log/slog"
@@ -13,22 +14,14 @@ type adapterRedis struct {
 	ctx           context.Context
 	client        *redis.Client
 	connectionURL string
-	config        RedisConfig
+	config        config.RedisConfig
 }
 
-type RedisConfig struct {
-	Db       int
-	Host     string
-	Port     int
-	Username string
-	Password string
-}
-
-func NewRedis(ctx context.Context, config RedisConfig) infrastructure.RedisInterface {
+func NewRedis(ctx context.Context, config config.Config) infrastructure.RedisInterface {
 	return &adapterRedis{
 		ctx:           ctx,
-		connectionURL: fmt.Sprintf("%s:%d", config.Host, config.Port),
-		config:        config,
+		connectionURL: fmt.Sprintf("%s:%d", config.Redis.Host, config.Redis.Port),
+		config:        config.Redis,
 	}
 }
 

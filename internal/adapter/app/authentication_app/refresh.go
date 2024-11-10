@@ -11,7 +11,7 @@ import (
 )
 
 func (a authenticationApp) Refresh(ctx context.Context, request entity.RefreshTokenRequest) (result entity.TokenGenerated, err error) {
-	err = validation_util.ValidateStruct(a.validator, model.FromRefreshTokenRequestEntity(request))
+	err = validation_util.ValidateStruct(a.validator, model.FromAuthTokenRequestEntity(request))
 	if err != nil {
 		return
 	}

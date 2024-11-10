@@ -17,6 +17,7 @@ var (
 		"username": "Invalid username or password",
 		"password": "Invalid username or password",
 	})
-	ErrUnauthorized = error_util.Error401("unauthorized")
-	ErrTokenInvalid = error_util.Error400("invalid token")
+	ErrUnauthorized           = error_util.Error401("unauthorized")
+	ErrTokenInvalid           = error_util.Error400("invalid token")
+	ErrTokenClaimsParseFailed = error_util.Error400("Could not parse token claims")
 )

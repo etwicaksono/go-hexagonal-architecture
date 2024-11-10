@@ -2,6 +2,7 @@ package rest_util
 
 import (
 	"fmt"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
@@ -90,7 +91,7 @@ func (j *Jwt) parseJwtToken(jwtToken string) (*jwt.Token, error) {
 }
 
 // Verify verifies the jwt token against the secret
-func (j *Jwt) ReverseJwtToken(jwtToken string) (*model.TokenReversed, error) {
+func (j *Jwt) ReverseJwtToken(jwtToken string) (*entity.AuthToken, error) {
 	var expiredAt time.Time
 	parsed, err := j.parseJwtToken(jwtToken)
 
@@ -127,7 +128,7 @@ func (j *Jwt) ReverseJwtToken(jwtToken string) (*model.TokenReversed, error) {
 		return nil, errorsConst.ErrInternalServer
 	}
 
-	return &model.TokenReversed{
+	return &entity.AuthToken{
 		AccessKey: accessKeyParsed,
 		ExpiredAt: expiredAt,
 		TokenType: typeParsed,
@@ -170,10 +171,14 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 		return errorsConst.ErrUnauthorized
 	}
 
-	ctx.Locals(accessKey, reversedToken.AccessKey)
+	ctx.Locals(accessKey, reversedToken)
 	return ctx.Next()
 }
 
-func (j *Jwt) GetJwtAccessKey(ctx *fiber.Ctx) string {
-	return ctx.Locals(accessKey).(string)
+func (j *Jwt) GetJwtAuthToken(ctx *fiber.Ctx) (authToken entity.AuthToken, err error) {
+	authToken, ok := ctx.Locals(accessKey).(entity.AuthToken)
+	if !ok {
+		return authToken, errorsConst.ErrTokenClaimsParseFailed
+	}
+	return
 }

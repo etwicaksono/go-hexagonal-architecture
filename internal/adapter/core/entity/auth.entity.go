@@ -24,3 +24,9 @@ type TokenGenerated struct {
 type RefreshTokenRequest struct {
 	Token string
 }
+
+type AuthToken struct {
+	AccessKey string
+	ExpiredAt time.Time
+	TokenType string
+}

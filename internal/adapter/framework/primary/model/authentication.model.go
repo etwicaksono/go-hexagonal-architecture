@@ -48,12 +48,6 @@ func FromTokenGeneratedEntity(t entity.TokenGenerated) TokenGenerated {
 	return TokenGenerated(t)
 }
 
-type TokenReversed struct {
-	AccessKey string
-	ExpiredAt time.Time
-	TokenType string
-}
-
 type RefreshTokenRequest struct {
 	Token string `json:"refresh_token" validate:"required"`
 }
@@ -62,6 +56,6 @@ func (t RefreshTokenRequest) ToEntity() entity.RefreshTokenRequest {
 	return entity.RefreshTokenRequest(t)
 }
 
-func FromRefreshTokenRequestEntity(t entity.RefreshTokenRequest) RefreshTokenRequest {
+func FromAuthTokenRequestEntity(t entity.RefreshTokenRequest) RefreshTokenRequest {
 	return RefreshTokenRequest(t)
 }
