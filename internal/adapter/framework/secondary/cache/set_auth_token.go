@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-func (cache redisCache) SetToken(ctx context.Context, tokenKey string, token model.TokenData) (err error) {
+func (cache redisCache) SetAuthToken(ctx context.Context, tokenKey string, token model.TokenData) (err error) {
 	tokenByte, err := json.Marshal(token)
 	if err != nil {
-		slog.ErrorContext(ctx, "failed marshal token", slog.String("error", err.Error()))
+		slog.ErrorContext(ctx, "failed marshal auth token", slog.String("error", err.Error()))
 		return
 	}
 
@@ -19,7 +19,7 @@ func (cache redisCache) SetToken(ctx context.Context, tokenKey string, token mod
 
 	err = cache.Client.Set(ctx, tokenKey, tokenByte, expiredAt).Err()
 	if err != nil {
-		slog.ErrorContext(ctx, "failed set token from redis", slog.String("error", err.Error()))
+		slog.ErrorContext(ctx, "failed set auth token from redis", slog.String("error", err.Error()))
 		return
 	}
 

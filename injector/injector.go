@@ -11,9 +11,10 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/user_mongo"
-	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -38,6 +39,8 @@ var routerSet = wire.NewSet(
 )
 
 var authenticationSet = wire.NewSet(
+	infrastructure.NewRedis,
+	cache.NewCache,
 	user_mongo.NewUserMongo,
 	rest_util.NewJwt,
 	authentication_core.NewAuthenticationCore,
@@ -48,7 +51,7 @@ var exampleSet = wire.NewSet(
 	configSet,
 	minio.MinioProvider,
 	validatorSet,
-	mongo2.NewMongo,
+	infrastructure.NewMongo,
 	example_message_mongo.NewExampleMessageMongo,
 	example_message_app.NewExampleMessageApp,
 	example_message_core.NewExampleMessageCore,

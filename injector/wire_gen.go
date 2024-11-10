@@ -18,10 +18,11 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/user_mongo"
-	mongo2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
@@ -43,10 +44,12 @@ func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
 	middlewareMiddleware := middleware.NewMiddleware(jwt)
 	docsHandler := docs_handler.NewDocumentationHandler(ctx, configConfig)
 	userDbInterface := user_mongo.NewUserMongo(configConfig, mongoClient)
-	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig, jwt)
+	redisInterface := infrastructure.NewRedis(ctx, configConfig)
+	cacheInterface := cache.NewCache(redisInterface)
+	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig, jwt, cacheInterface)
 	validate := validatorProvider()
 	authenticationAppInterface := authentication_app.NewAuthenticationApp(authenticationCoreInterface, validate, jwt)
-	authenticationHandler := authentication_handler.NewAuthenticationRestHandler(authenticationAppInterface)
+	authenticationHandler := authentication_handler.NewAuthenticationRestHandler(authenticationAppInterface, jwt)
 	exampleMessageDbInterface := example_message_mongo.NewExampleMessageMongo(configConfig, mongoClient)
 	minioInterface := minio.MinioProvider(ctx, configConfig)
 	exampleMessageCoreInterface := example_message_core.NewExampleMessageCore(exampleMessageDbInterface, minioInterface)
@@ -76,8 +79,8 @@ var validatorSet = wire.NewSet(validatorProvider)
 
 var routerSet = wire.NewSet(middleware.NewMiddleware, example_message_handler.NewExampleRestHandler, docs_handler.NewDocumentationHandler, rest.NewRouter)
 
-var authenticationSet = wire.NewSet(user_mongo.NewUserMongo, rest_util.NewJwt, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
+var authenticationSet = wire.NewSet(infrastructure.NewRedis, cache.NewCache, user_mongo.NewUserMongo, rest_util.NewJwt, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
 
 var exampleSet = wire.NewSet(
-	configSet, minio.MinioProvider, validatorSet, mongo2.NewMongo, example_message_mongo.NewExampleMessageMongo, example_message_app.NewExampleMessageApp, example_message_core.NewExampleMessageCore,
+	configSet, minio.MinioProvider, validatorSet, infrastructure.NewMongo, example_message_mongo.NewExampleMessageMongo, example_message_app.NewExampleMessageApp, example_message_core.NewExampleMessageCore,
 )

@@ -10,13 +10,13 @@ import (
 func (cache redisCache) GetAuthToken(ctx context.Context, tokenKey string) (token model.TokenData, err error) {
 	result, err := cache.Client.Get(ctx, tokenKey).Bytes()
 	if err != nil {
-		slog.ErrorContext(ctx, "failed get token from redis", slog.String("error", err.Error()))
+		slog.ErrorContext(ctx, "failed get auth token from redis", slog.String("error", err.Error()))
 		return
 	}
 
 	err = json.Unmarshal(result, &token)
 	if err != nil {
-		slog.ErrorContext(ctx, "failed unmarshal token", slog.String("err", err.Error()))
+		slog.ErrorContext(ctx, "failed unmarshal auth token", slog.String("err", err.Error()))
 		return
 	}
 

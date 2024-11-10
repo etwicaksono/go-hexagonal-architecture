@@ -42,6 +42,7 @@ func (j *Jwt) GenerateJwtToken(accessKey string) (generatedToken model.TokenGene
 	expiredAt := time.Now().Add(accessTokenAdditionalDuration)
 	accessKeyClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp":       expiredAt.Unix(),
+		"iat":       time.Now().Unix(),
 		"accessKey": accessKey,
 		"type":      AccessTokenType,
 	})
@@ -55,6 +56,7 @@ func (j *Jwt) GenerateJwtToken(accessKey string) (generatedToken model.TokenGene
 	refreshableUntil := time.Now().Add(refreshTokenAdditionalDuration)
 	refreshKeyClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp":       refreshableUntil.Unix(),
+		"iat":       time.Now().Unix(),
 		"accessKey": accessKey,
 		"type":      RefreshTokenType,
 	})

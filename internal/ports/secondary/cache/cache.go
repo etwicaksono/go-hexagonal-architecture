@@ -7,7 +7,6 @@ import (
 
 type CacheInterface interface {
 	GetAuthToken(ctx context.Context, tokenKey string) (token model.TokenData, err error)
-	SetToken(ctx context.Context, tokenKey string, token model.TokenData) (err error)
-	SetIdempotentToken(ctx context.Context, tokenKey string) (success bool, err error)
+	SetAuthToken(ctx context.Context, tokenKey string, token model.TokenData) (err error)
 	DeleteToken(ctx context.Context, tokenKey string) (err error)
 }
