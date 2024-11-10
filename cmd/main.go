@@ -39,11 +39,15 @@ func main() {
 	}
 	defer mongoDb.Disconnect()
 
+	redis := infrastructure.NewRedis(ctx, cfg)
+	redis.Connect()
+	defer redis.Disconnect()
+
 	/*
 	   Server initialization
 	*/
 	// Rest app initialization
-	restApp := injector.RestProvider(ctx, mongoDb.GetClient())
+	restApp := injector.RestProvider(ctx, mongoDb.GetClient(), redis.GetClient())
 
 	// Grpc app initialization
 	grpcHandler := injector.GrpcHandlerProvider(ctx, mongoDb.GetClient())

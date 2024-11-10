@@ -177,8 +177,8 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 	return ctx.Next()
 }
 
-func (j *Jwt) GetJwtAuthToken(ctx *fiber.Ctx) (authToken entity.AuthToken, err error) {
-	authToken, ok := ctx.Locals(accessKey).(entity.AuthToken)
+func (j *Jwt) GetJwtAuthToken(ctx *fiber.Ctx) (authToken *entity.AuthToken, err error) {
+	authToken, ok := ctx.Locals(accessKey).(*entity.AuthToken)
 	if !ok {
 		return authToken, errorsConst.ErrTokenClaimsParseFailed
 	}

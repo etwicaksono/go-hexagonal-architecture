@@ -27,6 +27,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -38,14 +39,13 @@ func LoggerInit() error {
 	return error2
 }
 
-func RestProvider(ctx context.Context, mongoClient *mongo.Client) *fiber.App {
+func RestProvider(ctx context.Context, mongoClient *mongo.Client, redisClient *redis.Client) *fiber.App {
 	configConfig := config.LoadConfig()
 	jwt := rest_util.NewJwt(configConfig)
 	middlewareMiddleware := middleware.NewMiddleware(jwt)
 	docsHandler := docs_handler.NewDocumentationHandler(ctx, configConfig)
 	userDbInterface := user_mongo.NewUserMongo(configConfig, mongoClient)
-	redisInterface := infrastructure.NewRedis(ctx, configConfig)
-	cacheInterface := cache.NewCache(redisInterface)
+	cacheInterface := cache.NewCache(redisClient)
 	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig, jwt, cacheInterface)
 	validate := validatorProvider()
 	authenticationAppInterface := authentication_app.NewAuthenticationApp(authenticationCoreInterface, validate, jwt)
@@ -79,7 +79,7 @@ var validatorSet = wire.NewSet(validatorProvider)
 
 var routerSet = wire.NewSet(middleware.NewMiddleware, example_message_handler.NewExampleRestHandler, docs_handler.NewDocumentationHandler, rest.NewRouter)
 
-var authenticationSet = wire.NewSet(infrastructure.NewRedis, cache.NewCache, user_mongo.NewUserMongo, rest_util.NewJwt, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
+var authenticationSet = wire.NewSet(cache.NewCache, user_mongo.NewUserMongo, rest_util.NewJwt, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
 
 var exampleSet = wire.NewSet(
 	configSet, minio.MinioProvider, validatorSet, infrastructure.NewMongo, example_message_mongo.NewExampleMessageMongo, example_message_app.NewExampleMessageApp, example_message_core.NewExampleMessageCore,

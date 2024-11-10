@@ -27,6 +27,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 )
 
 var configSet = wire.NewSet(config.LoadConfig)
@@ -39,7 +40,6 @@ var routerSet = wire.NewSet(
 )
 
 var authenticationSet = wire.NewSet(
-	infrastructure.NewRedis,
 	cache.NewCache,
 	user_mongo.NewUserMongo,
 	rest_util.NewJwt,
@@ -68,6 +68,7 @@ func LoggerInit() error {
 func RestProvider(
 	ctx context.Context,
 	mongoClient *mongo.Client,
+	redisClient *redis.Client,
 ) *fiber.App {
 	wire.Build(
 		routerSet,
