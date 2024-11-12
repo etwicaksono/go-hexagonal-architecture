@@ -50,9 +50,6 @@ type DbConfig struct {
 	Name                     string
 	Username                 string
 	Password                 string
-	MaxConnOpen              int
-	MaxConnIdle              int
-	MaxConnLifetime          time.Duration
 	Option                   string
 	ExampleMessageCollection string
 	ExampleUserCollection    string
@@ -137,9 +134,6 @@ func LoadConfig() Config {
 			Name:                     vpr.GetString("DB_NAME"),
 			Username:                 vpr.GetString("DB_USERNAME"),
 			Password:                 vpr.GetString("DB_PASSWORD"),
-			MaxConnOpen:              vpr.GetInt("DB_MAX_CONN_OPEN"),
-			MaxConnIdle:              vpr.GetInt("DB_MAX_CONN_IDLE"),
-			MaxConnLifetime:          vpr.GetDuration("DB_MAX_CONN_LIFETIME"),
 			Option:                   vpr.GetString("DB_OPTION"),
 			ExampleMessageCollection: vpr.GetString("DB_EXAMPLE_MESSAGE_COLLECTION"),
 			ExampleUserCollection:    vpr.GetString("DB_EXAMPLE_USER_COLLECTION"),

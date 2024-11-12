@@ -31,13 +31,23 @@ func main() {
 	/*
 	   Infrastructure initialization
 	*/
-	mongoDb := infrastructure.NewMongo(ctx, cfg) // TODO: adjust so it can use other database
-	err = mongoDb.Connect()
-	if err != nil {
-		slog.ErrorContext(ctx, "Failed to connect to MongoDB", slog.String(entity.Error, err.Error()))
+	var dbClient *entity.DbClient
+	switch cfg.Db.Protocol {
+	case "mongodb":
+		{
+			mongoDb := infrastructure.NewMongoDb(ctx, cfg)
+			err = mongoDb.Connect()
+			if err != nil {
+				slog.ErrorContext(ctx, "Failed to connect to MongoDB", slog.String(entity.Error, err.Error()))
+				return
+			}
+			defer mongoDb.Disconnect()
+			dbClient = mongoDb.GetClient()
+		}
+	default:
+		slog.ErrorContext(ctx, "Unsupported database protocol, supported protocol: [mongo]", slog.String("protocol", cfg.Db.Protocol))
 		return
 	}
-	defer mongoDb.Disconnect()
 
 	redis := infrastructure.NewRedis(ctx, cfg)
 	redis.Connect()
@@ -47,10 +57,10 @@ func main() {
 	   Server initialization
 	*/
 	// Rest app initialization
-	restApp := injector.RestProvider(ctx, mongoDb.GetClient(), redis.GetClient())
+	restApp := injector.RestProvider(ctx, dbClient, redis.GetClient())
 
 	// Grpc app initialization
-	grpcHandler := injector.GrpcHandlerProvider(ctx, mongoDb.GetClient())
+	grpcHandler := injector.GrpcHandlerProvider(ctx, dbClient)
 	grpcApp := grpc.NewGrpcAdapter(
 		ctx,
 		fmt.Sprintf("%s:%d", cfg.App.GrpcHost, cfg.App.GrpcPort),

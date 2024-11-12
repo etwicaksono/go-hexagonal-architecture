@@ -1,5 +1,11 @@
 package entity
 
+import "go.mongodb.org/mongo-driver/mongo"
+
+type DbClient struct {
+	MongoClient *mongo.Client
+}
+
 type BulkWriteResult struct {
 	// The number of documents inserted.
 	InsertedCount int64

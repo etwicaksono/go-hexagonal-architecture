@@ -16,7 +16,6 @@ type adapterMongo struct {
 	ctx           context.Context
 	connectionURL string
 	client        *mongo.Client
-	config        mongoConfig
 }
 
 type mongoConfig struct {
@@ -31,10 +30,10 @@ type mongoConfig struct {
 	option          string
 }
 
-func NewMongo(
+func NewMongoDb(
 	ctx context.Context,
 	config config.Config,
-) infrastructure.MongoInterface {
+) infrastructure.DbInterface {
 	return &adapterMongo{
 		ctx: ctx,
 		connectionURL: fmt.Sprintf(
@@ -46,22 +45,11 @@ func NewMongo(
 			config.Db.Name,
 			config.Db.Option,
 		),
-		config: mongoConfig{
-			protocol:        config.Db.Protocol,
-			address:         config.Db.Address,
-			name:            config.Db.Name,
-			username:        config.Db.Username,
-			password:        config.Db.Password,
-			maxConnOpen:     config.Db.MaxConnOpen,
-			maxConnIdle:     config.Db.MaxConnIdle,
-			maxConnLifetime: config.Db.MaxConnLifetime,
-		},
 	}
 }
 
 func (a *adapterMongo) Connect() error {
-	clientOptions := options.Client().
-		ApplyURI(a.connectionURL)
+	clientOptions := options.Client().ApplyURI(a.connectionURL)
 
 	client, err := mongo.Connect(a.ctx, clientOptions)
 	if err != nil {
@@ -84,6 +72,8 @@ func (a *adapterMongo) Disconnect() {
 	}
 }
 
-func (a *adapterMongo) GetClient() *mongo.Client {
-	return a.client
+func (a *adapterMongo) GetClient() *entity.DbClient {
+	return &entity.DbClient{
+		MongoClient: a.client,
+	}
 }

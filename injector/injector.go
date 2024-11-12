@@ -7,19 +7,18 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/authentication_app"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/authentication_core"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/authentication_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/user_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
-	"go.mongodb.org/mongo-driver/mongo"
-
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_message_app"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_message_core"
@@ -51,7 +50,7 @@ var exampleSet = wire.NewSet(
 	configSet,
 	minio.MinioProvider,
 	validatorSet,
-	infrastructure.NewMongo,
+	infrastructure.NewMongoDb,
 	example_message_mongo.NewExampleMessageMongo,
 	example_message_app.NewExampleMessageApp,
 	example_message_core.NewExampleMessageCore,
@@ -67,7 +66,7 @@ func LoggerInit() error {
 
 func RestProvider(
 	ctx context.Context,
-	mongoClient *mongo.Client,
+	dbClient *entity.DbClient, // TODO: use DB interface instead
 	redisClient *redis.Client,
 ) *fiber.App {
 	wire.Build(
@@ -81,7 +80,7 @@ func RestProvider(
 
 func GrpcHandlerProvider(
 	ctx context.Context,
-	mongoClient *mongo.Client,
+	dbClient *entity.DbClient,
 ) grpc.Handler {
 	wire.Build(
 		exampleSet,
