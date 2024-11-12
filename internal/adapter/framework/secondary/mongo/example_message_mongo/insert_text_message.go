@@ -2,16 +2,16 @@ package example_message_mongo
 
 import (
 	"context"
-	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/model"
+	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log/slog"
 )
 
 func (e exampleMessageMongo) InsertTextMessage(ctx context.Context, objs []entity.MessageTextItem) (entity.BulkWriteResult, error) {
 	if len(objs) == 0 {
-		return entity.BulkWriteResult{}, fmt.Errorf("no object to insert")
+		return entity.BulkWriteResult{}, errorsConst.ErrNoObjectToInsert
 	}
 	bulkCommands := make([]mongo.WriteModel, len(objs))
 	collection := e.client.Database(e.dbName).Collection(e.collection)

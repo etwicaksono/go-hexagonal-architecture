@@ -22,4 +22,5 @@ var (
 	ErrTokenClaimsParseFailed = error_util.Error400("Could not parse token claims")
 	ErrUnsupportedDbProtocol  = error_util.Error500("Unsupported database protocol, supported protocol: [mongo, mysql]")
 	ErrInvalidLogLevel        = error_util.Error500("Invalid log level, available options: [debug, info, warn, error]")
+	ErrNoObjectToInsert       = error_util.Error400("no object to insert")
 )

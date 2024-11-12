@@ -2,28 +2,33 @@ package model
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"time"
 )
 
 type User struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Email     string             `bson:"email"`
-	Name      string             `bson:"name"`
-	Username  string             `bson:"username"`
-	Password  string             `bson:"password"`
-	Active    bool               `bson:"active"`
-	CreatedAt time.Time          `bson:"created_at"`
-	CreatedBy string             `bson:"created_by"`
-	UpdatedAt time.Time          `bson:"updated_at,omitempty"`
-	UpdatedBy string             `bson:"updated_by,omitempty"`
-	DeletedAt time.Time          `bson:"deleted_at,omitempty"`
-	DeletedBy string             `bson:"deleted_by,omitempty"`
+	ID        string         `gorm:"column:id;type:char(36);primaryKey"`
+	Email     string         `gorm:"column:email;type:varchar(64)"`
+	Name      string         `gorm:"column:name;type:varchar(64)"`
+	Username  string         `gorm:"column:username;type:varchar(64)"`
+	Password  string         `gorm:"column:password;type:varchar(255)"`
+	Active    bool           `gorm:"column:active;type:tinyint(1);default:1"`
+	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime"`
+	CreatedBy string         `gorm:"column:created_by;type:varchar(255)"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;autoUpdateTime"`
+	UpdatedBy string         `gorm:"column:updated_by;type:varchar(255)"`
+	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;"`
+	DeletedBy string         `gorm:"column:deleted_by;type:varchar(255)"`
 }
 
 func (u User) ToEntity() entity.User {
+	userId := u.ID
+	if u.ID == "" {
+		userId = uuid.New().String()
+	}
 	return entity.User{
-		ID:        u.ID.Hex(),
+		ID:        userId,
 		Email:     u.Email,
 		Name:      u.Name,
 		Username:  u.Username,
@@ -33,13 +38,18 @@ func (u User) ToEntity() entity.User {
 		CreatedBy: u.CreatedBy,
 		UpdatedAt: u.UpdatedAt,
 		UpdatedBy: u.UpdatedBy,
-		DeletedAt: u.DeletedAt,
+		DeletedAt: u.DeletedAt.Time,
 		DeletedBy: u.DeletedBy,
 	}
 }
 
 func FromUserEntity(u entity.User) User {
-	messageItem := User{
+	userId := u.ID
+	if u.ID == "" {
+		userId = uuid.New().String()
+	}
+	user := User{
+		ID:        userId,
 		Email:     u.Email,
 		Name:      u.Name,
 		Username:  u.Username,
@@ -49,11 +59,8 @@ func FromUserEntity(u entity.User) User {
 		CreatedBy: u.CreatedBy,
 		UpdatedAt: u.UpdatedAt,
 		UpdatedBy: u.UpdatedBy,
-		DeletedAt: u.DeletedAt,
+		DeletedAt: gorm.DeletedAt{Time: u.DeletedAt},
 		DeletedBy: u.DeletedBy,
 	}
-	if u.ID != "" {
-		messageItem.ID, _ = primitive.ObjectIDFromHex(u.ID)
-	}
-	return messageItem
+	return user
 }

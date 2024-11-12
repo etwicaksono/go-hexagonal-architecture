@@ -15,3 +15,11 @@ func Implode(s []string, separator string) string {
 	}
 	return strings.Join(s, separator)
 }
+
+func ToLowerSlice(ids []string) []string {
+	result := make([]string, len(ids))
+	for i, id := range ids {
+		result[i] = strings.ToLower(id)
+	}
+	return result
+}
