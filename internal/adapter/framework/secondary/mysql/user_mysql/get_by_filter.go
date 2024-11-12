@@ -11,7 +11,7 @@ import (
 func (u userMysql) GetByFilter(ctx context.Context, filter entity.UserGetFilter) (result []entity.User, err error) {
 	var userMysqlModels []model.User
 
-	pipeline := u.client.Table(u.table)
+	pipeline := u.client.Table(u.table).Where("deleted_at is null")
 
 	if len(filter.IDs) > 0 {
 		pipeline = pipeline.Where("LOWER(id) in (?)", string_util.ToLowerSlice(filter.IDs))
