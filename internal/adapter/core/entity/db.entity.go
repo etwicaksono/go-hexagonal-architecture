@@ -1,5 +1,15 @@
 package entity
 
+import (
+	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
+)
+
+type DbClient struct {
+	MongoClient *mongo.Client
+	GormClient  *gorm.DB
+}
+
 type BulkWriteResult struct {
 	// The number of documents inserted.
 	InsertedCount int64

@@ -39,7 +39,7 @@ func (u User) ToEntity() entity.User {
 }
 
 func FromUserEntity(u entity.User) User {
-	messageItem := User{
+	user := User{
 		Email:     u.Email,
 		Name:      u.Name,
 		Username:  u.Username,
@@ -53,7 +53,7 @@ func FromUserEntity(u entity.User) User {
 		DeletedBy: u.DeletedBy,
 	}
 	if u.ID != "" {
-		messageItem.ID, _ = primitive.ObjectIDFromHex(u.ID)
+		user.ID, _ = primitive.ObjectIDFromHex(u.ID)
 	}
-	return messageItem
+	return user
 }

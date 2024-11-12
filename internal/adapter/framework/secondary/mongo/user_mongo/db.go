@@ -16,6 +16,6 @@ func NewUserMongo(config config.Config, mongoClient *mongo.Client) db.UserDbInte
 	return &userMongo{
 		client:     mongoClient,
 		dbName:     config.Db.Name,
-		collection: config.Db.ExampleUserCollection,
+		collection: config.Db.UserCollection,
 	}
 }
