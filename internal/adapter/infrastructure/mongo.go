@@ -14,20 +14,9 @@ import (
 
 type adapterMongo struct {
 	ctx           context.Context
+	config        config.Config
 	connectionURL string
 	client        *mongo.Client
-}
-
-type mongoConfig struct {
-	protocol        string
-	address         string
-	name            string
-	username        string
-	password        string
-	maxConnOpen     int
-	maxConnIdle     int
-	maxConnLifetime time.Duration
-	option          string
 }
 
 func NewMongoDb(
@@ -35,7 +24,8 @@ func NewMongoDb(
 	config config.Config,
 ) infrastructure.DbInterface {
 	return &adapterMongo{
-		ctx: ctx,
+		ctx:    ctx,
+		config: config,
 		connectionURL: fmt.Sprintf(
 			"%s://%s:%s@%s/%s%s",
 			config.Db.Protocol,
@@ -49,7 +39,12 @@ func NewMongoDb(
 }
 
 func (a *adapterMongo) Connect() error {
-	clientOptions := options.Client().ApplyURI(a.connectionURL)
+	clientOptions := options.Client().ApplyURI(a.connectionURL).
+		SetMaxPoolSize(uint64(a.config.Db.MaxOpenConnections)).              // Max open connections
+		SetMaxConnIdleTime(a.config.Db.MaxConnectionIdletime * time.Second). // Max connection idle time
+		SetServerSelectionTimeout(10 * time.Second).                         // Timeout to find a server
+		SetConnectTimeout(10 * time.Second).                                 // Timeout for initial connection
+		SetSocketTimeout(30 * time.Second)                                   // Timeout for read/write on each socket
 
 	client, err := mongo.Connect(a.ctx, clientOptions)
 	if err != nil {

@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 	"log/slog"
 	"os"
 	"time"
@@ -45,14 +46,18 @@ type AppConfig struct {
 }
 
 type DbConfig struct {
-	Protocol                 string
+	Protocol                 valueobject.SuportedDb
 	Address                  string
 	Name                     string
 	Username                 string
 	Password                 string
 	Option                   string
+	MaxOpenConnections       int
+	MaxIdleConnections       int
+	MaxConnectionLifetime    time.Duration
+	MaxConnectionIdletime    time.Duration
 	ExampleMessageCollection string
-	ExampleUserCollection    string
+	UserCollection           string
 }
 
 type SwaggerConfig struct {
@@ -129,14 +134,18 @@ func LoadConfig() Config {
 			JwtTokenRefresh:      vpr.GetString("APP_JWT_TOKEN_REFRESH"),
 		},
 		Db: DbConfig{
-			Protocol:                 vpr.GetString("DB_PROTOCOL"),
+			Protocol:                 valueobject.SuportedDbFromString(vpr.GetString("DB_PROTOCOL")),
 			Address:                  vpr.GetString("DB_ADDRESS"),
 			Name:                     vpr.GetString("DB_NAME"),
 			Username:                 vpr.GetString("DB_USERNAME"),
 			Password:                 vpr.GetString("DB_PASSWORD"),
 			Option:                   vpr.GetString("DB_OPTION"),
+			MaxOpenConnections:       vpr.GetInt("DB_MAX_OPEN_CONNECTIONS"),
+			MaxIdleConnections:       vpr.GetInt("DB_MAX_IDLE_CONNECTIONS"),
+			MaxConnectionLifetime:    vpr.GetDuration("DB_MAX_CONNECTION_LIFETIME"),
+			MaxConnectionIdletime:    vpr.GetDuration("DB_MAX_CONNECTION_IDLE_TIME"),
 			ExampleMessageCollection: vpr.GetString("DB_EXAMPLE_MESSAGE_COLLECTION"),
-			ExampleUserCollection:    vpr.GetString("DB_EXAMPLE_USER_COLLECTION"),
+			UserCollection:           vpr.GetString("DB_USER_COLLECTION"),
 		},
 		Swagger: SwaggerConfig{
 			DeepLinking:  vpr.GetBool("SWAGGER_DEEP_LINKING"),

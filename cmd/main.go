@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -22,7 +24,7 @@ func main() {
 	// Load config
 	cfg := config.LoadConfig()
 
-	err := injector.LoggerInit()
+	logger, err := injector.LoggerInit()
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to initialize logger", slog.String(entity.Error, err.Error()))
 		stop()
@@ -33,7 +35,7 @@ func main() {
 	*/
 	var dbClient *entity.DbClient
 	switch cfg.Db.Protocol {
-	case "mongodb":
+	case valueobject.SuportedDb_MONGO:
 		{
 			mongoDb := infrastructure.NewMongoDb(ctx, cfg)
 			err = mongoDb.Connect()
@@ -44,8 +46,19 @@ func main() {
 			defer mongoDb.Disconnect()
 			dbClient = mongoDb.GetClient()
 		}
+	case valueobject.SuportedDb_MYSQL:
+		{
+			mysqlDb := infrastructure.NewMysqlDb(ctx, cfg, logger)
+			err = mysqlDb.Connect()
+			if err != nil {
+				slog.ErrorContext(ctx, "Failed to connect to MySQL", slog.String(entity.Error, err.Error()))
+				return
+			}
+			defer mysqlDb.Disconnect()
+			dbClient = mysqlDb.GetClient()
+		}
 	default:
-		slog.ErrorContext(ctx, "Unsupported database protocol, supported protocol: [mongo]", slog.String("protocol", cfg.Db.Protocol))
+		slog.ErrorContext(ctx, errorsConst.ErrUnsupportedDbProtocol.Error(), slog.String("protocol", cfg.Db.Protocol.ToString()))
 		return
 	}
 

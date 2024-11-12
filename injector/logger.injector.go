@@ -2,11 +2,12 @@ package injector
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"log/slog"
 	"os"
 )
 
-func loggerInit(cfg config.Config) error {
+func loggerInit(cfg config.Config) (logger *slog.Logger, err error) {
 	var logLevel slog.Level
 
 	switch cfg.App.LogLevel {
@@ -18,6 +19,8 @@ func loggerInit(cfg config.Config) error {
 		logLevel = slog.LevelWarn
 	case "error":
 		logLevel = slog.LevelError
+	default:
+		return nil, errorsConst.ErrInvalidLogLevel
 	}
 
 	//Initiate logger
@@ -31,7 +34,7 @@ func loggerInit(cfg config.Config) error {
 		slog.String("service", cfg.App.Name),
 		slog.String("with-release", cfg.App.Version),
 	})
-	logger := slog.New(logHandler)
+	logger = slog.New(logHandler)
 	slog.SetDefault(logger)
-	return nil
+	return logger, nil
 }

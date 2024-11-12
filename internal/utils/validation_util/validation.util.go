@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	IsUsernameTag = "is-username"
+	isUsernameTag = "is-username"
 )
 
 func NewValidator() *validator.Validate {
@@ -37,7 +37,7 @@ func NewValidator() *validator.Validate {
 }
 
 func registerCustomValidations(validatorInstance *validator.Validate) {
-	err := validatorInstance.RegisterValidation(IsUsernameTag, isUsernameValid)
+	err := validatorInstance.RegisterValidation(isUsernameTag, isUsernameValid)
 	if err != nil {
 		slog.Error("Failed to register is-username validation", slog.String(entity.Error, err.Error()))
 	}
@@ -92,7 +92,7 @@ func translateErrorMessage(err error) (errValidation fiber.Map) {
 					}
 					errValidation[fieldName] = fmt.Sprint(fieldName, " field is required when ", strings.Join(fieldSlice, ", "), " is filled")
 				}
-			case IsUsernameTag:
+			case isUsernameTag:
 				{
 					errValidation[fieldName] = fmt.Sprint(fieldName, " username must contain only letters and numbers.")
 				}

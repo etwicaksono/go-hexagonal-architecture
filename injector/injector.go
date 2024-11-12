@@ -14,11 +14,10 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/user_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
+	"log/slog"
 
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/app/example_message_app"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/example_message_core"
@@ -40,7 +39,7 @@ var routerSet = wire.NewSet(
 
 var authenticationSet = wire.NewSet(
 	cache.NewCache,
-	user_mongo.NewUserMongo,
+	userDbProvider,
 	rest_util.NewJwt,
 	authentication_core.NewAuthenticationCore,
 	authentication_app.NewAuthenticationApp,
@@ -51,22 +50,22 @@ var exampleSet = wire.NewSet(
 	minio.MinioProvider,
 	validatorSet,
 	infrastructure.NewMongoDb,
-	example_message_mongo.NewExampleMessageMongo,
+	messageDbProvider,
 	example_message_app.NewExampleMessageApp,
 	example_message_core.NewExampleMessageCore,
 )
 
-func LoggerInit() error {
+func LoggerInit() (logger *slog.Logger, err error) {
 	wire.Build(
 		configSet,
 		loggerInit,
 	)
-	return nil
+	return nil, nil
 }
 
 func RestProvider(
 	ctx context.Context,
-	dbClient *entity.DbClient, // TODO: use DB interface instead
+	dbClient *entity.DbClient,
 	redisClient *redis.Client,
 ) *fiber.App {
 	wire.Build(

@@ -20,4 +20,6 @@ var (
 	ErrUnauthorized           = error_util.Error401("unauthorized")
 	ErrTokenInvalid           = error_util.Error400("invalid token")
 	ErrTokenClaimsParseFailed = error_util.Error400("Could not parse token claims")
+	ErrUnsupportedDbProtocol  = error_util.Error500("Unsupported database protocol, supported protocol: [mongo, mysql]")
+	ErrInvalidLogLevel        = error_util.Error500("Invalid log level, available options: [debug, info, warn, error]")
 )
