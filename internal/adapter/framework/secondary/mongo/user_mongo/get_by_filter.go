@@ -53,8 +53,8 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 		pipeline = append(pipeline, bson.E{Key: "username", Value: bson.M{"$in": usernameRegexes}})
 	}
 
-	if filter.Active != nil {
-		pipeline = append(pipeline, bson.E{Key: "active", Value: *filter.Active})
+	if filter.Active.Valid {
+		pipeline = append(pipeline, bson.E{Key: "active", Value: filter.Active.Bool})
 	}
 
 	findOptions := options.Find()

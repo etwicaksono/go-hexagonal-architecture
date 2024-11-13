@@ -1,6 +1,9 @@
 package entity
 
-import "time"
+import (
+	"github.com/guregu/null"
+	"time"
+)
 
 type User struct {
 	ID        string
@@ -10,19 +13,19 @@ type User struct {
 	Password  string
 	Active    bool
 	CreatedAt time.Time
-	CreatedBy string
-	UpdatedAt time.Time
-	UpdatedBy string
-	DeletedAt time.Time
-	DeletedBy string
+	CreatedBy null.String
+	UpdatedAt null.Time
+	UpdatedBy null.String
+	DeletedAt null.Time
+	DeletedBy null.String
 }
 
 type UserFindFilter struct {
-	ID       string
-	Email    string
-	Name     string
-	Username string
-	Active   *bool
+	ID       null.String
+	Email    null.String
+	Name     null.String
+	Username null.String
+	Active   null.Bool
 }
 
 type UserGetFilter struct {
@@ -30,5 +33,5 @@ type UserGetFilter struct {
 	Emails    []string
 	Names     []string
 	Usernames []string
-	Active    *bool
+	Active    null.Bool
 }

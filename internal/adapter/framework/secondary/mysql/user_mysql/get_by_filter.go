@@ -25,8 +25,8 @@ func (u userMysql) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 	if len(filter.Usernames) > 0 {
 		pipeline = pipeline.Where("LOWER(username) in (?)", string_util.ToLowerSlice(filter.Usernames))
 	}
-	if filter.Active != nil {
-		pipeline = pipeline.Where("active = ?", filter.Active)
+	if filter.Active.Valid {
+		pipeline = pipeline.Where("active = ?", filter.Active.Bool)
 	}
 
 	tx := pipeline.Find(&userMysqlModels)
