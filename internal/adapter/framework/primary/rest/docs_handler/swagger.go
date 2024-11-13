@@ -49,7 +49,7 @@ func (a DocsHandler) SwaggerYaml(ctx *fiber.Ctx) (err error) {
 		ServerDescription string
 	}{
 		ServerUrl:         a.config.App.Host, // Use environment variable or config for dynamic host
-		ServerDescription: "Local server",    // Define your base path if needed
+		ServerDescription: a.config.App.Name,
 	}
 
 	// Render the template with the data
