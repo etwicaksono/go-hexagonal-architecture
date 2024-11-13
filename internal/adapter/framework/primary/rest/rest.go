@@ -27,7 +27,7 @@ func NewRestApp(
 	}
 
 	// Use absolute path for the templates directory
-	templatePath := filepath.Join(wd, "/docs/swagger-ui")
+	templatePath := filepath.Join(wd, "/docs")
 	engine := html.New(templatePath, ".gohtml")
 
 	fiberApp := fiber.New(fiber.Config{
