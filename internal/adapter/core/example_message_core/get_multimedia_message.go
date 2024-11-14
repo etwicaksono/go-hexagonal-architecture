@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"log/slog"
@@ -13,7 +14,7 @@ import (
 func (e exampleMessageCore) GetMultimediaMessage(ctx context.Context) ([]entity.MessageMultimediaItem, error) {
 	messages, err := e.db.FindAllMultimediaMessage(ctx)
 	if err != nil && !errors.Is(err, errors2.ErrNoData) {
-		slog.ErrorContext(ctx, "Failed to find all multimedia message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to find all multimedia message", slog.String(constants.Error, err.Error()))
 		return nil, err
 	}
 

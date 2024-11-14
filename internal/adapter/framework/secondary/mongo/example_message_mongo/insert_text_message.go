@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log/slog"
@@ -23,7 +24,7 @@ func (e exampleMessageMongo) InsertTextMessage(ctx context.Context, objs []entit
 
 	result, err := collection.BulkWrite(ctx, bulkCommands)
 	if err != nil {
-		slog.ErrorContext(ctx, "Failed to BulkWrite text message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to BulkWrite text message", slog.String(constants.Error, err.Error()))
 		return entity.BulkWriteResult{}, err
 	}
 

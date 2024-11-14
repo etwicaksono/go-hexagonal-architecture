@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -25,7 +26,7 @@ func (a *adapter) SendTextMessage(ctx context.Context, request *example.SendText
 				return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("%s: %s", k, v))
 			}
 		}
-		slog.ErrorContext(ctx, "Failed to send text message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to send text message", slog.String(constants.Error, err.Error()))
 		return nil, err
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils"
 	"github.com/guregu/null"
@@ -14,7 +15,7 @@ func (a authenticationCore) Login(ctx context.Context, request entity.LoginReque
 	// check if user exist
 	user, err := a.db.FindByFilter(ctx, entity.UserFindFilter{Email: null.StringFrom(request.Email)})
 	if err != nil {
-		slog.ErrorContext(ctx, "Error on finding user", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Error on finding user", slog.String(constants.Error, err.Error()))
 		if errors.Is(err, errors2.ErrNoData) {
 			return entity.TokenGenerated{}, errors2.ErrUserNotFound
 		}

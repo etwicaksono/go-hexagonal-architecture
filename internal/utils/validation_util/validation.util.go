@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/string_util"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sagikazarmark/slog-shim"
@@ -39,7 +41,7 @@ func NewValidator() *validator.Validate {
 func registerCustomValidations(validatorInstance *validator.Validate) {
 	err := validatorInstance.RegisterValidation(isUsernameTag, isUsernameValid)
 	if err != nil {
-		slog.Error("Failed to register is-username validation", slog.String(entity.Error, err.Error()))
+		slog.Error("Failed to register is-username validation", slog.String(constants.Error, err.Error()))
 	}
 }
 
@@ -117,6 +119,24 @@ func IsValidExtension(allowedExtension []string, fileName string) bool {
 		}
 	}
 	return false
+}
+
+func IsValidMultimediaFileExtension(files []entity.MultimediaFile, allowedTypes []string) error {
+	for _, requestFile := range files {
+		//Validate extension
+		if !IsValidExtension(allowedTypes, requestFile.Filename) {
+			return error_util.ErrorValidation(
+				fiber.Map{
+					"files": fmt.Sprintf(
+						"invalid file type (%s). Allowed types are %s",
+						requestFile.Filename,
+						string_util.Implode(allowedTypes, ", "),
+					),
+				},
+			)
+		}
+	}
+	return nil
 }
 
 func isUsernameValid(fl validator.FieldLevel) bool {

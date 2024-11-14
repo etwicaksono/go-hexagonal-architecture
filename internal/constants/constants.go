@@ -1,4 +1,4 @@
-package entity
+package constants
 
 const (
 	Error    string = "error"
@@ -8,7 +8,4 @@ const (
 	Request  string = "request"
 	Response string = "response"
 	Body     string = "body"
-
-	//	Redis key prefix
-	BlackListedTokenRedisPrefix string = "blacklisted-token"
 )

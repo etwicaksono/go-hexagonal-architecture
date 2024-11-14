@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils"
 	"github.com/google/uuid"
@@ -33,7 +34,7 @@ func (a authenticationCore) Register(ctx context.Context, request entity.Registe
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		slog.ErrorContext(ctx, "Failed to generate uuid", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to generate uuid", slog.String(constants.Error, err.Error()))
 		return
 	}
 	user := entity.User{

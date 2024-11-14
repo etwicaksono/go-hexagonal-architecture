@@ -3,8 +3,8 @@ package minio
 import (
 	"bytes"
 	"context"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	minio2 "github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/minio"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -35,7 +35,7 @@ func MinioProvider(ctx context.Context, cfg config.Config) minio2.MinioInterface
 		Secure: useSSL,
 	})
 	if err != nil {
-		slog.Info("Minio client initialization failed", slog.String(entity.Error, err.Error()))
+		slog.Info("Minio client initialization failed", slog.String(constants.Error, err.Error()))
 		panic(err)
 	}
 	slog.Info("Minio client initialized successfully")

@@ -3,12 +3,12 @@ package config
 import (
 	"context"
 	"fmt"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"log/slog"
 	"os"
 	"time"
 
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/spf13/viper"
 )
 
@@ -90,7 +90,7 @@ func LoadConfig() Config {
 	// Get the current working directory
 	wd, err := os.Getwd()
 	if err != nil {
-		slog.ErrorContext(context.Background(), "Failed to get current working directory", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(context.Background(), "Failed to get current working directory", slog.String(constants.Error, err.Error()))
 		panic(err.Error())
 	}
 
@@ -104,7 +104,7 @@ func LoadConfig() Config {
 
 	err = vpr.ReadInConfig()
 	if err != nil {
-		slog.ErrorContext(context.Background(), "Failed to read config file", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(context.Background(), "Failed to read config file", slog.String(constants.Error, err.Error()))
 		panic(err.Error())
 	}
 

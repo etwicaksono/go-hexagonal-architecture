@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/infrastructure"
 	"gorm.io/driver/mysql"
@@ -66,7 +67,7 @@ func (a *adapterMysql) Connect() error {
 		TranslateError: true,
 	})
 	if err != nil {
-		slog.ErrorContext(a.ctx, "Failed to connect to MySQL", slog.String("connection", a.connectionURL), slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(a.ctx, "Failed to connect to MySQL", slog.String("connection", a.connectionURL), slog.String(constants.Error, err.Error()))
 		return err
 	}
 
@@ -77,7 +78,7 @@ func (a *adapterMysql) Connect() error {
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		slog.Error("Failed to get *sql.DB: %v", slog.String(entity.Error, err.Error()))
+		slog.Error("Failed to get *sql.DB: %v", slog.String(constants.Error, err.Error()))
 		return err
 	}
 
@@ -143,7 +144,7 @@ func (l *slogGormLogger) Trace(ctx context.Context, begin time.Time, fc func() (
 	sql, rows := fc()
 	logData := []interface{}{"sql", sql, "rows", rows, "elapsed", elapsed}
 	if err != nil && l.level >= logger.Error {
-		l.logger.ErrorContext(ctx, "Error executing SQL", slog.Any(entity.Error, logData))
+		l.logger.ErrorContext(ctx, "Error executing SQL", slog.Any(constants.Error, logData))
 	} else if l.level >= logger.Info {
 		l.logger.InfoContext(ctx, "SQL executed", logData...)
 	}

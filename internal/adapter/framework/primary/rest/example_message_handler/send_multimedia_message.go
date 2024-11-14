@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/payload_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
@@ -20,12 +21,12 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 	payload := new(model.SendMultimediaMessageRequest)
 	err = payload_util.BodyParser(ctx, payload)
 	if err != nil {
-		slog.ErrorContext(context, "Failed to parse RegisterRequest", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(context, "Failed to parse RegisterRequest", slog.String(constants.Error, err.Error()))
 		return
 	}
 
 	// Validate storage
-	if valueobject.MultimediaStorageFromString(payload.Storage) == valueobject.MultimediaStorage_INVALID {
+	if valueobject.MultimediaStorageFromString(payload.Storage) == valueobject.MultimediaStorage_INVALID { // TODO: move to separated function
 		return error_util.ErrorValidation(
 			fiber.Map{"storage": fmt.Sprintf(
 				"Invalid storage type. Available types are: %s",
@@ -47,7 +48,7 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 	}
 
 	// Get the files from the "files" field in the form
-	files := form.File["files"]
+	files := form.File["files"] // TODO: move to separated function
 	if files != nil {
 		for _, file := range files {
 			// Open the file
@@ -57,7 +58,7 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 			}
 			defer func() {
 				if err := openedFile.Close(); err != nil {
-					slog.ErrorContext(context, fmt.Sprintf("Failed to close file (%s)", file.Filename), slog.String(entity.Error, err.Error()))
+					slog.ErrorContext(context, fmt.Sprintf("Failed to close file (%s)", file.Filename), slog.String(constants.Error, err.Error()))
 				}
 			}()
 
@@ -77,7 +78,7 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 
 	err = a.app.SendMultimediaMessage(context, payload.ToEntity())
 	if err != nil {
-		slog.ErrorContext(context, "Failed to send multimedia message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(context, "Failed to send multimedia message", slog.String(constants.Error, err.Error()))
 		return err
 	}
 

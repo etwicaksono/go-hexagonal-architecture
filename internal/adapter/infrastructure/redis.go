@@ -3,8 +3,8 @@ package infrastructure
 import (
 	"context"
 	"fmt"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/infrastructure"
 	"github.com/redis/go-redis/v9"
 	"log/slog"
@@ -41,7 +41,7 @@ func (a *adapterRedis) Connect() {
 func (a *adapterRedis) Disconnect() {
 	err := a.client.Close()
 	if err != nil {
-		slog.ErrorContext(a.ctx, "Failed to disconnect to Redis", slog.String("connection", a.connectionURL), slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(a.ctx, "Failed to disconnect to Redis", slog.String("connection", a.connectionURL), slog.String(constants.Error, err.Error()))
 	}
 }
 

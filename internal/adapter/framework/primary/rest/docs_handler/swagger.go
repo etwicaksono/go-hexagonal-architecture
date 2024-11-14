@@ -2,7 +2,7 @@ package docs_handler
 
 import (
 	"fmt"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"html/template"
 	"log/slog"
@@ -26,7 +26,7 @@ func (a DocsHandler) SwaggerPage(ctx *fiber.Ctx) (err error) {
 		"docExpansion":   a.config.Swagger.DocExpansion,
 	})
 	if err != nil {
-		slog.ErrorContext(a.ctx, "Failed to render swagger-ui", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(a.ctx, "Failed to render swagger-ui", slog.String(constants.Error, err.Error()))
 	}
 
 	return err
@@ -39,7 +39,7 @@ func (a DocsHandler) SwaggerYaml(ctx *fiber.Ctx) (err error) {
 	}
 	tmpl, err := template.ParseFiles(filepath.Join(wd, "/docs/swagger.yaml")) // Using a template file
 	if err != nil {
-		slog.ErrorContext(ctx.UserContext(), "Failed to parse template", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx.UserContext(), "Failed to parse template", slog.String(constants.Error, err.Error()))
 		return errorsConst.ErrInternalServer
 	}
 
@@ -55,7 +55,7 @@ func (a DocsHandler) SwaggerYaml(ctx *fiber.Ctx) (err error) {
 	// Render the template with the data
 	var renderedSwagger strings.Builder
 	if err := tmpl.Execute(&renderedSwagger, data); err != nil {
-		slog.ErrorContext(ctx.UserContext(), "Failed to render template", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx.UserContext(), "Failed to render template", slog.String(constants.Error, err.Error()))
 		return errorsConst.ErrInternalServer
 	}
 

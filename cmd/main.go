@@ -6,6 +6,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"log/slog"
@@ -26,7 +27,7 @@ func main() {
 
 	logger, err := injector.LoggerInit()
 	if err != nil {
-		slog.ErrorContext(ctx, "Failed to initialize logger", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to initialize logger", slog.String(constants.Error, err.Error()))
 		stop()
 	}
 
@@ -40,7 +41,7 @@ func main() {
 			mongoDb := infrastructure.NewMongoDb(ctx, cfg)
 			err = mongoDb.Connect()
 			if err != nil {
-				slog.ErrorContext(ctx, "Failed to connect to MongoDB", slog.String(entity.Error, err.Error()))
+				slog.ErrorContext(ctx, "Failed to connect to MongoDB", slog.String(constants.Error, err.Error()))
 				return
 			}
 			defer mongoDb.Disconnect()
@@ -51,7 +52,7 @@ func main() {
 			mysqlDb := infrastructure.NewMysqlDb(ctx, cfg, logger)
 			err = mysqlDb.Connect()
 			if err != nil {
-				slog.ErrorContext(ctx, "Failed to connect to MySQL", slog.String(entity.Error, err.Error()))
+				slog.ErrorContext(ctx, "Failed to connect to MySQL", slog.String(constants.Error, err.Error()))
 				return
 			}
 			defer mysqlDb.Disconnect()
@@ -88,7 +89,7 @@ func main() {
 		slog.InfoContext(ctx, "Starting rest server...")
 		err := restApp.Listen(fmt.Sprintf("%s:%d", cfg.App.RestHost, cfg.App.RestPort))
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to start rest server", slog.String(entity.Error, err.Error()))
+			slog.ErrorContext(ctx, "Failed to start rest server", slog.String(constants.Error, err.Error()))
 			shutdown <- err
 		}
 	}()
@@ -97,7 +98,7 @@ func main() {
 	go func() {
 		err = grpcApp.Run()
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to start grpc server", slog.String(entity.Error, err.Error()))
+			slog.ErrorContext(ctx, "Failed to start grpc server", slog.String(constants.Error, err.Error()))
 			shutdown <- err
 		}
 	}()
@@ -105,7 +106,7 @@ func main() {
 	select {
 	case err = <-shutdown:
 		// Wait throw error
-		slog.ErrorContext(ctx, "Server crashed", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Server crashed", slog.String(constants.Error, err.Error()))
 		return
 	case <-ctx.Done():
 		// Wait for first CTRL+C.
