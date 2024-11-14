@@ -3,7 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"log/slog"
 	"os"
 	"time"

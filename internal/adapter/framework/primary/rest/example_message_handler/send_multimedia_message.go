@@ -3,12 +3,12 @@ package example_message_handler
 import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/payload_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/string_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"github.com/gofiber/fiber/v2"
 	"io"
 	"log/slog"

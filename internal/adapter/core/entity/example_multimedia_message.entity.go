@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"github.com/etwicaksono/public-proto/gen/example"
 )
 

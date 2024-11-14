@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/grpc"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"log/slog"
 	"os"
 	"os/signal"

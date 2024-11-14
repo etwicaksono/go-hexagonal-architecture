@@ -2,7 +2,6 @@ package injector
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/example_message_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/user_mongo"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mysql/example_message_mysql"
@@ -10,6 +9,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/db"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"github.com/sagikazarmark/slog-shim"
 )
 
