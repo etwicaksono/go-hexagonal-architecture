@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/constants"
+	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/payload_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/string_util"
@@ -21,6 +22,7 @@ import (
 func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request entity.SendMultimediaMessageRequest) error {
 	var files []entity.FileItem
 
+	// TODO: save file to temporary directory, delete in the end of process, move to correct directory when process run correctly
 	for _, requestFile := range request.Files {
 		//Validate extension
 		allowedTypes := []string{".jpg", ".jpeg", ".png", ".txt"}
@@ -42,15 +44,26 @@ func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request e
 		switch request.Storage {
 		case valueobject.MultimediaStorage_LOCAL:
 			{
-				path := fmt.Sprintf("uploaded/%s", fileName)
-				file, err := os.Create(path)
+				pathDir := "uploaded/temp"
+				// Check if the directory exists, if not, create it
+				if _, err := os.Stat(pathDir); os.IsNotExist(err) {
+					err := os.MkdirAll(pathDir, os.ModePerm)
+					if err != nil {
+						slog.ErrorContext(ctx, "Failed to create directory", slog.String("path", pathDir), slog.String(entity.Error, err.Error()))
+						return errorsConst.ErrInternalServer
+					}
+				}
+
+				pathFile := fmt.Sprintf("%s/%s", pathDir, fileName)
+
+				file, err := os.Create(pathFile)
 				if err != nil {
 					return err
 				}
 				closeFile := func(file *os.File) {
 					err := file.Close()
 					if err != nil {
-						slog.ErrorContext(ctx, "Failed to close file", slog.String("path", path), slog.String(entity.Error, err.Error()))
+						slog.ErrorContext(ctx, "Failed to close file", slog.String("path", pathFile), slog.String(entity.Error, err.Error()))
 					}
 				}
 
@@ -63,7 +76,7 @@ func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request e
 				closeFile(file)
 				files = append(
 					files,
-					entity.FileItem{File: path, Storage: request.Storage.ToString()},
+					entity.FileItem{File: pathFile, Storage: request.Storage.ToString()},
 				)
 			}
 		case valueobject.MultimediaStorage_MINIO:
