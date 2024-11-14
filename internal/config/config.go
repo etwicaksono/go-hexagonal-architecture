@@ -46,7 +46,7 @@ type AppConfig struct {
 }
 
 type DbConfig struct {
-	Protocol                 valueobject.SuportedDb
+	Protocol                 valueobject.SupportedDb
 	Address                  string
 	Name                     string
 	Username                 string
@@ -134,7 +134,7 @@ func LoadConfig() Config {
 			JwtTokenRefresh:      vpr.GetString("APP_JWT_TOKEN_REFRESH"),
 		},
 		Db: DbConfig{
-			Protocol:                 valueobject.SuportedDbFromString(vpr.GetString("DB_PROTOCOL")),
+			Protocol:                 valueobject.SupportedDbFromString(vpr.GetString("DB_PROTOCOL")),
 			Address:                  vpr.GetString("DB_ADDRESS"),
 			Name:                     vpr.GetString("DB_NAME"),
 			Username:                 vpr.GetString("DB_USERNAME"),

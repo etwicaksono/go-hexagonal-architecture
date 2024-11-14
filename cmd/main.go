@@ -35,7 +35,7 @@ func main() {
 	*/
 	var dbClient *entity.DbClient
 	switch cfg.Db.Protocol {
-	case valueobject.SuportedDb_MONGO:
+	case valueobject.SupportedDb_MONGO:
 		{
 			mongoDb := infrastructure.NewMongoDb(ctx, cfg)
 			err = mongoDb.Connect()
@@ -46,7 +46,7 @@ func main() {
 			defer mongoDb.Disconnect()
 			dbClient = mongoDb.GetClient()
 		}
-	case valueobject.SuportedDb_MYSQL:
+	case valueobject.SupportedDb_MYSQL:
 		{
 			mysqlDb := infrastructure.NewMysqlDb(ctx, cfg, logger)
 			err = mysqlDb.Connect()

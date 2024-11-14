@@ -15,11 +15,11 @@ import (
 
 func userDbProvider(cfg config.Config, dbClient *entity.DbClient) db.UserDbInterface {
 	switch cfg.Db.Protocol {
-	case valueobject.SuportedDb_MONGO:
+	case valueobject.SupportedDb_MONGO:
 		{
 			return user_mongo.NewUserMongo(cfg, dbClient.MongoClient)
 		}
-	case valueobject.SuportedDb_MYSQL:
+	case valueobject.SupportedDb_MYSQL:
 		{
 			return user_mysql.NewUserMysql(cfg, dbClient.GormClient)
 		}
@@ -33,11 +33,11 @@ func userDbProvider(cfg config.Config, dbClient *entity.DbClient) db.UserDbInter
 
 func messageDbProvider(cfg config.Config, dbClient *entity.DbClient) db.ExampleMessageDbInterface {
 	switch cfg.Db.Protocol {
-	case valueobject.SuportedDb_MONGO:
+	case valueobject.SupportedDb_MONGO:
 		{
 			return example_message_mongo.NewExampleMessageMongo(cfg, dbClient.MongoClient)
 		}
-	case valueobject.SuportedDb_MYSQL:
+	case valueobject.SupportedDb_MYSQL:
 		{
 			return example_message_mysql.NewExampleMessageMysql(cfg, dbClient.GormClient)
 		}
