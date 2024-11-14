@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"log/slog"
 )
 
@@ -26,11 +27,22 @@ func (e exampleMessageCore) GetMultimediaMessage(ctx context.Context) ([]entity.
 		}
 		for _, file := range message.Files {
 			fileResult := file
-			protocol := "http"
-			if e.minio.IsUseSSL() {
-				protocol = "https"
+
+			switch file.Storage {
+			case valueobject.MultimediaStorage_MINIO.ToString():
+				{
+					protocol := "http"
+					if e.minio.IsUseSSL() {
+						protocol = "https"
+					}
+					fileResult.File = fmt.Sprintf("%s://%s/%s/%s", protocol, e.minio.GetEndpoint(), e.minio.GetBucketName(), file.File)
+				}
+			case valueobject.MultimediaStorage_LOCAL.ToString():
+				{
+					fileResult.File = fmt.Sprintf("%s:%d/%s", e.appConfig.RestHost, e.appConfig.RestPort, file.File)
+				}
 			}
-			fileResult.File = fmt.Sprintf("%s://%s/%s/%s", protocol, e.minio.GetEndpoint(), e.minio.GetBucketName(), file.File)
+
 			msgResult.Files = append(msgResult.Files, fileResult)
 		}
 		result = append(result, msgResult)

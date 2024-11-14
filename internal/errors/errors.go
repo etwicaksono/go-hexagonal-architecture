@@ -17,10 +17,11 @@ var (
 		"username": "Invalid username or password",
 		"password": "Invalid username or password",
 	})
-	ErrUnauthorized           = error_util.Error401("unauthorized")
-	ErrTokenInvalid           = error_util.Error400("invalid token")
-	ErrTokenClaimsParseFailed = error_util.Error400("Could not parse token claims")
-	ErrUnsupportedDbProtocol  = error_util.Error500("Unsupported database protocol, supported protocol: [mongo, mysql]")
-	ErrInvalidLogLevel        = error_util.Error500("Invalid log level, available options: [debug, info, warn, error]")
-	ErrNoObjectToInsert       = error_util.Error400("no object to insert")
+	ErrUnauthorized            = error_util.Error401("unauthorized")
+	ErrTokenInvalid            = error_util.Error400("invalid token")
+	ErrTokenClaimsParseFailed  = error_util.Error400("Could not parse token claims")
+	ErrUnsupportedDbProtocol   = error_util.Error500("Unsupported database protocol, supported protocol: [mongo, mysql]")
+	ErrInvalidLogLevel         = error_util.Error500("Invalid log level, available options: [debug, info, warn, error]")
+	ErrNoObjectToInsert        = error_util.Error400("no object to insert")
+	ErrFailedToDeleteTempFiles = error_util.Error500("Failed to delete temp files")
 )

@@ -84,8 +84,10 @@ func NewRestApp(
 
 	// Static files
 	docPath := filepath.Join(wd, "/docs")
+	uploadedPath := filepath.Join(wd, "/uploaded")
 	staticFiles := map[string]string{
-		"/docs": docPath,
+		"/docs":     docPath,
+		"/uploaded": uploadedPath,
 	}
 	for key, value := range staticFiles {
 		fiberApp.Static(key, value)

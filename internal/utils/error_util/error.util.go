@@ -21,21 +21,21 @@ func (c CustomErrorType) String() string {
 
 type CustomError struct {
 	errorType CustomErrorType
+	message   string
 
-	Code    int
-	Message string
-	Fields  fiber.Map
+	Code   int
+	Fields fiber.Map
 }
 
 func NewCustomError() *CustomError {
 	return &CustomError{
 		Code:    http.StatusInternalServerError,
-		Message: http.StatusText(http.StatusInternalServerError),
+		message: http.StatusText(http.StatusInternalServerError),
 	}
 }
 
 func (e *CustomError) Error() string {
-	return e.Message
+	return e.message
 }
 
 func (e *CustomError) SetErrorType(errorType CustomErrorType) *CustomError {
@@ -49,7 +49,7 @@ func (e *CustomError) SetCode(code int) *CustomError {
 }
 
 func (e *CustomError) SetMessage(msg string) *CustomError {
-	e.Message = msg
+	e.message = msg
 	return e
 }
 
