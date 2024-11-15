@@ -21,7 +21,6 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/gofiber/fiber/v2"
@@ -79,10 +78,10 @@ var configSet = wire.NewSet(config.LoadConfig)
 
 var validatorSet = wire.NewSet(validatorProvider)
 
-var routerSet = wire.NewSet(middleware.NewMiddleware, example_message_handler.NewExampleRestHandler, docs_handler.NewDocumentationHandler, rest.NewRouter)
+var routerSet = wire.NewSet(middleware.NewMiddleware, docs_handler.NewDocumentationHandler, rest.NewRouter)
 
 var authenticationSet = wire.NewSet(cache.NewCache, userDbProvider, rest_util.NewJwt, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
 
-var exampleSet = wire.NewSet(
-	configSet, minio.MinioProvider, validatorSet, infrastructure.NewMongoDb, messageDbProvider, example_message_app.NewExampleMessageApp, example_message_core.NewExampleMessageCore,
+var exampleSet = wire.NewSet(minio.MinioProvider, validatorSet,
+	messageDbProvider, example_message_core.NewExampleMessageCore, example_message_app.NewExampleMessageApp, example_message_handler.NewExampleRestHandler,
 )
