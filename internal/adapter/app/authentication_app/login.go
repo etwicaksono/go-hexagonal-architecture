@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/validation_util"
 	"log/slog"
 )
@@ -16,7 +17,7 @@ func (a authenticationApp) Login(ctx context.Context, request entity.LoginReques
 
 	result, err = a.core.Login(ctx, request)
 	if err != nil {
-		slog.ErrorContext(ctx, "Error on authenticating user", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Error on authenticating user", slog.String(constants.Error, err.Error()))
 		return
 	}
 

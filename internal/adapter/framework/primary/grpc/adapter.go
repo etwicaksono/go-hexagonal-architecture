@@ -2,10 +2,10 @@ package grpc
 
 import (
 	"context"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"log/slog"
 	"net"
 
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/app"
 	primaryPort "github.com/etwicaksono/go-hexagonal-architecture/internal/ports/primary/grpc"
 	"github.com/etwicaksono/public-proto/gen/example"
@@ -43,7 +43,7 @@ func (a *adapter) Run() error {
 			a.ctx,
 			"Failed to listen on port",
 			slog.String("address", a.address),
-			slog.String(entity.Error, err.Error()))
+			slog.String(constants.Error, err.Error()))
 		return err
 	}
 
@@ -65,7 +65,7 @@ func (a *adapter) Run() error {
 	// Run grpc server
 	err = grpcServer.Serve(listen)
 	if err != nil {
-		slog.WarnContext(a.ctx, "Failed to serve grpc server", slog.String(entity.Error, err.Error()))
+		slog.WarnContext(a.ctx, "Failed to serve grpc server", slog.String(constants.Error, err.Error()))
 		return err
 	}
 

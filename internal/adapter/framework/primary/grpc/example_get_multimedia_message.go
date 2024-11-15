@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"context"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"log/slog"
 
 	"github.com/etwicaksono/public-proto/gen/example"
@@ -12,7 +12,7 @@ import (
 func (a *adapter) GetMultimediaMessage(ctx context.Context, _ *emptypb.Empty) (*example.GetMultimediaMessageResponse, error) {
 	messages, err := a.handler.ExampleMessageApp.GetMultimediaMessage(ctx)
 	if err != nil {
-		slog.ErrorContext(ctx, "Failed to get multimedia message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to get multimedia message", slog.String(constants.Error, err.Error()))
 		return nil, err
 	}
 

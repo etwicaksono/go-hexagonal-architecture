@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 )
 
 type SendMultimediaMessageRequest struct {

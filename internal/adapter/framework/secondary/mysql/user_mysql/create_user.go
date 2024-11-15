@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mysql/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"log/slog"
 )
@@ -23,7 +24,7 @@ func (u userMysql) CreateUser(ctx context.Context, objs []entity.User) (result e
 
 	tx := u.client.Table(u.table).Create(&userMysqlModels)
 	if tx.Error != nil {
-		slog.ErrorContext(ctx, "Failed to BulkWrite user", slog.String(entity.Error, tx.Error.Error()))
+		slog.ErrorContext(ctx, "Failed to BulkWrite user", slog.String(constants.Error, tx.Error.Error()))
 		return entity.BulkWriteResult{}, tx.Error
 	}
 	return entity.BulkWriteResult{

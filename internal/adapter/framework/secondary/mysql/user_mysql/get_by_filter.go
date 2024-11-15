@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mysql/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/string_util"
 	"log/slog"
 )
@@ -25,13 +26,13 @@ func (u userMysql) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 	if len(filter.Usernames) > 0 {
 		pipeline = pipeline.Where("LOWER(username) in (?)", string_util.ToLowerSlice(filter.Usernames))
 	}
-	if filter.Active != nil {
-		pipeline = pipeline.Where("active = ?", filter.Active)
+	if filter.Active.Valid {
+		pipeline = pipeline.Where("active = ?", filter.Active.Bool)
 	}
 
 	tx := pipeline.Find(&userMysqlModels)
 	if tx.Error != nil {
-		slog.ErrorContext(ctx, "Failed to GetByFilter user", slog.String(entity.Error, tx.Error.Error()))
+		slog.ErrorContext(ctx, "Failed to GetByFilter user", slog.String(constants.Error, tx.Error.Error()))
 		return nil, tx.Error
 	}
 

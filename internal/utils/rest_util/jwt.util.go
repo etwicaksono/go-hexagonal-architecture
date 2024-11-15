@@ -6,6 +6,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/cache"
 	"github.com/gofiber/fiber/v2"
@@ -182,7 +183,7 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 	}
 
 	// Check if token is within blacklist
-	_, err = j.cache.GetAuthToken(ctx.UserContext(), fmt.Sprintf("%s:%s", entity.BlackListedTokenRedisPrefix, reversedToken.AccessKey))
+	_, err = j.cache.GetAuthToken(ctx.UserContext(), fmt.Sprintf("%s:%s", constants.BlackListedTokenRedisPrefix, reversedToken.AccessKey))
 	if err == nil {
 		return errorsConst.ErrUnauthorized
 	} else {

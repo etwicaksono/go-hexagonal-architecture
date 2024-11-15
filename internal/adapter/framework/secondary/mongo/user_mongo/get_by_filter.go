@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -53,8 +54,8 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 		pipeline = append(pipeline, bson.E{Key: "username", Value: bson.M{"$in": usernameRegexes}})
 	}
 
-	if filter.Active != nil {
-		pipeline = append(pipeline, bson.E{Key: "active", Value: *filter.Active})
+	if filter.Active.Valid {
+		pipeline = append(pipeline, bson.E{Key: "active", Value: filter.Active.Bool})
 	}
 
 	findOptions := options.Find()
@@ -63,7 +64,7 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, errors2.ErrNoData
 		}
-		slog.ErrorContext(ctx, "Failed to get user", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to get user", slog.String(constants.Error, err.Error()))
 		return nil, err
 	}
 	defer cursor.Close(ctx)
@@ -72,7 +73,7 @@ func (e userMongo) GetByFilter(ctx context.Context, filter entity.UserGetFilter)
 	for cursor.Next(ctx) {
 		var user model.User
 		if err = cursor.Decode(&user); err != nil {
-			slog.ErrorContext(ctx, "Failed to decode message", slog.String(entity.Error, err.Error()))
+			slog.ErrorContext(ctx, "Failed to decode message", slog.String(constants.Error, err.Error()))
 			return nil, err
 		}
 		users = append(users, user.ToEntity())

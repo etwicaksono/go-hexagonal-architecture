@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/valueobject"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log/slog"
@@ -36,7 +37,7 @@ func (a *adapter) SendMultimediaMessage(ctx context.Context, request *example.Se
 				return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("%s: %s", k, v))
 			}
 		}
-		slog.ErrorContext(ctx, "Failed to send text message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to send text message", slog.String(constants.Error, err.Error()))
 		return nil, err
 	}
 

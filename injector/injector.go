@@ -14,7 +14,6 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/infrastructure"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"log/slog"
@@ -32,7 +31,6 @@ var configSet = wire.NewSet(config.LoadConfig)
 var validatorSet = wire.NewSet(validatorProvider)
 var routerSet = wire.NewSet(
 	middleware.NewMiddleware,
-	example_message_handler.NewExampleRestHandler,
 	docs_handler.NewDocumentationHandler,
 	rest.NewRouter,
 )
@@ -46,13 +44,12 @@ var authenticationSet = wire.NewSet(
 	authentication_handler.NewAuthenticationRestHandler,
 )
 var exampleSet = wire.NewSet(
-	configSet,
 	minio.MinioProvider,
 	validatorSet,
-	infrastructure.NewMongoDb,
 	messageDbProvider,
-	example_message_app.NewExampleMessageApp,
 	example_message_core.NewExampleMessageCore,
+	example_message_app.NewExampleMessageApp,
+	example_message_handler.NewExampleRestHandler,
 )
 
 func LoggerInit() (logger *slog.Logger, err error) {
@@ -69,6 +66,7 @@ func RestProvider(
 	redisClient *redis.Client,
 ) *fiber.App {
 	wire.Build(
+		configSet,
 		routerSet,
 		authenticationSet,
 		exampleSet,
@@ -82,6 +80,7 @@ func GrpcHandlerProvider(
 	dbClient *entity.DbClient,
 ) grpc.Handler {
 	wire.Build(
+		configSet,
 		exampleSet,
 		grpcHandlerProvider,
 	)

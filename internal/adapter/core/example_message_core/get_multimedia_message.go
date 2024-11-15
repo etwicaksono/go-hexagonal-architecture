@@ -5,14 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"log/slog"
 )
 
 func (e exampleMessageCore) GetMultimediaMessage(ctx context.Context) ([]entity.MessageMultimediaItem, error) {
 	messages, err := e.db.FindAllMultimediaMessage(ctx)
 	if err != nil && !errors.Is(err, errors2.ErrNoData) {
-		slog.ErrorContext(ctx, "Failed to find all multimedia message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to find all multimedia message", slog.String(constants.Error, err.Error()))
 		return nil, err
 	}
 
@@ -26,11 +28,22 @@ func (e exampleMessageCore) GetMultimediaMessage(ctx context.Context) ([]entity.
 		}
 		for _, file := range message.Files {
 			fileResult := file
-			protocol := "http"
-			if e.minio.IsUseSSL() {
-				protocol = "https"
+
+			switch file.Storage {
+			case valueobject.MultimediaStorage_MINIO.ToString():
+				{
+					protocol := "http"
+					if e.minio.IsUseSSL() {
+						protocol = "https"
+					}
+					fileResult.File = fmt.Sprintf("%s://%s/%s/%s", protocol, e.minio.GetEndpoint(), e.minio.GetBucketName(), file.File)
+				}
+			case valueobject.MultimediaStorage_LOCAL.ToString():
+				{
+					fileResult.File = fmt.Sprintf("%s:%d/%s", e.appConfig.RestHost, e.appConfig.RestPort, file.File)
+				}
 			}
-			fileResult.File = fmt.Sprintf("%s://%s/%s/%s", protocol, e.minio.GetEndpoint(), e.minio.GetBucketName(), file.File)
+
 			msgResult.Files = append(msgResult.Files, fileResult)
 		}
 		result = append(result, msgResult)

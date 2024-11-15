@@ -11,8 +11,8 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: http://localhost:4001
-    description: Local server
+  - url: {{ .ServerUrl }}
+    description: {{ .ServerDescription }}
 tags:
   - name: Authentication
     description: Authentication related operations
@@ -206,39 +206,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  code:
-                    type: integer
-                    example: 200
-                  status:
-                    type: string
-                    example: success
-                  message:
-                    type: string
-                    example: Get multimedia message success
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          example: 66f1bc0c5ea328c2e2c2a254
-                        sender:
-                          type: string
-                          example: sender
-                        receiver:
-                          type: string
-                          example: receiver
-                        message:
-                          type: string
-                          example: halo
-                        fileUrls:
-                          type: array
-                          items:
-                            type: string
-                          example: [ "http://localhost:9000/example/example/1685382363-1727118406365912800.jpg", "http://localhost:9000/example/example/1685382658-1727118406430732800.jpg" ]
+                $ref: '#/components/schemas/GetMultimediaMessageResponse200'
         '401':
           description: Unauthorized request, invalid or expired token.
           content:
@@ -624,6 +592,40 @@ components:
           type: object
           nullable: true
           example: null
+    GetMultimediaMessageResponse200:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 200
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Get multimedia message success
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: 66f1bc0c5ea328c2e2c2a254
+              sender:
+                type: string
+                example: sender
+              receiver:
+                type: string
+                example: receiver
+              message:
+                type: string
+                example: halo
+              fileUrls:
+                type: array
+                items:
+                  type: string
+                example: [ "http://localhost:9000/example/example/1685382363-1727118406365912800.jpg", "http://localhost:9000/example/example/1685382658-1727118406430732800.jpg" ]
 
   securitySchemes:
     BearerAuth:             # Name of the security scheme

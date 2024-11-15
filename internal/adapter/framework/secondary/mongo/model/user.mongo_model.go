@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/guregu/null"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
@@ -14,11 +15,11 @@ type User struct {
 	Password  string             `bson:"password"`
 	Active    bool               `bson:"active"`
 	CreatedAt time.Time          `bson:"created_at"`
-	CreatedBy string             `bson:"created_by"`
-	UpdatedAt time.Time          `bson:"updated_at,omitempty"`
-	UpdatedBy string             `bson:"updated_by,omitempty"`
-	DeletedAt time.Time          `bson:"deleted_at,omitempty"`
-	DeletedBy string             `bson:"deleted_by,omitempty"`
+	CreatedBy *string            `bson:"created_by"`
+	UpdatedAt *time.Time         `bson:"updated_at,omitempty"`
+	UpdatedBy *string            `bson:"updated_by,omitempty"`
+	DeletedAt *time.Time         `bson:"deleted_at,omitempty"`
+	DeletedBy *string            `bson:"deleted_by,omitempty"`
 }
 
 func (u User) ToEntity() entity.User {
@@ -30,11 +31,11 @@ func (u User) ToEntity() entity.User {
 		Password:  u.Password,
 		Active:    u.Active,
 		CreatedAt: u.CreatedAt,
-		CreatedBy: u.CreatedBy,
-		UpdatedAt: u.UpdatedAt,
-		UpdatedBy: u.UpdatedBy,
-		DeletedAt: u.DeletedAt,
-		DeletedBy: u.DeletedBy,
+		CreatedBy: null.StringFromPtr(u.CreatedBy),
+		UpdatedAt: null.TimeFromPtr(u.UpdatedAt),
+		UpdatedBy: null.StringFromPtr(u.UpdatedBy),
+		DeletedAt: null.TimeFromPtr(u.DeletedAt),
+		DeletedBy: null.StringFromPtr(u.DeletedBy),
 	}
 }
 
@@ -46,11 +47,11 @@ func FromUserEntity(u entity.User) User {
 		Password:  u.Password,
 		Active:    u.Active,
 		CreatedAt: u.CreatedAt,
-		CreatedBy: u.CreatedBy,
-		UpdatedAt: u.UpdatedAt,
-		UpdatedBy: u.UpdatedBy,
-		DeletedAt: u.DeletedAt,
-		DeletedBy: u.DeletedBy,
+		CreatedBy: u.CreatedBy.Ptr(),
+		UpdatedAt: u.UpdatedAt.Ptr(),
+		UpdatedBy: u.UpdatedBy.Ptr(),
+		DeletedAt: u.DeletedAt.Ptr(),
+		DeletedBy: u.DeletedBy.Ptr(),
 	}
 	if u.ID != "" {
 		user.ID, _ = primitive.ObjectIDFromHex(u.ID)

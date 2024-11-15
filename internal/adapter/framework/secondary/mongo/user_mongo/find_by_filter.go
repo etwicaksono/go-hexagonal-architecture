@@ -11,17 +11,17 @@ func (e userMongo) FindByFilter(ctx context.Context, filter entity.UserFindFilte
 		Active: filter.Active,
 	}
 
-	if filter.ID != "" {
-		getByFilter.IDs = []string{filter.ID}
+	if filter.ID.Valid {
+		getByFilter.IDs = []string{filter.ID.String}
 	}
-	if filter.Email != "" {
-		getByFilter.Emails = []string{filter.Email}
+	if filter.Email.Valid {
+		getByFilter.Emails = []string{filter.Email.String}
 	}
-	if filter.Name != "" {
-		getByFilter.Names = []string{filter.Name}
+	if filter.Name.Valid {
+		getByFilter.Names = []string{filter.Name.String}
 	}
-	if filter.Username != "" {
-		getByFilter.Usernames = []string{filter.Username}
+	if filter.Username.Valid {
+		getByFilter.Usernames = []string{filter.Username.String}
 	}
 
 	users, err := e.GetByFilter(ctx, getByFilter)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/validation_util"
@@ -27,7 +28,7 @@ func (a authenticationApp) Refresh(ctx context.Context, request entity.RefreshTo
 
 	result, err = a.core.Refresh(ctx, request.Token)
 	if err != nil {
-		slog.ErrorContext(ctx, "Error on refreshing auth token", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Error on refreshing auth token", slog.String(constants.Error, err.Error()))
 		return
 	}
 

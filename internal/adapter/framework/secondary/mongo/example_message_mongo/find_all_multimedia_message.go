@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	model2 "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/mongo/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,7 +19,7 @@ func (e exampleMessageMongo) FindAllMultimediaMessage(ctx context.Context) ([]en
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, errors2.ErrNoData
 		}
-		slog.ErrorContext(ctx, "Failed to find all multimedia message", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Failed to find all multimedia message", slog.String(constants.Error, err.Error()))
 		return nil, err
 	}
 	defer cursor.Close(ctx)
@@ -27,7 +28,7 @@ func (e exampleMessageMongo) FindAllMultimediaMessage(ctx context.Context) ([]en
 	for cursor.Next(ctx) {
 		var message model2.MessageMultimediaItem
 		if err = cursor.Decode(&message); err != nil {
-			slog.ErrorContext(ctx, "Failed to decode message", slog.String(entity.Error, err.Error()))
+			slog.ErrorContext(ctx, "Failed to decode message", slog.String(constants.Error, err.Error()))
 			return nil, err
 		}
 		messages = append(messages, message.ToEntity())

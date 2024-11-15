@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/infrastructure"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -48,7 +49,7 @@ func (a *adapterMongo) Connect() error {
 
 	client, err := mongo.Connect(a.ctx, clientOptions)
 	if err != nil {
-		slog.ErrorContext(a.ctx, "Failed to connect to MongoDB", slog.String("connection", a.connectionURL), slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(a.ctx, "Failed to connect to MongoDB", slog.String("connection", a.connectionURL), slog.String(constants.Error, err.Error()))
 		return err
 	}
 
@@ -63,7 +64,7 @@ func (a *adapterMongo) Connect() error {
 func (a *adapterMongo) Disconnect() {
 	err := a.client.Disconnect(a.ctx)
 	if err != nil {
-		slog.ErrorContext(a.ctx, "Failed to disconnect to MongoDB", slog.String("connection", a.connectionURL), slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(a.ctx, "Failed to disconnect to MongoDB", slog.String("connection", a.connectionURL), slog.String(constants.Error, err.Error()))
 	}
 }
 

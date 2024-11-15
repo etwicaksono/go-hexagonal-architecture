@@ -36,7 +36,8 @@ func SetRoute(app *fiber.App, router Router) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return rest_util.ResponseOk(c, "Welcome to Hexagonal Architecture!")
 	})
-	app.Get("/swagger/*", router.docs.Swagger)
+	app.Get("/swagger/*", router.docs.SwaggerPage)
+	app.Get("/swagger.yaml", router.docs.SwaggerYaml)
 
 	// Authentication
 	auth := app.Group("/auth")

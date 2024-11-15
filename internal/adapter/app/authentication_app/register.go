@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/validation_util"
 	"log/slog"
 )
@@ -16,7 +17,7 @@ func (a authenticationApp) Register(ctx context.Context, request entity.Register
 
 	err = a.core.Register(ctx, request)
 	if err != nil {
-		slog.ErrorContext(ctx, "Error on registering user", slog.String(entity.Error, err.Error()))
+		slog.ErrorContext(ctx, "Error on registering user", slog.String(constants.Error, err.Error()))
 		return
 	}
 
