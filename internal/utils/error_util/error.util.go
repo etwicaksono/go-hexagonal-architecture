@@ -38,7 +38,7 @@ func (e *CustomError) Error() string {
 	return e.message
 }
 
-func (e *CustomError) SetErrorType(errorType CustomErrorType) *CustomError {
+func (e *CustomError) setErrorType(errorType CustomErrorType) *CustomError {
 	e.errorType = errorType
 	return e
 }
@@ -66,33 +66,33 @@ func (e *CustomError) IsValidationError() bool {
 func ErrorValidation(errValidation fiber.Map) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusBadRequest).
-		SetErrorType(validationError).
+		setErrorType(validationError).
 		SetMessage(validationError.String()).
 		SetFields(errValidation)
 }
 func Error400(msg string) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusBadRequest).
-		SetErrorType(badRequestError).
+		setErrorType(badRequestError).
 		SetMessage(msg)
 }
 func Error401(msg string) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusUnauthorized).
-		SetErrorType(unauthorizedError).
+		setErrorType(unauthorizedError).
 		SetMessage(msg)
 }
 func Error401WithField(msg string, errorField fiber.Map) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusUnauthorized).
-		SetErrorType(unauthorizedError).
+		setErrorType(unauthorizedError).
 		SetMessage(msg).
 		SetFields(errorField)
 }
 func Error500(msg string) *CustomError {
 	return NewCustomError().
 		SetCode(http.StatusInternalServerError).
-		SetErrorType(internalServerError).
+		setErrorType(internalServerError).
 		SetMessage(msg)
 }
 

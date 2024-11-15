@@ -109,7 +109,7 @@ func LoadConfig() Config {
 	}
 
 	configInstance = &Config{
-		App: AppConfig{
+		App: AppConfig{ // TODO:Set default value so it can run without .env file
 			Env:                  vpr.GetString("APP_ENV"),
 			RestHost:             vpr.GetString("APP_REST_HOST"),
 			RestPort:             vpr.GetInt("APP_REST_PORT"),

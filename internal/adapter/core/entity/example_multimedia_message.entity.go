@@ -5,12 +5,6 @@ import (
 	"github.com/etwicaksono/public-proto/gen/example"
 )
 
-type MultimediaFile struct {
-	Filename    string
-	ContentType string
-	Data        []byte
-}
-
 type SendMultimediaMessageRequest struct {
 	Sender   string
 	Receiver string
