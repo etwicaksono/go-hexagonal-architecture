@@ -17,6 +17,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -29,54 +30,90 @@ type MoveFromTempArgs struct {
 }
 
 func DeleteTempFiles(ctx context.Context, tempFiles *[]entity.FileItem) error {
+	var wg sync.WaitGroup
+	errChan := make(chan error, len(*tempFiles)) // buffered to handle potential errors from multiple goroutines
+
 	for _, file := range *tempFiles {
-		err := os.Remove(file.File)
+		wg.Add(1)
+		go func(f entity.FileItem) {
+			defer wg.Done()
+			if err := os.Remove(f.File); err != nil {
+				slog.ErrorContext(ctx, "Failed to delete file", slog.String("path", f.File), slog.String(constants.Error, err.Error()))
+				errChan <- err
+			}
+		}(file)
+	}
+
+	// Wait for all deletions to complete
+	wg.Wait()
+	close(errChan)
+
+	// Check if any errors occurred
+	for err := range errChan {
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to delete file", slog.String("path", file.File), slog.String(constants.Error, err.Error()))
-			return err
+			return err // return the first error encountered
 		}
 	}
 	return nil
 }
 
 func SaveToTemp(ctx context.Context, multimediaFiles []entity.MultimediaFile, tempFiles *[]entity.FileItem) error {
+	var wg sync.WaitGroup
+	var mu sync.Mutex                                 // To safely append to tempFiles from multiple goroutines
+	errChan := make(chan error, len(multimediaFiles)) // Buffered channel for error handling
+
 	for _, requestFile := range multimediaFiles {
-		ext := filepath.Ext(requestFile.Filename)
-		fileNameNoExtension := strings.TrimSuffix(requestFile.Filename, ext)
-		fileName := fmt.Sprintf("%s-%d%s", payload_util.Slugify(fileNameNoExtension), time.Now().UnixNano(), ext)
-		pathDir := "./uploaded/temp"
-		// Check if the directory exists, if not, create it
-		err := createDirectory(pathDir)
-		if err != nil {
-			slog.ErrorContext(ctx, "Failed to create directory", slog.String("path", pathDir), slog.String(constants.Error, err.Error()))
-			return errorsConst.ErrInternalServer
-		}
+		wg.Add(1)
+		go func(file entity.MultimediaFile) {
+			defer wg.Done()
 
-		pathFile := fmt.Sprintf("%s/%s", pathDir, fileName)
+			ext := filepath.Ext(file.Filename)
+			fileNameNoExtension := strings.TrimSuffix(file.Filename, ext)
+			fileName := fmt.Sprintf("%s-%d%s", payload_util.Slugify(fileNameNoExtension), time.Now().UnixNano(), ext)
+			pathDir := "./uploaded/temp"
 
-		file, err := os.Create(pathFile)
-		if err != nil {
-			return err
-		}
-		closeFile := func(file *os.File) {
-			err := file.Close()
-			if err != nil {
-				slog.ErrorContext(ctx, "Failed to close file", slog.String("path", pathFile), slog.String(constants.Error, err.Error()))
+			// Check if the directory exists, if not, create it
+			if err := createDirectory(pathDir); err != nil {
+				slog.ErrorContext(ctx, "Failed to create directory", slog.String("path", pathDir), slog.String(constants.Error, err.Error()))
+				errChan <- errorsConst.ErrInternalServer
+				return
 			}
-		}
 
-		// Write the file data
-		_, err = file.Write(requestFile.Data)
+			pathFile := fmt.Sprintf("%s/%s", pathDir, fileName)
+			fileHandle, err := os.Create(pathFile)
+			if err != nil {
+				errChan <- err
+				return
+			}
+			defer func() {
+				if closeErr := fileHandle.Close(); closeErr != nil {
+					slog.ErrorContext(ctx, "Failed to close file", slog.String("path", pathFile), slog.String(constants.Error, closeErr.Error()))
+				}
+			}()
+
+			// Write the file data
+			if _, err = fileHandle.Write(file.Data); err != nil {
+				slog.ErrorContext(ctx, "Failed to write file data", slog.String("path", pathFile), slog.String(constants.Error, err.Error()))
+				errChan <- err
+				return
+			}
+
+			// Safely append to tempFiles
+			mu.Lock()
+			*tempFiles = append(*tempFiles, entity.FileItem{File: pathFile, Storage: valueobject.MultimediaStorage_LOCAL.ToString()})
+			mu.Unlock()
+		}(requestFile)
+	}
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(errChan)
+
+	// Return any errors encountered
+	for err := range errChan {
 		if err != nil {
-			closeFile(file)
-			slog.ErrorContext(ctx, "Failed to write file data", slog.String("path", pathFile), slog.String(constants.Error, err.Error()))
 			return err
 		}
-		closeFile(file)
-		*tempFiles = append(
-			*tempFiles,
-			entity.FileItem{File: pathFile, Storage: valueobject.MultimediaStorage_LOCAL.ToString()},
-		)
 	}
 	return nil
 }
@@ -92,36 +129,44 @@ func MoveFromTemp(args MoveFromTempArgs) (resultFiles []entity.FileItem, err err
 		return nil, errorsConst.ErrInvalidNewFilePath
 	}
 
+	var wg sync.WaitGroup
+	var mu sync.Mutex                                // To safely append to resultFiles from multiple goroutines
+	errChan := make(chan error, len(args.TempFiles)) // Buffered channel for error handling
+
 	for _, file := range args.TempFiles {
-		switch args.Storage {
-		case valueobject.MultimediaStorage_LOCAL:
-			{
+		wg.Add(1)
+		go func(file entity.FileItem) {
+			defer wg.Done()
+
+			switch args.Storage {
+			case valueobject.MultimediaStorage_LOCAL:
 				currentFilePath := file.File
-				// Check if the directory exists, if not, create it
-				err = createDirectory(args.NewFilePath)
-				if err != nil {
+				// Ensure directory exists
+				if err := createDirectory(args.NewFilePath); err != nil {
 					slog.ErrorContext(args.Ctx, "Failed to create directory", slog.String("path", args.NewFilePath), slog.String(constants.Error, err.Error()))
-					return nil, err
+					errChan <- err
+					return
 				}
 
-				// Define the new file path in the target directory
+				// Define the new file path
 				newFilePath := filepath.Join(args.NewFilePath, filepath.Base(currentFilePath))
 
-				// Move the file to the new directory
-				if err = os.Rename(currentFilePath, newFilePath); err != nil {
+				// Move the file
+				if err := os.Rename(currentFilePath, newFilePath); err != nil {
 					slog.ErrorContext(args.Ctx, "Failed to move file", slog.String("path", currentFilePath), slog.String(constants.Error, err.Error()))
-					return nil, err
+					errChan <- err
+					return
 				}
 
-				resultFiles = append(
-					resultFiles,
-					entity.FileItem{File: strings.Replace(newFilePath, "\\", "/", -1), Storage: valueobject.MultimediaStorage_LOCAL.ToString()},
-				)
-			}
-		case valueobject.MultimediaStorage_MINIO:
-			{
+				// Append the result
+				mu.Lock()
+				resultFiles = append(resultFiles, entity.FileItem{File: strings.Replace(newFilePath, "\\", "/", -1), Storage: valueobject.MultimediaStorage_LOCAL.ToString()})
+				mu.Unlock()
+
+			case valueobject.MultimediaStorage_MINIO:
 				if args.Minio == nil {
-					return nil, errorsConst.ErrMinioNotInitialized
+					errChan <- errorsConst.ErrMinioNotInitialized
+					return
 				}
 				fileName := filepath.Base(file.File)
 				filePath := fmt.Sprint(args.NewFilePath, "/", fileName)
@@ -130,64 +175,64 @@ func MoveFromTemp(args MoveFromTempArgs) (resultFiles []entity.FileItem, err err
 				tempFile, err := os.Open(file.File)
 				if err != nil {
 					slog.ErrorContext(args.Ctx, "Failed to open file", slog.String("path", file.File), slog.String(constants.Error, err.Error()))
-					return nil, err
+					errChan <- err
+					return
 				}
-				closeTempFile := func() {
+				defer func(tempFile *os.File) {
 					err := tempFile.Close()
 					if err != nil {
-						return
+						slog.ErrorContext(args.Ctx, "Failed to close file", slog.String("path", file.File), slog.String(constants.Error, err.Error()))
 					}
-				}
+				}(tempFile)
 
-				// Read the file into a []byte
+				// Read file data
 				fileBytes, err := io.ReadAll(tempFile)
 				if err != nil {
-					closeTempFile()
-					slog.ErrorContext(args.Ctx, "Failed to read all file", slog.String("path", file.File), slog.String(constants.Error, err.Error()))
-					return nil, err
+					slog.ErrorContext(args.Ctx, "Failed to read file", slog.String("path", file.File), slog.String(constants.Error, err.Error()))
+					errChan <- err
+					return
 				}
 
-				// Reset the file pointer back to the start for further reading if needed
-				_, err = tempFile.Seek(0, 0)
-				if err != nil {
-					closeTempFile()
-					slog.ErrorContext(args.Ctx, "Failed to reset file pointer", slog.String("path", file.File), slog.String(constants.Error, err.Error()))
-					return nil, err
-				}
-
-				// Read the first 512 bytes of the file to detect content type
+				// Detect content type
 				buffer := make([]byte, 512)
-				_, err = tempFile.Read(buffer)
-				if err != nil {
-					closeTempFile()
-					slog.ErrorContext(args.Ctx, "Failed to read first 512 bytes of the file", slog.String("path", file.File), slog.String(constants.Error, err.Error()))
-					return nil, err
+				if _, err := tempFile.ReadAt(buffer, 0); err != nil {
+					slog.ErrorContext(args.Ctx, "Failed to read first bytes", slog.String("path", file.File), slog.String(constants.Error, err.Error()))
+					errChan <- err
+					return
 				}
-
-				// Detect the content type
 				contentType := http.DetectContentType(buffer)
 
+				// Upload file
 				info, err := args.Minio.Upload(args.Ctx, fileBytes, contentType, filePath)
 				if err != nil {
-					closeTempFile()
 					slog.ErrorContext(args.Ctx, "Failed to upload file", slog.String("path", filePath), slog.String(constants.Error, err.Error()))
-					return nil, err
+					errChan <- err
+					return
 				}
-				closeTempFile()
 
-				resultFiles = append(
-					resultFiles,
-					entity.FileItem{File: info.Key, Storage: valueobject.MultimediaStorage_MINIO.ToString()},
-				)
-			}
-		default:
-			{
-				return nil, error_util.ErrorValidation(fiber.Map{"storage": "invalid storage type"})
-			}
+				// Append the result
+				mu.Lock()
+				resultFiles = append(resultFiles, entity.FileItem{File: info.Key, Storage: valueobject.MultimediaStorage_MINIO.ToString()})
+				mu.Unlock()
 
+			default:
+				errChan <- error_util.ErrorValidation(fiber.Map{"storage": "invalid storage type"})
+				return
+			}
+		}(file)
+	}
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(errChan)
+
+	// Check for errors
+	for err := range errChan {
+		if err != nil {
+			return nil, err
 		}
 	}
-	return
+	return resultFiles, nil
 }
 
 func createDirectory(path string) error {
