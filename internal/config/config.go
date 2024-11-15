@@ -35,7 +35,6 @@ type AppConfig struct {
 	IdleTimeout          time.Duration
 	ReadTimeout          time.Duration
 	WriteTimeout         time.Duration
-	GracefulTimeout      time.Duration
 	Name                 string
 	Version              string
 	Host                 string
@@ -109,63 +108,70 @@ func LoadConfig() Config {
 	}
 
 	configInstance = &Config{
-		App: AppConfig{ // TODO:Set default value so it can run without .env file
-			Env:                  vpr.GetString("APP_ENV"),
-			RestHost:             vpr.GetString("APP_REST_HOST"),
-			RestPort:             vpr.GetInt("APP_REST_PORT"),
-			RestPrefork:          vpr.GetBool("FIBER_PREFORK"),
-			RestRecovery:         vpr.GetBool("FIBER_RECOVERY"),
-			RestEnableStackTrace: vpr.GetBool("FIBER_ENABLE_STACK_TRACE"),
-			RestCorsAllowOrigins: vpr.GetString("FIBER_CORS_ALLOW_ORIGINS"),
-			RestCorsAllowHeaders: vpr.GetString("FIBER_CORS_ALLOW_HEADERS"),
-			RestCorsAllowMethods: vpr.GetString("FIBER_CORS_ALLOW_METHODS"),
-			GrpcHost:             vpr.GetString("APP_GRPC_HOST"),
-			GrpcPort:             vpr.GetInt("APP_GRPC_PORT"),
-			IdleTimeout:          vpr.GetDuration("APP_IDLE_TIMEOUT"),
-			ReadTimeout:          vpr.GetDuration("APP_READ_TIMEOUT"),
-			WriteTimeout:         vpr.GetDuration("APP_WRITE_TIMEOUT"),
-			GracefulTimeout:      vpr.GetDuration("APP_GRACEFUL_TIMEOUT"),
-			Name:                 vpr.GetString("APP_NAME"),
-			Version:              vpr.GetString("APP_VERSION"),
-			Host:                 vpr.GetString("APP_HOST"),
-			LogLevel:             vpr.GetString("APP_LOG_LEVEL"),
-			JwtTokenKey:          vpr.GetString("APP_JWT_TOKEN_KEY"),
-			JwtTokenExpiration:   vpr.GetString("APP_JWT_TOKEN_EXPIRATION"),
-			JwtTokenRefresh:      vpr.GetString("APP_JWT_TOKEN_REFRESH"),
+		App: AppConfig{
+			Env:                  coalesce(vpr.GetString("APP_ENV"), "local"), // TODO: 0 usage
+			RestHost:             coalesce(vpr.GetString("APP_REST_HOST"), "localhost"),
+			RestPort:             coalesce(vpr.GetInt("APP_REST_PORT"), 4001),
+			RestPrefork:          coalesce(vpr.GetBool("FIBER_PREFORK"), false),
+			RestRecovery:         coalesce(vpr.GetBool("FIBER_RECOVERY"), true),
+			RestEnableStackTrace: coalesce(vpr.GetBool("FIBER_ENABLE_STACK_TRACE"), true),
+			RestCorsAllowOrigins: coalesce(vpr.GetString("FIBER_CORS_ALLOW_ORIGINS"), "*"),
+			RestCorsAllowHeaders: coalesce(vpr.GetString("FIBER_CORS_ALLOW_HEADERS"), "Origin, Content-Type, Accept, Authorization"),
+			RestCorsAllowMethods: coalesce(vpr.GetString("FIBER_CORS_ALLOW_METHODS"), "GET, POST, DELETE, PUT, PATCH, OPTIONS"),
+			GrpcHost:             coalesce(vpr.GetString("APP_GRPC_HOST"), "localhost"),
+			GrpcPort:             coalesce(vpr.GetInt("APP_GRPC_PORT"), 50000),
+			IdleTimeout:          coalesce(vpr.GetDuration("APP_IDLE_TIMEOUT"), 30*time.Second),
+			ReadTimeout:          coalesce(vpr.GetDuration("APP_READ_TIMEOUT"), 30*time.Second),
+			WriteTimeout:         coalesce(vpr.GetDuration("APP_WRITE_TIMEOUT"), 30*time.Second),
+			Name:                 coalesce(vpr.GetString("APP_NAME"), "example"),
+			Version:              coalesce(vpr.GetString("APP_VERSION"), "1.0.0"),
+			Host:                 coalesce(vpr.GetString("APP_HOST"), "http://localhost:4001"),
+			LogLevel:             coalesce(vpr.GetString("APP_LOG_LEVEL"), "info"),
+			JwtTokenKey:          coalesce(vpr.GetString("APP_JWT_TOKEN_KEY"), "sometokenkey"),
+			JwtTokenExpiration:   coalesce(vpr.GetString("APP_JWT_TOKEN_EXPIRATION"), "10h"),
+			JwtTokenRefresh:      coalesce(vpr.GetString("APP_JWT_TOKEN_REFRESH"), "24h"),
 		},
 		Db: DbConfig{
-			Protocol:                 valueobject.SupportedDbFromString(vpr.GetString("DB_PROTOCOL")),
-			Address:                  vpr.GetString("DB_ADDRESS"),
-			Name:                     vpr.GetString("DB_NAME"),
-			Username:                 vpr.GetString("DB_USERNAME"),
-			Password:                 vpr.GetString("DB_PASSWORD"),
-			Option:                   vpr.GetString("DB_OPTION"),
-			MaxOpenConnections:       vpr.GetInt("DB_MAX_OPEN_CONNECTIONS"),
-			MaxIdleConnections:       vpr.GetInt("DB_MAX_IDLE_CONNECTIONS"),
-			MaxConnectionLifetime:    vpr.GetDuration("DB_MAX_CONNECTION_LIFETIME"),
-			MaxConnectionIdletime:    vpr.GetDuration("DB_MAX_CONNECTION_IDLE_TIME"),
-			ExampleMessageCollection: vpr.GetString("DB_EXAMPLE_MESSAGE_COLLECTION"),
-			UserCollection:           vpr.GetString("DB_USER_COLLECTION"),
+			Protocol:                 valueobject.SupportedDbFromString(coalesce(vpr.GetString("DB_PROTOCOL"), "mongodb")),
+			Address:                  coalesce(vpr.GetString("DB_ADDRESS"), "localhost:27017"),
+			Name:                     coalesce(vpr.GetString("DB_NAME"), "example"),
+			Username:                 coalesce(vpr.GetString("DB_USERNAME"), "admin"),
+			Password:                 coalesce(vpr.GetString("DB_PASSWORD"), "admin_password"),
+			Option:                   coalesce(vpr.GetString("DB_OPTION"), "?authSource=admin&readPreference=secondaryPreferred"),
+			MaxOpenConnections:       coalesce(vpr.GetInt("DB_MAX_OPEN_CONNECTIONS"), 10),
+			MaxIdleConnections:       coalesce(vpr.GetInt("DB_MAX_IDLE_CONNECTIONS"), 2),
+			MaxConnectionLifetime:    coalesce(vpr.GetDuration("DB_MAX_CONNECTION_LIFETIME"), 60*time.Second),
+			MaxConnectionIdletime:    coalesce(vpr.GetDuration("DB_MAX_CONNECTION_IDLE_TIME"), 20*time.Second),
+			ExampleMessageCollection: coalesce(vpr.GetString("DB_EXAMPLE_MESSAGE_COLLECTION"), "messages"),
+			UserCollection:           coalesce(vpr.GetString("DB_USER_COLLECTION"), "users"),
 		},
 		Swagger: SwaggerConfig{
-			DeepLinking:  vpr.GetBool("SWAGGER_DEEP_LINKING"),
-			DocExpansion: vpr.GetString("SWAGGER_DOC_EXPANSION"),
+			DeepLinking:  coalesce(vpr.GetBool("SWAGGER_DEEP_LINKING"), true),
+			DocExpansion: coalesce(vpr.GetString("SWAGGER_DOC_EXPANSION"), "list"),
 		},
 		Minio: MinioConfig{
-			Endpoint:        vpr.GetString("MINIO_ENDPOINT"),
-			AccessKeyID:     vpr.GetString("MINIO_ACCESS_KEY_ID"),
-			SecretAccessKey: vpr.GetString("MINIO_SECRET_ACCESS_KEY"),
-			UseSSL:          vpr.GetBool("MINIO_USE_SSL"),
-			BucketName:      vpr.GetString("MINIO_BUCKET_NAME"),
+			Endpoint:        coalesce(vpr.GetString("MINIO_ENDPOINT"), "localhost:9000"),
+			AccessKeyID:     coalesce(vpr.GetString("MINIO_ACCESS_KEY"), "miniouser"),
+			SecretAccessKey: coalesce(vpr.GetString("MINIO_SECRET_KEY"), "miniopassword"),
+			UseSSL:          coalesce(vpr.GetBool("MINIO_USE_SSL"), false),
+			BucketName:      coalesce(vpr.GetString("MINIO_BUCKET_NAME"), "example"),
 		},
 		Redis: RedisConfig{
-			Db:       vpr.GetInt("REDIS_DB"),
-			Host:     vpr.GetString("REDIS_HOST"),
-			Port:     vpr.GetInt("REDIS_PORT"),
-			Username: vpr.GetString("REDIS_USERNAME"),
-			Password: vpr.GetString("REDIS_PASSWORD"),
+			Db:       coalesce(vpr.GetInt("REDIS_DB"), 0),
+			Host:     coalesce(vpr.GetString("REDIS_HOST"), "localhost"),
+			Port:     coalesce(vpr.GetInt("REDIS_PORT"), 6379),
+			Username: coalesce(vpr.GetString("REDIS_USERNAME"), ""),
+			Password: coalesce(vpr.GetString("REDIS_PASSWORD"), ""),
 		},
 	}
 
 	return *configInstance
+}
+
+func coalesce[T comparable](first, second T) T {
+	var zero T
+	if first != zero {
+		return first
+	}
+	return second
 }

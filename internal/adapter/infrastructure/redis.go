@@ -17,7 +17,7 @@ type adapterRedis struct {
 	config        config.RedisConfig
 }
 
-func NewRedis(ctx context.Context, config config.Config) infrastructure.RedisInterface { // TODO: should implement db interface
+func NewRedis(ctx context.Context, config config.Config) infrastructure.RedisInterface {
 	return &adapterRedis{
 		ctx:           ctx,
 		connectionURL: fmt.Sprintf("%s:%d", config.Redis.Host, config.Redis.Port),

@@ -31,6 +31,7 @@ func NewRestApp(
 	engine := html.New(templatePath, ".gohtml")
 
 	fiberApp := fiber.New(fiber.Config{
+		AppName:      cfg.App.Name,
 		IdleTimeout:  cfg.App.IdleTimeout,
 		WriteTimeout: cfg.App.WriteTimeout,
 		ReadTimeout:  cfg.App.ReadTimeout,

@@ -43,9 +43,9 @@ func MinioProvider(ctx context.Context, cfg config.Config) minio2.MinioInterface
 	minioInstance = &adapterMinio{
 		ctx:        ctx,
 		client:     client,
-		endpoint:   cfg.Minio.Endpoint,
+		endpoint:   endpoint,
 		bucketName: cfg.Minio.BucketName,
-		useSSL:     cfg.Minio.UseSSL,
+		useSSL:     useSSL,
 	}
 	return minioInstance
 }
