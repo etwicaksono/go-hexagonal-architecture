@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/valueobject"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -22,7 +23,7 @@ func FromMessageMultimediaItemEntity(mmi entity.MessageMultimediaItem) MessageMu
 	var files []FileItem
 	for _, file := range mmi.Files {
 		files = append(files, FileItem{
-			Storage: file.Storage,
+			Storage: file.Storage.ToString(),
 			File:    file.File,
 		})
 	}
@@ -43,7 +44,7 @@ func (mti MessageMultimediaItem) ToEntity() entity.MessageMultimediaItem {
 
 	for _, file := range mti.Files {
 		files = append(files, entity.FileItem{
-			Storage: file.Storage,
+			Storage: valueobject.MultimediaStorageFromString(file.Storage),
 			File:    file.File,
 		})
 	}

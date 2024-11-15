@@ -14,7 +14,7 @@ type SendMultimediaMessageRequest struct {
 }
 
 type FileItem struct {
-	Storage string
+	Storage valueobject.MultimediaStorage
 	File    string
 }
 
