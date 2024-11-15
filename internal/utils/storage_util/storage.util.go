@@ -28,7 +28,7 @@ type MoveFromTempArgs struct {
 	Minio       minio.MinioInterface
 }
 
-func DeleteTempFiles(ctx context.Context, tempFiles *[]entity.FileItem) error { // TODO: move to separated function
+func DeleteTempFiles(ctx context.Context, tempFiles *[]entity.FileItem) error {
 	for _, file := range *tempFiles {
 		err := os.Remove(file.File)
 		if err != nil {

@@ -1,5 +1,12 @@
 package valueobject
 
+import (
+	"fmt"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/error_util"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/string_util"
+	"github.com/gofiber/fiber/v2"
+)
+
 type MultimediaStorage int32
 
 const (
@@ -43,4 +50,20 @@ func MultimediaStorageFromString(value string) MultimediaStorage {
 	default:
 		return MultimediaStorage_INVALID
 	}
+}
+func ValidateMultimediaStorageString(value string) error {
+	if MultimediaStorageFromString(value) == MultimediaStorage_INVALID {
+		return error_util.ErrorValidation(
+			fiber.Map{"storage": fmt.Sprintf(
+				"Invalid storage type. Available types are: %s",
+				string_util.Implode(
+					[]string{
+						MultimediaStorage_LOCAL.ToString(),
+						MultimediaStorage_MINIO.ToString(),
+					},
+					", ",
+				))},
+		)
+	}
+	return nil
 }

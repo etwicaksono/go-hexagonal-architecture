@@ -23,7 +23,7 @@ func (e exampleMessageCore) SendMultimediaMessage(ctx context.Context, request e
 		}
 	}()
 
-	err := validation_util.IsValidMultimediaFileExtension(request.Files, []string{".jpg", ".jpeg", ".png", ".txt"})
+	err := validation_util.ValidateMultimediaFileExtension(request.Files, []string{".jpg", ".jpeg", ".png", ".txt"})
 	if err != nil {
 		return err
 	}

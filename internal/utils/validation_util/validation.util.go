@@ -121,7 +121,7 @@ func IsValidExtension(allowedExtension []string, fileName string) bool {
 	return false
 }
 
-func IsValidMultimediaFileExtension(files []entity.MultimediaFile, allowedTypes []string) error {
+func ValidateMultimediaFileExtension(files []entity.MultimediaFile, allowedTypes []string) error {
 	for _, requestFile := range files {
 		//Validate extension
 		if !IsValidExtension(allowedTypes, requestFile.Filename) {
