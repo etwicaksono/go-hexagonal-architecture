@@ -13,6 +13,12 @@ import (
 func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error) {
 	context := ctx.UserContext()
 
+	userData, err := a.jwt.GetAuthContextData(ctx)
+	if err != nil {
+		slog.ErrorContext(context, "Failed to get auth token", slog.String(constants.Error, err.Error()))
+		return
+	}
+
 	payload := new(model.SendMultimediaMessageRequest)
 	err = payload_util.BodyParser(ctx, payload)
 	if err != nil {
@@ -25,8 +31,6 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 		return
 	}
 
-	// TODO: Get userdata and override payload
-
 	// Handle file upload
 	parsedFiles, err := payload_util.MultipartFormParser(ctx, "files")
 	if err != nil {
@@ -35,6 +39,7 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 	}
 
 	payload.Files = parsedFiles["files"]
+	payload.Sender = userData.UserId
 
 	err = a.app.SendMultimediaMessage(context, payload.ToEntity())
 	if err != nil {

@@ -1,6 +1,7 @@
 package rest_util
 
 import (
+	"errors"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
@@ -11,15 +12,16 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/cache"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/redis/go-redis/v9"
 	"log/slog"
 	"strings"
 	"time"
 )
 
 const (
-	authCachedDataKey = "authCachedDataKey"
-	AccessTokenType   = "access"
-	RefreshTokenType  = "refresh"
+	authContextDataKey = "authContextDataKey"
+	AccessTokenType    = "access"
+	RefreshTokenType   = "refresh"
 )
 
 type Jwt struct {
@@ -181,30 +183,23 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 		return errorsConst.ErrUnauthorized
 	}
 
-	// Check if token is within blacklist
-	isBlacklisted, err := j.cache.IsBlacklistedToken(ctx.UserContext(), reversedToken.AccessKey)
-	if err != nil {
-		slog.ErrorContext(ctx.UserContext(), "Failed to check IsBlacklistedToken from redis", slog.String(constants.Error, err.Error()))
-		return errorsConst.ErrInternalServer
-	}
-	if isBlacklisted {
-		return errorsConst.ErrUnauthorized
-	}
-
-	// Get authCachedData from redis
+	// Check if token is existed in cache
 	authCachedData, err := j.cache.GetAuthenticatedToken(ctx.UserContext(), reversedToken.AccessKey)
 	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return errorsConst.ErrUnauthorized
+		}
 		slog.ErrorContext(ctx.UserContext(), "Failed to get authenticated token from redis", slog.String(constants.Error, err.Error()))
 		return errorsConst.ErrInternalServer
 	}
 
 	// Set authCachedData to context
-	ctx.Locals(authCachedDataKey, authCachedData)
+	ctx.Locals(authContextDataKey, authCachedData)
 	return ctx.Next()
 }
 
-func (j *Jwt) GetAuthCachedData(ctx *fiber.Ctx) (userData modelRedis.AuthCachedData, err error) {
-	userData, ok := ctx.Locals(authCachedDataKey).(modelRedis.AuthCachedData)
+func (j *Jwt) GetAuthContextData(ctx *fiber.Ctx) (userData modelRedis.AuthCachedData, err error) {
+	userData, ok := ctx.Locals(authContextDataKey).(modelRedis.AuthCachedData)
 	if !ok {
 		return userData, errorsConst.ErrTokenClaimsParseFailed
 	}

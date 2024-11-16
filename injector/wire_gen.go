@@ -42,12 +42,12 @@ func LoggerInit() (*slog.Logger, error) {
 
 func RestProvider(ctx context.Context, dbClient *entity.DbClient, redisClient *redis.Client) *fiber.App {
 	configConfig := config.LoadConfig()
-	cacheInterface := auth_cache.NewCache(redisClient)
-	jwt := rest_util.NewJwt(configConfig, cacheInterface)
+	authCacheInterface := auth_cache.NewCache(redisClient)
+	jwt := rest_util.NewJwt(configConfig, authCacheInterface)
 	middlewareMiddleware := middleware.NewMiddleware(jwt)
 	docsHandler := docs_handler.NewDocumentationHandler(ctx, configConfig)
 	userDbInterface := userDbProvider(configConfig, dbClient)
-	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig, jwt, cacheInterface)
+	authenticationCoreInterface := authentication_core.NewAuthenticationCore(userDbInterface, configConfig, jwt, authCacheInterface)
 	validate := validatorProvider()
 	authenticationAppInterface := authentication_app.NewAuthenticationApp(authenticationCoreInterface, validate, jwt)
 	authenticationHandler := authentication_handler.NewAuthenticationRestHandler(authenticationAppInterface, jwt)
@@ -55,7 +55,7 @@ func RestProvider(ctx context.Context, dbClient *entity.DbClient, redisClient *r
 	minioInterface := minio.MinioProvider(ctx, configConfig)
 	exampleMessageCoreInterface := example_message_core.NewExampleMessageCore(exampleMessageDbInterface, minioInterface, configConfig)
 	exampleMessageAppInterface := example_message_app.NewExampleMessageApp(exampleMessageCoreInterface, validate)
-	exampleMessageHandler := example_message_handler.NewExampleRestHandler(exampleMessageAppInterface)
+	exampleMessageHandler := example_message_handler.NewExampleRestHandler(exampleMessageAppInterface, jwt)
 	router := rest.NewRouter(middlewareMiddleware, docsHandler, authenticationHandler, exampleMessageHandler)
 	app := rest.NewRestApp(configConfig, router)
 	return app

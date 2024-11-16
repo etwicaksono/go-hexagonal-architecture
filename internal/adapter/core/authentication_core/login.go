@@ -6,7 +6,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
-	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
+	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils"
 	"github.com/guregu/null"
 	"log/slog"
@@ -16,16 +16,16 @@ func (a authenticationCore) Login(ctx context.Context, request entity.LoginReque
 	// check if user exist
 	user, err := a.db.FindByFilter(ctx, entity.UserFindFilter{Email: null.StringFrom(request.Email)})
 	if err != nil {
-		slog.ErrorContext(ctx, "Error on finding user", slog.String(constants.Error, err.Error()))
-		if errors.Is(err, errors2.ErrNoData) {
-			return entity.TokenGenerated{}, errors2.ErrUserNotFound
+		if errors.Is(err, errorsConst.ErrNoData) {
+			return entity.TokenGenerated{}, errorsConst.ErrUserNotFound
 		}
+		slog.ErrorContext(ctx, "Error on finding user", slog.String("email", request.Email), slog.String(constants.Error, err.Error()))
 		return
 	}
 
 	// verify password
 	if err = utils.PasswordVerify(user.Password, request.Password); err != nil {
-		return entity.TokenGenerated{}, errors2.ErrLoginCredentialInvalid
+		return entity.TokenGenerated{}, errorsConst.ErrLoginCredentialInvalid
 	}
 
 	accessKey, err := utils.PasswordGenerate(user.ID)

@@ -9,7 +9,7 @@ import (
 
 func (a AuthenticationHandler) Logout(ctx *fiber.Ctx) (err error) {
 	context := ctx.UserContext()
-	userData, err := a.jwt.GetAuthCachedData(ctx)
+	userData, err := a.jwt.GetAuthContextData(ctx)
 	if err != nil {
 		slog.ErrorContext(context, "Failed to get auth token", slog.String(constants.Error, err.Error()))
 		return
