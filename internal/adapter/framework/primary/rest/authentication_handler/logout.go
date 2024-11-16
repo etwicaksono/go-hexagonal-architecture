@@ -15,7 +15,7 @@ func (a AuthenticationHandler) Logout(ctx *fiber.Ctx) (err error) {
 		return
 	}
 
-	err = a.app.Logout(context, userData.AccessKey, userData.ExpiredAt)
+	err = a.app.Logout(context, userData.AccessKey)
 	if err != nil {
 		slog.ErrorContext(context, "Failed to logout", slog.String(constants.Error, err.Error()))
 		return
