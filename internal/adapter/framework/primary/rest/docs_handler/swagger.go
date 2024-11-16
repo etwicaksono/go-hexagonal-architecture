@@ -19,7 +19,7 @@ func (a DocsHandler) SwaggerPage(ctx *fiber.Ctx) (err error) {
 	swaggerJsonUrl := fmt.Sprintf("%s/swagger.yaml", url)
 
 	err = ctx.Render("swagger-ui/index", fiber.Map{
-		"title":          "Example API",
+		"title":          a.config.App.Name,
 		"swaggerUiUrl":   swaggerUiUrl,
 		"swaggerJsonUrl": swaggerJsonUrl,
 		"deepLinking":    a.config.Swagger.DeepLinking,
@@ -47,9 +47,13 @@ func (a DocsHandler) SwaggerYaml(ctx *fiber.Ctx) (err error) {
 	data := struct {
 		ServerUrl         string
 		ServerDescription string
+		Title             string
+		Version           string
 	}{
 		ServerUrl:         a.config.App.Host, // Use environment variable or config for dynamic host
 		ServerDescription: a.config.App.Name,
+		Title:             a.config.App.Name,
+		Version:           a.config.App.Version,
 	}
 
 	// Render the template with the data

@@ -1,12 +1,12 @@
 openapi: 3.0.3
 info:
-  title: Example API - OpenAPI 3.0
+  title: {{ .Title }}
   description: |-
     Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas dolor nemo laudantium perferendis voluptas ipsam, illum optio, quidem porro, accusamus fuga explicabo ab dignissimos voluptates? Quaerat iste eligendi odio voluptatum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur maxime eligendi accusamus eaque porro quaerat repellat inventore, ullam voluptatibus quod molestias quae ab. Expedita corporis ab id pariatur omnis. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur nesciunt sint obcaecati eligendi beatae velit! Repellendus accusantium, rerum suscipit, quaerat nam commodi, unde eligendi explicabo architecto provident reprehenderit temporibus distinctio.
 
   contact:
     email: etwicaksono@dutacorpora.id
-  version: 1.0.0
+  version: {{ .Version }}
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
