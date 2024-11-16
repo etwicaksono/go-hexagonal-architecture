@@ -459,9 +459,6 @@ components:
     SendTextMessageRequest:
       type: object
       properties:
-        sender:
-          type: string
-          description: "The sender of the message."
         receiver:
           type: string
           description: "The receiver of the message."
@@ -469,7 +466,6 @@ components:
           type: string
           description: "The content of the message."
       required:
-        - sender
         - receiver
         - message
     SendTextMessageResponse200:
@@ -541,15 +537,11 @@ components:
     SendMultimediaMessageRequest:
       type: object
       required:
-        - sender
         - receiver
         - message
         - files
         - storage
       properties:
-        sender:
-          type: string
-          description: The sender of the message.
         receiver:
           type: string
           description: The receiver of the message.

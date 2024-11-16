@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errors2 "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils"
@@ -29,14 +30,24 @@ func (a authenticationCore) Login(ctx context.Context, request entity.LoginReque
 
 	accessKey, err := utils.PasswordGenerate(user.ID)
 	if err != nil {
+		slog.ErrorContext(ctx, "Error on generating access key", slog.String(constants.Error, err.Error()))
 		return
 	}
 	generatedJwt, err := a.jwt.GenerateJwtToken(accessKey)
 	if err != nil {
+		slog.ErrorContext(ctx, "Error on generating jwt token", slog.String(constants.Error, err.Error()))
 		return
 	}
 
-	// TODO: save access key to cache
+	err = a.cache.SetAuthenticatedToken(ctx, accessKey, model.AuthCachedData{
+		UserId:    user.ID,
+		AccessKey: accessKey,
+		ExpiredAt: generatedJwt.ExpiredAt,
+	})
+	if err != nil {
+		slog.ErrorContext(ctx, "Error on saving auth token to cache", slog.String(constants.Error, err.Error()))
+		return
+	}
 
 	return generatedJwt.ToEntity(), nil
 }

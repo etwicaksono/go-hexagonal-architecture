@@ -12,7 +12,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache/auth_cache"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
@@ -36,7 +36,7 @@ var routerSet = wire.NewSet(
 )
 
 var authenticationSet = wire.NewSet(
-	cache.NewCache,
+	auth_cache.NewCache,
 	userDbProvider,
 	rest_util.NewJwt,
 	authentication_core.NewAuthenticationCore,

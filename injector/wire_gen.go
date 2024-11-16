@@ -19,7 +19,7 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/docs_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/example_message_handler"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/rest/middleware"
-	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache"
+	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache/auth_cache"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/minio"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/utils/rest_util"
@@ -42,7 +42,7 @@ func LoggerInit() (*slog.Logger, error) {
 
 func RestProvider(ctx context.Context, dbClient *entity.DbClient, redisClient *redis.Client) *fiber.App {
 	configConfig := config.LoadConfig()
-	cacheInterface := cache.NewCache(redisClient)
+	cacheInterface := auth_cache.NewCache(redisClient)
 	jwt := rest_util.NewJwt(configConfig, cacheInterface)
 	middlewareMiddleware := middleware.NewMiddleware(jwt)
 	docsHandler := docs_handler.NewDocumentationHandler(ctx, configConfig)
@@ -80,7 +80,7 @@ var validatorSet = wire.NewSet(validatorProvider)
 
 var routerSet = wire.NewSet(middleware.NewMiddleware, docs_handler.NewDocumentationHandler, rest.NewRouter)
 
-var authenticationSet = wire.NewSet(cache.NewCache, userDbProvider, rest_util.NewJwt, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
+var authenticationSet = wire.NewSet(auth_cache.NewCache, userDbProvider, rest_util.NewJwt, authentication_core.NewAuthenticationCore, authentication_app.NewAuthenticationApp, authentication_handler.NewAuthenticationRestHandler)
 
 var exampleSet = wire.NewSet(minio.MinioProvider, validatorSet,
 	messageDbProvider, example_message_core.NewExampleMessageCore, example_message_app.NewExampleMessageApp, example_message_handler.NewExampleRestHandler,

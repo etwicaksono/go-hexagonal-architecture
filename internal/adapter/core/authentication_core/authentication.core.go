@@ -12,14 +12,14 @@ type authenticationCore struct {
 	db     db.UserDbInterface
 	config config.Config
 	jwt    *rest_util.Jwt
-	cache  cache.CacheInterface
+	cache  cache.AuthCacheInterface
 }
 
 func NewAuthenticationCore(
 	db db.UserDbInterface,
 	config config.Config,
 	jwt *rest_util.Jwt,
-	cache cache.CacheInterface,
+	cache cache.AuthCacheInterface,
 ) core.AuthenticationCoreInterface {
 	return &authenticationCore{
 		db:     db,

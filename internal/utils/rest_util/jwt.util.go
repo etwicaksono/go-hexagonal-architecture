@@ -1,38 +1,37 @@
 package rest_util
 
 import (
-	"errors"
 	"fmt"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/primary/model"
+	modelRedis "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache/model"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/config"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/constants"
 	errorsConst "github.com/etwicaksono/go-hexagonal-architecture/internal/errors"
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/cache"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/redis/go-redis/v9"
 	"log/slog"
 	"strings"
 	"time"
 )
 
 const (
-	accessKey        = "accessKey"
-	AccessTokenType  = "access"
-	RefreshTokenType = "refresh"
+	authCachedDataKey = "authCachedDataKey"
+	AccessTokenType   = "access"
+	RefreshTokenType  = "refresh"
 )
 
 type Jwt struct {
 	tokenKey        string
 	tokenExpiration string
 	tokenRefresh    string
-	cache           cache.CacheInterface
+	cache           cache.AuthCacheInterface
 }
 
 func NewJwt(
 	config config.Config,
-	cache cache.CacheInterface,
+	cache cache.AuthCacheInterface,
 ) *Jwt {
 	return &Jwt{
 		tokenKey:        config.App.JwtTokenKey,
@@ -183,23 +182,31 @@ func (j *Jwt) JwtAuthenticate(ctx *fiber.Ctx) error {
 	}
 
 	// Check if token is within blacklist
-	_, err = j.cache.GetAuthToken(ctx.UserContext(), fmt.Sprintf("%s:%s", constants.BlackListedTokenRedisPrefix, reversedToken.AccessKey))
-	if err == nil {
+	isBlacklisted, err := j.cache.IsBlacklistedToken(ctx.UserContext(), reversedToken.AccessKey)
+	if err != nil {
+		slog.ErrorContext(ctx.UserContext(), "Failed to check IsBlacklistedToken from redis", slog.String(constants.Error, err.Error()))
+		return errorsConst.ErrInternalServer
+	}
+	if isBlacklisted {
 		return errorsConst.ErrUnauthorized
-	} else {
-		if !errors.Is(redis.Nil, err) {
-			slog.ErrorContext(ctx.UserContext(), "Failed to get auth token from redis", slog.String("error", err.Error()))
-		}
 	}
 
-	ctx.Locals(accessKey, reversedToken)
+	// Get authCachedData from redis
+	authCachedData, err := j.cache.GetAuthenticatedToken(ctx.UserContext(), reversedToken.AccessKey)
+	if err != nil {
+		slog.ErrorContext(ctx.UserContext(), "Failed to get authenticated token from redis", slog.String(constants.Error, err.Error()))
+		return errorsConst.ErrInternalServer
+	}
+
+	// Set authCachedData to context
+	ctx.Locals(authCachedDataKey, authCachedData)
 	return ctx.Next()
 }
 
-func (j *Jwt) GetJwtAuthToken(ctx *fiber.Ctx) (authToken *entity.AuthToken, err error) {
-	authToken, ok := ctx.Locals(accessKey).(*entity.AuthToken)
+func (j *Jwt) GetAuthCachedData(ctx *fiber.Ctx) (userData modelRedis.AuthCachedData, err error) {
+	userData, ok := ctx.Locals(authCachedDataKey).(modelRedis.AuthCachedData)
 	if !ok {
-		return authToken, errorsConst.ErrTokenClaimsParseFailed
+		return userData, errorsConst.ErrTokenClaimsParseFailed
 	}
 	return
 }

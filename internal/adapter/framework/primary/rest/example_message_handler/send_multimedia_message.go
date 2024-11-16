@@ -25,6 +25,8 @@ func (a ExampleMessageHandler) SendMultimediaMessage(ctx *fiber.Ctx) (err error)
 		return
 	}
 
+	// TODO: Get userdata and override payload
+
 	// Handle file upload
 	parsedFiles, err := payload_util.MultipartFormParser(ctx, "files")
 	if err != nil {
