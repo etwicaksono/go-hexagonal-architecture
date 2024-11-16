@@ -26,7 +26,7 @@ func (a authenticationApp) Refresh(ctx context.Context, request entity.RefreshTo
 		return result, errorsConst.ErrTokenInvalid
 	}
 
-	result, err = a.core.Refresh(ctx, request.Token)
+	result, err = a.core.Refresh(ctx, tokenReversed.AccessKey)
 	if err != nil {
 		slog.ErrorContext(ctx, "Error on refreshing auth token", slog.String(constants.Error, err.Error()))
 		return

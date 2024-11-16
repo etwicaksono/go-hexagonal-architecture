@@ -100,7 +100,7 @@ func SaveToTemp(ctx context.Context, multimediaFiles []entity.MultimediaFile, te
 
 			// Safely append to tempFiles
 			mu.Lock()
-			*tempFiles = append(*tempFiles, entity.FileItem{File: pathFile, Storage: valueobject.MultimediaStorage_LOCAL.ToString()})
+			*tempFiles = append(*tempFiles, entity.FileItem{File: pathFile, Storage: valueobject.MultimediaStorage_LOCAL})
 			mu.Unlock()
 		}(requestFile)
 	}
@@ -160,7 +160,7 @@ func MoveFromTemp(args MoveFromTempArgs) (resultFiles []entity.FileItem, err err
 
 				// Append the result
 				mu.Lock()
-				resultFiles = append(resultFiles, entity.FileItem{File: strings.Replace(newFilePath, "\\", "/", -1), Storage: valueobject.MultimediaStorage_LOCAL.ToString()})
+				resultFiles = append(resultFiles, entity.FileItem{File: strings.Replace(newFilePath, "\\", "/", -1), Storage: valueobject.MultimediaStorage_LOCAL})
 				mu.Unlock()
 
 			case valueobject.MultimediaStorage_MINIO:
@@ -212,7 +212,7 @@ func MoveFromTemp(args MoveFromTempArgs) (resultFiles []entity.FileItem, err err
 
 				// Append the result
 				mu.Lock()
-				resultFiles = append(resultFiles, entity.FileItem{File: info.Key, Storage: valueobject.MultimediaStorage_MINIO.ToString()})
+				resultFiles = append(resultFiles, entity.FileItem{File: info.Key, Storage: valueobject.MultimediaStorage_MINIO})
 				mu.Unlock()
 
 			default:

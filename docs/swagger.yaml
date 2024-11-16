@@ -100,6 +100,9 @@ paths:
       requestBody:
         required: true
         content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthRefreshRequest'
           application/json:
             schema:
               $ref: '#/components/schemas/AuthRefreshRequest'
@@ -459,9 +462,6 @@ components:
     SendTextMessageRequest:
       type: object
       properties:
-        sender:
-          type: string
-          description: "The sender of the message."
         receiver:
           type: string
           description: "The receiver of the message."
@@ -469,7 +469,6 @@ components:
           type: string
           description: "The content of the message."
       required:
-        - sender
         - receiver
         - message
     SendTextMessageResponse200:
@@ -541,15 +540,11 @@ components:
     SendMultimediaMessageRequest:
       type: object
       required:
-        - sender
         - receiver
         - message
         - files
         - storage
       properties:
-        sender:
-          type: string
-          description: The sender of the message.
         receiver:
           type: string
           description: The receiver of the message.

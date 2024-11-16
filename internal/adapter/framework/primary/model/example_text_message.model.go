@@ -3,10 +3,10 @@ package model
 import "github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/core/entity"
 
 type MessageTextItem struct {
-	Id       string `json:"id"`
-	Sender   string `json:"sender"`
-	Receiver string `json:"receiver"`
-	Message  string `json:"message"`
+	Id       string `json:"id" form:"id"`
+	Sender   string `json:"sender" form:"sender"`
+	Receiver string `json:"receiver" form:"receiver"`
+	Message  string `json:"message" form:"message"`
 }
 
 func FromMessageTextItemEntity(m entity.MessageTextItem) MessageTextItem {
@@ -19,9 +19,9 @@ func FromMessageTextItemEntity(m entity.MessageTextItem) MessageTextItem {
 }
 
 type SendTextMessageRequest struct {
-	Sender   string `json:"sender" validate:"required"`
-	Receiver string `json:"receiver" validate:"required"`
-	Message  string `json:"message" validate:"required"`
+	Sender   string `json:"sender" form:"sender" validate:"required"`
+	Receiver string `json:"receiver" form:"receiver" validate:"required"`
+	Message  string `json:"message" form:"message" validate:"required"`
 }
 
 func (s SendTextMessageRequest) ToEntity() entity.SendTextMessageRequest {

@@ -30,7 +30,7 @@ func (e exampleMessageCore) GetMultimediaMessage(ctx context.Context) ([]entity.
 			fileResult := file
 
 			switch file.Storage {
-			case valueobject.MultimediaStorage_MINIO.ToString():
+			case valueobject.MultimediaStorage_MINIO:
 				{
 					protocol := "http"
 					if e.minio.IsUseSSL() {
@@ -38,7 +38,7 @@ func (e exampleMessageCore) GetMultimediaMessage(ctx context.Context) ([]entity.
 					}
 					fileResult.File = fmt.Sprintf("%s://%s/%s/%s", protocol, e.minio.GetEndpoint(), e.minio.GetBucketName(), file.File)
 				}
-			case valueobject.MultimediaStorage_LOCAL.ToString():
+			case valueobject.MultimediaStorage_LOCAL:
 				{
 					fileResult.File = fmt.Sprintf("%s:%d/%s", e.appConfig.RestHost, e.appConfig.RestPort, file.File)
 				}

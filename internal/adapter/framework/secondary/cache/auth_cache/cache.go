@@ -1,4 +1,4 @@
-package cache
+package auth_cache
 
 import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/ports/secondary/cache"
@@ -9,7 +9,7 @@ type redisCache struct {
 	*redis.Client
 }
 
-func NewCache(redisClient *redis.Client) cache.CacheInterface {
+func NewCache(redisClient *redis.Client) cache.AuthCacheInterface {
 	return &redisCache{
 		redisClient,
 	}

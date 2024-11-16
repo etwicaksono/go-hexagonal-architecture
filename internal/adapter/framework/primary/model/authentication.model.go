@@ -6,10 +6,10 @@ import (
 )
 
 type RegisterRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Name     string `json:"name" validate:"required"`
-	Username string `json:"username" validate:"required,is-username"`
-	Password string `json:"password" validate:"required,max=72"`
+	Email    string `json:"email" form:"email" validate:"required,email"`
+	Name     string `json:"name" form:"name" validate:"required"`
+	Username string `json:"username" form:"username" validate:"required,is-username"`
+	Password string `json:"password" form:"password" validate:"required,max=72"`
 }
 
 func (r RegisterRequest) ToEntity() entity.RegisterRequest {
@@ -21,8 +21,8 @@ func FromRegisterRequestEntity(r entity.RegisterRequest) RegisterRequest {
 }
 
 type LoginRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,max=72"`
+	Email    string `json:"email" form:"email" validate:"required,email"`
+	Password string `json:"password" form:"password" validate:"required,max=72"`
 }
 
 func (r LoginRequest) ToEntity() entity.LoginRequest {
@@ -49,7 +49,7 @@ func FromTokenGeneratedEntity(t entity.TokenGenerated) TokenGenerated {
 }
 
 type RefreshTokenRequest struct {
-	Token string `json:"refresh_token" validate:"required"`
+	Token string `json:"refresh_token" form:"refresh_token" validate:"required"`
 }
 
 func (t RefreshTokenRequest) ToEntity() entity.RefreshTokenRequest {

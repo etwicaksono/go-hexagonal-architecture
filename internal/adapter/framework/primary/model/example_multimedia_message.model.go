@@ -6,10 +6,10 @@ import (
 )
 
 type SendMultimediaMessageRequest struct {
-	Sender   string `json:"sender" validate:"required"`
-	Receiver string `json:"receiver" validate:"required"`
-	Message  string `json:"message" validate:"required"`
-	Storage  string `json:"storage"`
+	Sender   string `json:"sender" form:"sender" validate:"required"`
+	Receiver string `json:"receiver" form:"receiver" validate:"required"`
+	Message  string `json:"message" form:"message" validate:"required"`
+	Storage  string `json:"storage" form:"storage"`
 	Files    []entity.MultimediaFile
 }
 
@@ -34,16 +34,16 @@ func FromSendMultimediaMessageRequestEntity(s entity.SendMultimediaMessageReques
 }
 
 type FileItem struct {
-	Storage string `json:"storage"`
-	File    string `json:"file"`
+	Storage string `json:"storage" form:"storage"`
+	File    string `json:"file" form:"file"`
 }
 
 type MessageMultimediaItem struct {
-	Id       string   `json:"id"`
-	Sender   string   `json:"sender"`
-	Receiver string   `json:"receiver"`
-	Message  string   `json:"message"`
-	FileUrls []string `json:"fileUrls"`
+	Id       string   `json:"id" form:"id"`
+	Sender   string   `json:"sender" form:"sender"`
+	Receiver string   `json:"receiver" form:"receiver"`
+	Message  string   `json:"message" form:"message"`
+	FileUrls []string `json:"fileUrls" form:"fileUrls"`
 }
 
 func FromMessageMultimediaItemEntity(s entity.MessageMultimediaItem) MessageMultimediaItem {

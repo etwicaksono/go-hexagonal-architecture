@@ -9,13 +9,13 @@ import (
 
 func (a AuthenticationHandler) Logout(ctx *fiber.Ctx) (err error) {
 	context := ctx.UserContext()
-	authToken, err := a.jwt.GetJwtAuthToken(ctx)
+	userData, err := a.jwt.GetAuthContextData(ctx)
 	if err != nil {
 		slog.ErrorContext(context, "Failed to get auth token", slog.String(constants.Error, err.Error()))
 		return
 	}
 
-	err = a.app.Logout(context, *authToken)
+	err = a.app.Logout(context, userData.AccessKey, userData.ExpiredAt)
 	if err != nil {
 		slog.ErrorContext(context, "Failed to logout", slog.String(constants.Error, err.Error()))
 		return

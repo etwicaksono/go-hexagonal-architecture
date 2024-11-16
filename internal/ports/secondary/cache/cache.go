@@ -5,8 +5,8 @@ import (
 	"github.com/etwicaksono/go-hexagonal-architecture/internal/adapter/framework/secondary/cache/model"
 )
 
-type CacheInterface interface {
-	GetAuthToken(ctx context.Context, tokenKey string) (token model.TokenData, err error)
-	SetAuthToken(ctx context.Context, tokenKey string, token model.TokenData) (err error)
-	DeleteToken(ctx context.Context, tokenKey string) (err error)
+type AuthCacheInterface interface {
+	SetAuthenticatedToken(ctx context.Context, accessKey string, cachedData model.AuthCachedData) (err error)
+	GetAuthenticatedToken(ctx context.Context, accessKey string) (cachedData model.AuthCachedData, err error)
+	DeleteAuthenticatedToken(ctx context.Context, accessKey string) (err error)
 }
